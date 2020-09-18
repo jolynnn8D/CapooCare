@@ -1,0 +1,86 @@
+
+---ENTITIES---
+
+--Pet-- 
+
+Must have a pet ID, profile, and can have special requirements associated to them. 
+
+Must belong to only 1 category. 
+
+Must be owned by at least 1 owner. 
+
+--User--
+
+Overlap constraint satisfied between Pet Owner and Caretaker. 
+
+Must have a unique non-null user ID. 
+
+Must have a profile. 
+
+--CareTaker--
+
+Must either be a Full-timer or a Part-timer. 
+
+Can only care for pets they can take care of 
+
+May take care of more than one pet at any given time 
+
+--Full-timer--
+
+*NOTE: All following constraints are not reflected in ER diagram. 
+
+Must work for 2 consecutive 150-day periods per year. 
+
+Cannot care for more than 5 pets at once. 
+
+Treated as available until they apply for leave. 
+
+Cannot apply for leave if there is at least 1 pet under their care. 
+
+Base daily price for each pet type can never be lower than specified by the PCS Administrator. 
+
+--Part-timer-- 
+
+*NOTE: All following constraints are not reflected in ER diagram. 
+
+Can only care for at most 2 pets if rating is below 4/5. 
+
+Can care for at most 5 pets if rating is equal to or above 4/5. 
+
+Can specify availability for the current year and the following year. 
+
+--Transaction-- 
+
+Must have a transaction ID, method of payment, and transaction status. 
+
+Can have a review tied to the transaction.
+
+Each transaction is linked only to one job.
+
+---RELATIONS---
+
+--Owns--
+
+Pet Owners must own at least one Pet. 
+
+--Job-- 
+
+Pet Owners can establish a care period with Care Takers during a specific range of dates, specifying the Pet involved and the method of transfer of the Pet (constraint not specified in ER diagram). 
+
+--Review-- 
+
+Pet Owners can leave a Review with a rating for a Caretaker at the end of a Transaction. 
+
+Review and rating are only applicable for the specific Transaction. 
+
+ 
+--Bid-- 
+
+Pet Owners can bid for services of care takers based on a criteria. 
+
+
+--Cares--
+
+Caretaker can establish a price for each Category of animal. 
+
+Caretaker must be able to care for at least one animal. 
