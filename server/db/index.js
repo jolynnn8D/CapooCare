@@ -11,7 +11,7 @@ module.exports = {
 const queryText =
     `CREATE TABLE IF NOT EXISTS 
         users(
-            user_id serial PRIMARY KEY, 
+            user_id BIGSERIAL NOT NULL PRIMARY KEY, 
             name VARCHAR(50) NOT NULL
         )`;
 pool.query(queryText, (err, res) => {
