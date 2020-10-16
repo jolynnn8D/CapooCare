@@ -15,5 +15,5 @@ const queryText =
             name VARCHAR(50) NOT NULL
         )`;
 pool.query(queryText, (err, res) => {
-    console.log(err, res)
+    // console.log(err, res);
 });
