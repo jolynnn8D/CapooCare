@@ -5,7 +5,8 @@ const cors = require("cors");
 const db = require("./db");
 const morgan = require('morgan');
 const { Pool } = require('pg');
-const port = process.env.PORT || 5000;
+const keys = require("./keys");
+const port = keys.port || 5000;
 
 const app = express();
 
