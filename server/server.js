@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
-const db = require("./db");
+const db = require("./database/queries");
 const morgan = require('morgan');
 const { Pool } = require('pg');
 const keys = require("./keys");
@@ -12,6 +12,14 @@ const app = express();
 
 app.use(cors())
 app.use(express.json());
+
+
+const forceInitializeDatabase = keys.forceInitializeDatabase
+
+if (forceInitializeDatabase) {
+    console.log("Re-initializing database...");
+    db.initDatabase();
+}
 
 //MIDDLEWARE
 // match all request - middleware has to be before as express reads from top to bottom
