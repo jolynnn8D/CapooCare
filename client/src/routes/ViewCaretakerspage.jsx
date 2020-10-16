@@ -1,11 +1,14 @@
 import React from 'react'
+import CaretakersVerticalTabs from '../components/admin/CaretakersVerticalTabs'
+import CaretakersList from '../components/CaretakersList'
 
 const ViewCaretakerspage = () => {
   return (
     <div>
-      View caretakers
+      <CaretakersVerticalTabs/>
+      <CaretakersList/>
     </div>
-  )
+  );
 }
 
 export default ViewCaretakerspage

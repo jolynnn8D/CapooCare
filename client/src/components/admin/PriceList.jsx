@@ -25,6 +25,7 @@ const PriceList = () => {
   const handleClick = (e) => {
     history.push("/admin/set-price");
   }
+  
   return (
     <Card onClick={handleClick} className={classes.root}>
       <CardActionArea>
