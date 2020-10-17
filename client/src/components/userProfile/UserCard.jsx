@@ -28,7 +28,7 @@ const UserCard = () => {
         <Card className={classes.root}>
             <Grid container>
                 <Grid item>
-                    <ProfilePic img={profileImg} href="/users/123/update"/>
+                    <ProfilePic img={profileImg} href="/users/:id/update"/>
                 </Grid>
                 <Grid item className={classes.profileTextArea}>
                     <h2 className={classes.profileText}> Pet Owner </h2>
