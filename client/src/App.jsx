@@ -8,6 +8,7 @@ import Adminpage from "./routes/Adminpage";
 import SetPricepage from "./routes/SetPricepage";
 import ViewAllCaretakers from "./components/admin/ViewAllCaretakers";
 import ViewCaretakerspage from "./routes/ViewCaretakerspage";
+import UserProfile from "./routes/UserProfile";
 
 const App = () => {
     return (
@@ -21,6 +22,7 @@ const App = () => {
                         <Route exact path="/admin/view-caretakers" component={ViewCaretakerspage}/>
                         <Route exact path="/users/:id/update" component={Updatepage} />
                         <Route exact path="/users/:id" component={Userdetailpage} />
+                        <Route exact path="/userprofile" component={UserProfile}/>
                     </Switch>
                 </Router>
             </div>
