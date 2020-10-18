@@ -15,7 +15,7 @@ const listUsers = () => async (dispatch) => {
 const listPets = () => async (dispatch) => {
   try {
     dispatch({type: PET_LIST_REQUEST});
-    const {data} = await axios.get("http://localhost:5000/api/v1/users");
+    const {data} = await axios.get("http://localhost:5000/api/v1/pets");
     dispatch({type: PET_LIST_SUCCESS, payload: data});
   } catch (error) {
     dispatch({type: PET_LIST_FAIL, payload: error.message}); 

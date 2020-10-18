@@ -13,15 +13,18 @@ function userListReducer(state = {users: []}, action) { // action send data from
       return state;
   }
 }
-
-function petListReducer(state = { pets: [] }, action) {
+// Default pets were added for testing
+// Actions are set to return state since backend is currently unavailable.
+function petListReducer(state = { pets: ["Capoo", "Corgi", "Test"] }, action) {
   switch(action.type) {
     case PET_LIST_REQUEST:
-      return {loading: true};
+      // return {loading: true};
+      return state;
     case PET_LIST_SUCCESS:
       return {loading: false, pets: action.payload}
     case PET_LIST_FAIL:
-      return {loading: false, error: action.payload}
+      // return {loading: false, error: action.payload}
+      return state;
     default:
       return state;
   }

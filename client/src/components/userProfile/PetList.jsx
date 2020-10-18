@@ -12,6 +12,9 @@ const useStyles = makeStyles({
     root: {
         padding: 30,
         height: 280
+    },
+    petAvatar: {
+        margin: 10
     }
 })
 const PetList = () => {
@@ -20,16 +23,21 @@ const PetList = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(listPets());
+        console.log(pets);
     })
 
     const classes = useStyles();
-    return (
+    return loading ? <div> Loading ... </div> : error ? <div>{error}</div> : (
         <Card className={classes.root}>
             <h2> Pets Owned </h2>
             <Grid container>
-                <Grid item>
-                    <ProfilePic img={petImg} href="#"/>
-                </Grid>
+                {pets.map((pet) => {
+                    return(
+                        <Grid item className={classes.petAvatar}>
+                            <ProfilePic img={petImg} href="#"/>
+                            <p> {pet} </p>
+                        </Grid>)
+                })}
             </Grid>
         </Card>
     )
