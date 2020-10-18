@@ -10,6 +10,7 @@ import ViewAllCaretakers from "./components/admin/ViewAllCaretakers";
 import ViewCaretakerspage from "./routes/ViewCaretakerspage";
 import UserProfile from "./routes/UserProfile";
 import CaretakerProfile from "./routes/CaretakerProfile"
+import Login from "./routes/Login";
 
 
 const App = () => {
@@ -18,7 +19,7 @@ const App = () => {
             <div className="container">
                 <Router>
                     <Switch>
-                        <Route exact path="/" component={Homepage} />
+                        <Route exact path="/" component={Login} />
                         <Route exact path="/admin" component={Adminpage}/>
                         <Route exact path="/admin/set-price" component={SetPricepage}/>
                         <Route exact path="/admin/view-caretakers" component={ViewCaretakerspage}/>
@@ -26,6 +27,7 @@ const App = () => {
                         <Route exact path="/users/:id" component={UserProfile} />
                         <Route exact path ="/users/:id/caretaker-admin" component={CaretakerAdmin}/>
                         <Route exact path ="/users/:id/caretaker" component={CaretakerProfile}/>
+                        <Route exact path="/login" component={Login} />
                     </Switch>
                 </Router>
             </div>
