@@ -11,7 +11,7 @@ import AddIcon from '@material-ui/icons/Add';
 import PetsIcon from '@material-ui/icons/Pets';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-const PetCareList = () => {
+const PetCareList = (props) => {
     return (
         <div>
             <List>
@@ -27,12 +27,14 @@ const PetCareList = () => {
                 <ListItemText
                     primary="$50/day"
                 />
+                {props.owner ? 
                 <ListItemSecondaryAction>
                     <IconButton edge="end" aria-label="delete">
                       <DeleteIcon />
                     </IconButton>
-                </ListItemSecondaryAction>
+                </ListItemSecondaryAction> : null } 
                 </ListItem>
+                {props.owner ?
                 <ListItem button>
                     <ListItemAvatar>
                         <Avatar>
@@ -42,7 +44,14 @@ const PetCareList = () => {
                     <ListItemText
                         primary="Click to add new pet"
                     />
-                </ListItem>
+                </ListItem> : null }
+                {!props.owner ? 
+                <ListItemSecondaryAction>
+                    <IconButton>
+                        <ListItemText  
+                            primary="Bid"/>
+                    </IconButton>
+                </ListItemSecondaryAction> : null } 
             </List>
         </div>
     )

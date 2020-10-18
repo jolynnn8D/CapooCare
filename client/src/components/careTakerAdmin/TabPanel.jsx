@@ -95,7 +95,7 @@ export default function FullWidthTabs() {
           Salary details
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <PetCareList/>
+          <PetCareList owner={true}/>
         </TabPanel>
       </SwipeableViews>
     </div>

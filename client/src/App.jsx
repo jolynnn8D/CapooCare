@@ -9,6 +9,7 @@ import SetPricepage from "./routes/SetPricepage";
 import ViewAllCaretakers from "./components/admin/ViewAllCaretakers";
 import ViewCaretakerspage from "./routes/ViewCaretakerspage";
 import UserProfile from "./routes/UserProfile";
+import CaretakerProfile from "./routes/CaretakerProfile"
 
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
                         <Route exact path="/users/:id/update" component={Updatepage} />
                         <Route exact path="/users/:id" component={UserProfile} />
                         <Route exact path ="/users/:id/caretaker-admin" component={CaretakerAdmin}/>
+                        <Route exact path ="/users/:id/caretaker" component={CaretakerProfile}/>
                     </Switch>
                 </Router>
             </div>
