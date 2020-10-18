@@ -3,7 +3,6 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
 import TabPanel from "../components/careTakerAdmin/TabPanel"
-import BidPanel from "../components/careTakerAdmin/BidPanel"
 
 const useStyles = makeStyles({
     root: {
