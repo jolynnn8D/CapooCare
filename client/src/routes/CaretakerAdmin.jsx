@@ -6,7 +6,7 @@ import TabPanel from "../components/careTakerAdmin/TabPanel"
 
 const useStyles = makeStyles({
     root: {
-        margin: 30
+        margin: "100px 30px 30px"
     }
 })
 

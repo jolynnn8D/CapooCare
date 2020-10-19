@@ -8,7 +8,7 @@ import ProfileTabs from "../components/userProfile/ProfileTabs"
 
 const useStyles = makeStyles({
     verticalSections: {
-        margin: "30px 10px 30px"
+        margin: "100px 10px 30px"
     }
 })
 

@@ -9,7 +9,7 @@ import ReviewPanel from "../components/userProfile/careTakerProfile/ReviewPanel"
 
 const useStyles = makeStyles({
     verticalSections: {
-        margin: "30px 10px 30px"
+        margin: "100px 10px 30px"
     }
 })
 
