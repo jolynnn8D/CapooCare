@@ -24,6 +24,31 @@ const Routes = [
         path: '/signup',
         sidebarName: 'Signup',
         component: Signup,
+    },
+    {
+        path: '/',
+        sidebarName: 'Homepage',
+        component: Homepage,
+    },
+    {
+        path: '/users/1',
+        sidebarName: 'Profile',
+        component: UserProfile,
+    },
+    {
+        path: '/users/1/caretaker',
+        sidebarName: 'Caretaker Profile',
+        component: CaretakerProfile,
+    },
+    {
+        path: '/users/1/caretaker-admin',
+        sidebarName: 'Caretaker Settings',
+        component: CaretakerAdmin,
+    },
+    {
+        path: '/admin',
+        sidebarName: 'PCS Administrator Settings',
+        component: Adminpage
     }
 ]
 
