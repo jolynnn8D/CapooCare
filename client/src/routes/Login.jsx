@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { AppBar, Toolbar, Container, TextField, Card, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { classnames } from '@material-ui/data-grid';
@@ -35,19 +35,14 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = () => {
     const classes = useStyles();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     return (
         <div>
-            <AppBar>
-                <Toolbar>
-                    <Typography variant="h5">
-                        Login
-                    </Typography>
-                </Toolbar>
-            </AppBar>
             <Container component="main" maxWidth="xs" className={classes.container}>
             <Typography component="h1" variant="h3" color="textPrimary" align="center">
-                Login Page
+                Login
             </Typography>
             <form className={classes.form} noValidate>
                 <TextField 
@@ -59,6 +54,7 @@ const Login = () => {
                     autoComplete="username"
                     autoFocus
                     className={classes.textfield}
+                    onChange={(event) => setUsername(event.target.value)}
                 />
                 <TextField
                     variant="outlined"
@@ -69,6 +65,7 @@ const Login = () => {
                     autoComplete="password"
                     autoFocus
                     className={classes.textfield}
+                    onChange={(event)=>setPassword(event.target.value)}
                 />
                 <Button
                     type="submit"
@@ -79,6 +76,12 @@ const Login = () => {
                 >
                     Login
                 </Button>
+                <Typography variant="h3">
+                    {username}
+                </Typography>
+                <Typography variant="h3">
+                    {password}
+                </Typography>
             </form>
         </Container>
         </div>
