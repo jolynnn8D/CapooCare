@@ -6,6 +6,55 @@ DROP TABLE IF EXISTS CareTaker CASCADE;
 DROP TABLE IF EXISTS Job CASCADE;
 DROP TABLE IF EXISTS Transaction CASCADE;
 
+CREATE OR REPLACE VIEW Account AS
+    SELECT *  FROM PCSAdmin
+    UNION
+    SELECT *  FROM Users
+
+CREATE TABLE PCSAdmin {
+    adminname varChar(50) PRIMARY KEY,
+    aname varChar(50) NOT NULL,
+    age   integer NOT NULL
+};
+
+CREATE OR REPLACE VIEW Users AS 
+    SELECT username, aname, age FROM CareTaker 
+    UNION
+    SELECT username, aname, age FROM PetOwner;
+
+CREATE TABLE PetOwner (
+    username varChar(50) PRIMARY KEY,
+    aname varChar(50) NOT NULL,
+    age   integer NOT NULL
+);
+
+CREATE OR REPLACE VIEW CareTaker
+    SELECT username, aname, age, rating, salary, atype FROM FullTimer 
+    UNION 
+    SELECT username, aname, age, rating, salary, atype FROM PartTimer; 
+
+CREATE TABLE FullTimer {
+    username varChar(50) PRIMARY KEY,
+    aname varChar(50) NOT NULL,
+    age   integer NOT NULL,
+    rating INTEGER,
+    salary INTEGER,
+    atype  Text[]
+};
+
+CREATE TABLE PartTimer {
+    username varChar(50) PRIMARY KEY,
+    aname varChar(50) NOT NULL,
+    age   integer NOT NULL,
+    rating INTEGER,
+    salary INTEGER,
+    atype  Text[]
+};
+
+
+/* Availability */
+
+
 CREATE OR REPLACE PROCEDURE
     add_petOwner(uName INTEGER, oName VARCHAR(50), pType VARCHAR(20), pName VARCHAR(20),
         pAge INTEGER, req VARCHAR(50)) AS
@@ -23,19 +72,15 @@ CREATE OR REPLACE PROCEDURE
     LANGUAGE plpgsql;
 
 CREATE TABLE Bid (
+    caretakerid SERIAL REFERENCES CareTaker(accountId),
+    petownerid  SERIAL,
+    petname   VARCHAR(20),
     startDate VARCHAR(50) NOT NULL,
-    endDate VARCHAR(50) NOT NULL
+    endDate VARCHAR(50) NOT NULL,
+    FOREIGN KEY (petownerid, petname) REFERENCES Owned_Pet_Belongs(accountId, petname),
+    PRIMARY KEY (caretakerid,petownerid,petname)
 );
 
-CREATE TABLE PetOwner (
-    username INTEGER PRIMARY KEY,
-    ownerName VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE CareTaker (
-    username INTEGER PRIMARY KEY,
-    ownerName VARCHAR(50) NOT NULL
-);
 
 CREATE TABLE Category (
     petType VARCHAR(20) UNIQUE NOT NULL
@@ -77,6 +122,8 @@ CREATE TABLE Transaction (
     PRIMARY KEY (ownerAccountId, carerAccountId, petName, startDate, endDate, datetime)
 );
 
+
+/* SEED */
 INSERT INTO Category VALUES ('dog');
 INSERT INTO Category VALUES ('cat');
 
