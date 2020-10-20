@@ -24,7 +24,7 @@ const initDatabase = () => {
         );
     } catch (err) {
         console.log(err);
-        throw err;
+        // throw err;
     }
 }
 
