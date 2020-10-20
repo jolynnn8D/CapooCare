@@ -51,30 +51,30 @@ CREATE TABLE Owned_Pet_Belongs (
 );
 
 CREATE TABLE Job (
-    ownerAccountId INTEGER,
-    carerAccountId INTEGER REFERENCES CareTaker(username),
+    ownerUsername INTEGER,
+    carerUsername INTEGER REFERENCES CareTaker(username),
     petName VARCHAR(20),
     startDate VARCHAR(20) NOT NULL,
     endDate VARCHAR(20) NOT NULL,
     transferAmount INTEGER NOT NULL,
     rating VARCHAR(5),
-    FOREIGN KEY (ownerAccountId, petName) REFERENCES Owned_Pet_Belongs(username, petName),
-    PRIMARY KEY (ownerAccountId, carerAccountId, petName, startDate, endDate)
+    FOREIGN KEY (ownerUsername, petName) REFERENCES Owned_Pet_Belongs(username, petName),
+    PRIMARY KEY (ownerUsername, carerUsername, petName, startDate, endDate)
 );
 
 CREATE TABLE Transaction (
-    ownerAccountId INTEGER,
-    carerAccountId INTEGER,
+    ownerUsername INTEGER,
+    carerUsername INTEGER,
     petName VARCHAR(20),
     startDate VARCHAR(20),
     endDate VARCHAR(20),
     paymentMethod VARCHAR(20) NOT NULL,
     datetime VARCHAR(30) NOT NULL,
     status VARCHAR(20) DEFAULT 'incomplete',
-    FOREIGN KEY (ownerAccountId, carerAccountId, petName, startDate, endDate)
-        REFERENCES Job(ownerAccountId, carerAccountId, petName, startDate, endDate)
+    FOREIGN KEY (ownerUsername, carerUsername, petName, startDate, endDate)
+        REFERENCES Job(ownerUsername, carerUsername, petName, startDate, endDate)
         ON DELETE CASCADE,
-    PRIMARY KEY (ownerAccountId, carerAccountId, petName, startDate, endDate, datetime)
+    PRIMARY KEY (ownerUsername, carerUsername, petName, startDate, endDate, datetime)
 );
 
 INSERT INTO Category VALUES ('dog');
