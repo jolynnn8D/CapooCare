@@ -46,6 +46,7 @@ CREATE TABLE Has_Availability (
     PRIMARY KEY (username, s_date, s_time, e_time)
 );
 
+/* Views */
 CREATE OR REPLACE VIEW Users AS (
     SELECT username, aname, age FROM CareTaker 
     UNION
