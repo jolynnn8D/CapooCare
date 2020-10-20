@@ -12,8 +12,8 @@ CREATE OR REPLACE VIEW Account AS
     SELECT *  FROM Users
 
 CREATE TABLE PCSAdmin {
-    adminname varChar(50) PRIMARY KEY,
-    aname varChar(50) NOT NULL,
+    adminname VARCHAR(50) PRIMARY KEY,
+    aname VARCHAR(50) NOT NULL,
     age   integer NOT NULL
 };
 
@@ -23,34 +23,43 @@ CREATE OR REPLACE VIEW Users AS
     SELECT username, aname, age FROM PetOwner;
 
 CREATE TABLE PetOwner (
-    username varChar(50) PRIMARY KEY,
-    aname varChar(50) NOT NULL,
+    username VARCHAR(50) PRIMARY KEY,
+    aname VARCHAR(50) NOT NULL,
     age   integer NOT NULL
 );
 
-CREATE OR REPLACE VIEW CareTaker
-    SELECT username, aname, age, rating, salary, atype FROM FullTimer 
-    UNION 
-    SELECT username, aname, age, rating, salary, atype FROM PartTimer; 
+-- CREATE OR REPLACE VIEW CareTaker
+--     SELECT username, aname, age, rating, salary, atype FROM FullTimer 
+--     UNION 
+--     SELECT username, aname, age, rating, salary, atype FROM PartTimer; 
+
+CREATE TABLE CareTaker {
+    username VARCHAR(50) PRIMARY KEY,
+    aname VARCHAR(50) NOT NULL,
+    age   integer NOT NULL
+}
 
 CREATE TABLE FullTimer {
-    username varChar(50) PRIMARY KEY,
-    aname varChar(50) NOT NULL,
-    age   integer NOT NULL,
+    username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username),
     rating INTEGER,
     salary INTEGER,
     atype  Text[]
 };
 
 CREATE TABLE PartTimer {
-    username varChar(50) PRIMARY KEY,
-    aname varChar(50) NOT NULL,
-    age   integer NOT NULL,
+    username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username),
     rating INTEGER,
     salary INTEGER,
     atype  Text[]
 };
 
+CREATE TABLE Has_Availability {
+    username VARCHAR(50) REFERENCES CareTaker(username) ON DELETE CASCADE,
+    s_date INTEGER,
+    s_time INTEGER,
+    e_time INTEGER,
+    PRIMARY KEY (username, s_date, s_time, e_time)
+};
 
 /* Availability */
 
@@ -124,6 +133,11 @@ CREATE TABLE Transaction (
 
 
 /* SEED */
+INSERT INTO PCSAdmin ('Red', 'red', 20);
+INSERT INTO PetOwner ('poppypop', 'poppy', 30);
+INSERT INTO CareTaker ('yellowchicken', 'chick', 22);
+INSERT INTO CareTaker ('redduck', 'ducklings', 21);
+
 INSERT INTO Category VALUES ('dog');
 INSERT INTO Category VALUES ('cat');
 
