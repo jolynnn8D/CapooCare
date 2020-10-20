@@ -7,16 +7,17 @@ DROP TABLE IF EXISTS Job CASCADE;
 DROP TABLE IF EXISTS Transaction CASCADE;
 DROP TABLE IF EXISTS PCSAdmin CASCADE;
 
+CREATE TABLE PCSAdmin (
+    adminname VARCHAR(50) PRIMARY KEY,
+    aname VARCHAR(50) NOT NULL,
+    age   integer NOT NULL
+);
+
 CREATE TABLE PetOwner (
     username VARCHAR(50) PRIMARY KEY,
     aname VARCHAR(50) NOT NULL,
     age   integer NOT NULL
 );
-
--- CREATE OR REPLACE VIEW CareTaker
---     SELECT username, aname, age, rating, salary, atype FROM FullTimer
---     UNION
---     SELECT username, aname, age, rating, salary, atype FROM PartTimer;
 
 CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
@@ -25,24 +26,6 @@ CREATE TABLE CareTaker (
     atype  Text[],
     rating INTEGER,
     salary INTEGER
-);
-
-CREATE OR REPLACE VIEW Users AS (
-    SELECT (username, aname, age) FROM CareTaker
-    UNION
-    SELECT (username, aname, age) FROM PetOwner
-);
-
-CREATE TABLE PCSAdmin (
-    adminName VARCHAR(50) PRIMARY KEY,
-    aname VARCHAR(50) NOT NULL,
-    age   integer NOT NULL
-);
-
-CREATE OR REPLACE VIEW Account AS (
-    SELECT (adminName, aname, age) FROM PCSAdmin
-    UNION
-    SELECT (username, aname, age) FROM Users
 );
 
 CREATE TABLE FullTimer (
@@ -61,6 +44,20 @@ CREATE TABLE Has_Availability (
     s_time INTEGER,
     e_time INTEGER,
     PRIMARY KEY (username, s_date, s_time, e_time)
+);
+
+CREATE OR REPLACE VIEW Users AS (
+    SELECT username, aname, age FROM CareTaker 
+    UNION
+    SELECT username, aname, age FROM PetOwner
+);
+
+CREATE OR REPLACE VIEW Account AS (
+    SELECT *  FROM PCSAdmin
+    UNION
+    SELECT username, aname, age FROM CareTaker 
+    UNION
+    SELECT username, aname, age FROM PetOwner
 );
 
 
