@@ -130,12 +130,11 @@ CREATE TABLE Transaction (
 
 
 /* SEED */
-INSERT INTO PCSAdmin ('Red', 'red', 20);
+INSERT INTO PCSAdmin VALUES ('Red', 'red', 20);
 
-INSERT INTO PetOwner ('poppypop', 'poppy', 30);
-
-INSERT INTO CareTaker ('yellowchicken', 'chick', 22);
-INSERT INTO CareTaker ('redduck', 'ducklings', 21);
+INSERT INTO CareTaker(username, aname, age) VALUES ('yellowchicken', 'chick', 22);
+INSERT INTO CareTaker(username, aname, age) VALUES ('redduck', 'ducklings', 21);
+INSERT INTO CareTaker(username, aname, age, atype) VALUES ('purpledog', 'purple', '25', {'dog', 'cat'}) 
 
 INSERT INTO Category VALUES ('dog');
 INSERT INTO Category VALUES ('cat');
