@@ -7,17 +7,17 @@ DROP TABLE IF EXISTS Job CASCADE;
 DROP TABLE IF EXISTS Transaction CASCADE;
 
 CREATE OR REPLACE PROCEDURE
-    add_petOwner(accId INTEGER, oName VARCHAR(50), pType VARCHAR(20), pName VARCHAR(20),
+    add_petOwner(uName INTEGER, oName VARCHAR(50), pType VARCHAR(20), pName VARCHAR(20),
         pAge INTEGER, req VARCHAR(50)) AS
         $$
         DECLARE ctx NUMERIC;
         BEGIN
             SELECT COUNT(*) INTO ctx FROM PetOwner
-                WHERE PetOwner.accountId = accId;
+                WHERE PetOwner.username = uName;
             IF ctx = 0 THEN
-                INSERT INTO PetOwner VALUES (accId, oName);
+                INSERT INTO PetOwner VALUES (uName, oName);
             END IF;
-            INSERT INTO Owned_Pet_Belongs VALUES (accId, pType, pName, pAge, req);
+            INSERT INTO Owned_Pet_Belongs VALUES (uName, pType, pName, pAge, req);
         END;
         $$
     LANGUAGE plpgsql;
@@ -28,12 +28,12 @@ CREATE TABLE Bid (
 );
 
 CREATE TABLE PetOwner (
-    accountId INTEGER PRIMARY KEY,
+    username INTEGER PRIMARY KEY,
     ownerName VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE CareTaker (
-    accountId INTEGER PRIMARY KEY,
+    username INTEGER PRIMARY KEY,
     ownerName VARCHAR(50) NOT NULL
 );
 
@@ -42,23 +42,23 @@ CREATE TABLE Category (
 );
 
 CREATE TABLE Owned_Pet_Belongs (
-    accountId INTEGER NOT NULL REFERENCES PetOwner(accountId) ON DELETE CASCADE,
+    username INTEGER NOT NULL REFERENCES PetOwner(username) ON DELETE CASCADE,
     petType VARCHAR(20) NOT NULL REFERENCES Category(petType),
     petName VARCHAR(20) NOT NULL,
     petAge INTEGER NOT NULL,
     requirements VARCHAR(50),
-    PRIMARY KEY (accountId, petName)
+    PRIMARY KEY (username, petName)
 );
 
 CREATE TABLE Job (
     ownerAccountId INTEGER,
-    carerAccountId INTEGER REFERENCES CareTaker(accountId),
+    carerAccountId INTEGER REFERENCES CareTaker(username),
     petName VARCHAR(20),
     startDate VARCHAR(20) NOT NULL,
     endDate VARCHAR(20) NOT NULL,
     transferAmount INTEGER NOT NULL,
     rating VARCHAR(5),
-    FOREIGN KEY (ownerAccountId, petName) REFERENCES Owned_Pet_Belongs(accountId, petName),
+    FOREIGN KEY (ownerAccountId, petName) REFERENCES Owned_Pet_Belongs(username, petName),
     PRIMARY KEY (ownerAccountId, carerAccountId, petName, startDate, endDate)
 );
 

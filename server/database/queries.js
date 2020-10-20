@@ -12,7 +12,7 @@ const pool = new Pool({
 });
 
 
-// Initialise database
+// Initialize database
 const initDatabase = () => {
     const init = fs.readFileSync("database/init.sql").toString();
     try {
