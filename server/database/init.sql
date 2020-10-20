@@ -36,21 +36,20 @@ CREATE TABLE PetOwner (
 CREATE TABLE CareTaker {
     username VARCHAR(50) PRIMARY KEY,
     aname VARCHAR(50) NOT NULL,
-    age   integer NOT NULL
+    age   integer NOT NULL,
+    atype  Text[],
+    rating INTEGER,
+    salary INTEGER,
 }
 
 CREATE TABLE FullTimer {
     username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username),
-    rating INTEGER,
-    salary INTEGER,
-    atype  Text[]
+    period1  VARCHAR(50),
+    period2  VARCHAR(50)
 };
 
 CREATE TABLE PartTimer {
-    username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username),
-    rating INTEGER,
-    salary INTEGER,
-    atype  Text[]
+    username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username)
 };
 
 CREATE TABLE Has_Availability {
@@ -60,8 +59,6 @@ CREATE TABLE Has_Availability {
     e_time INTEGER,
     PRIMARY KEY (username, s_date, s_time, e_time)
 };
-
-/* Availability */
 
 
 CREATE OR REPLACE PROCEDURE
@@ -134,7 +131,9 @@ CREATE TABLE Transaction (
 
 /* SEED */
 INSERT INTO PCSAdmin ('Red', 'red', 20);
+
 INSERT INTO PetOwner ('poppypop', 'poppy', 30);
+
 INSERT INTO CareTaker ('yellowchicken', 'chick', 22);
 INSERT INTO CareTaker ('redduck', 'ducklings', 21);
 
