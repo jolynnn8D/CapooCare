@@ -1,5 +1,11 @@
 # CS2102_2021_S1_Team57
 
+## Frontend
+
+1. Navigate into the client folder.  
+2. `npm install`  
+3. `npm start`  
+4. The application will open on localhost:3000  
 
 ## Backend
 
