@@ -10,20 +10,20 @@ DROP TABLE IF EXISTS PartTimer CASCADE;
 DROP TABLE IF EXISTS Has_Availability CASCADE;
 
 CREATE TABLE PCSAdmin (
-    adminName VARCHAR(50) PRIMARY KEY,
-    aname VARCHAR(50) NOT NULL,
+    username VARCHAR(50) PRIMARY KEY,
+    adminName VARCHAR(50) NOT NULL,
     age   INTEGER NOT NULL
 );
 
 CREATE TABLE PetOwner (
     username VARCHAR(50) PRIMARY KEY,
-    aname VARCHAR(50) NOT NULL,
+    ownerName VARCHAR(50) NOT NULL,
     age   INTEGER NOT NULL
 );
 
 CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
-    aname VARCHAR(50) NOT NULL,
+    carerName VARCHAR(50) NOT NULL,
     age   INTEGER NOT NULL,
     atype  TEXT[],
     rating INTEGER,
@@ -112,25 +112,25 @@ CREATE OR REPLACE PROCEDURE
 
 --/* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT username, aname, age FROM CareTaker
+   SELECT username, carerName, age FROM CareTaker
    UNION
-   SELECT username, aname, age FROM PetOwner
+   SELECT username, ownerName, age FROM PetOwner
 );
 
 CREATE OR REPLACE VIEW Account AS (
-   SELECT adminName, aname, age FROM PCSAdmin
+   SELECT username, adminName, age FROM PCSAdmin
    UNION
-   SELECT username, aname, age FROM CareTaker
+   SELECT username, carerName, age FROM CareTaker
    UNION
-   SELECT username, aname, age FROM PetOwner
+   SELECT username, ownerName, age FROM PetOwner
 );
 
 /* SEED */
 INSERT INTO PCSAdmin VALUES ('Red', 'red', 20);
 
-INSERT INTO CareTaker(username, aname, age) VALUES ('yellowchicken', 'chick', 22);
-INSERT INTO CareTaker(username, aname, age) VALUES ('redduck', 'ducklings', 21);
-INSERT INTO CareTaker(username, aname, age, atype) VALUES ('purpledog', 'purple', '25', '{"dog", "cat"}');
+INSERT INTO CareTaker(username, carerName, age) VALUES ('yellowchicken', 'chick', 22);
+INSERT INTO CareTaker(username, carerName, age) VALUES ('redduck', 'ducklings', 21);
+INSERT INTO CareTaker(username, carerName, age, atype) VALUES ('purpledog', 'purple', '25', '{"dog", "cat"}');
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);

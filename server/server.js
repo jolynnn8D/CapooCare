@@ -102,7 +102,7 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
  */
 app.post("/api/v1/caretaker", async (req, res) => {
     try {
-        const results = await db.query("INSERT INTO CareTaker(username, ownerName) VALUES ($1, $2) RETURNING *",
+        const results = await db.query("INSERT INTO CareTaker(username, carerName) VALUES ($1, $2) RETURNING *",
             [req.body.username, req.body.name]);
         res.status(201).json({
             status: "success",
@@ -135,7 +135,7 @@ app.post("/api/v1/caretaker", async (req, res) => {
  */
 app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
-        const results = await db.query("UPDATE CareTaker SET ownerName = $1 WHERE username = $2 RETURNING *",
+        const results = await db.query("UPDATE CareTaker SET carerName = $1 WHERE username = $2 RETURNING *",
             [req.body.name, req.params.username]);
         res.status(204).json({
             status: "success",
@@ -329,12 +329,12 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
 // Used for debugging.
 app.get("/api/v1/pet", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet_Belongs");
+        const results = await db.query("SELECT * FROM Owned_Pet");
         res.status(200).json({
             status: "success",
             results: results.rows.length,
             data: {
-                users: results.rows
+                pets: results.rows
             }
         });
     } catch (err) {
@@ -359,12 +359,12 @@ app.get("/api/v1/pet", async (req, res) => {
  */
 app.get("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1 AND petName = $2",
+        const results = await db.query("SELECT * FROM Owned_Pet WHERE username = $1 AND petName = $2",
             [req.params.username, req.params.petName]);
         res.status(200).json({
             status: "success",
             data: {
-                user: results.rows[0]
+                pet: results.rows[0]
             }
         });
     } catch (err) {
@@ -395,13 +395,13 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
 app.post("/api/v1/pet", async (req, res) => {
     try {
         const results = await db.query(
-            "INSERT INTO Owned_Pet_Belongs(username, petName, petType, petAge, requirements) VALUES " +
+            "INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES " +
             "($1, $2, $3, $4, $5) RETURNING *",
             [req.body.username, req.body.petName, req.body.petType, req.body.petAge, req.body.requirements]);
         res.status(201).json({
             status: "success",
             data: {
-                user: results.rows[0]
+                pet: results.rows[0]
             }
         });
     } catch (err) {
@@ -433,13 +433,13 @@ app.post("/api/v1/pet", async (req, res) => {
  */
 app.put("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
-        const results = await db.query("UPDATE Owned_Pet_Belongs SET petType = $1, petAge = $2, requirements = $3" +
+        const results = await db.query("UPDATE Owned_Pet SET petType = $1, petAge = $2, requirements = $3" +
             " WHERE username = $4 AND petName = $5 RETURNING *",
             [req.body.petType, req.body.petAge, req.body.requirements, req.params.username, req.params.petName]);
         res.status(204).json({
             status: "success",
             data: {
-                user: results.rows[0]
+                pet: results.rows[0]
             }
         });
     } catch (err) {
@@ -464,7 +464,7 @@ app.put("/api/v1/pet/:username/:petName", async (req, res) => {
  */
 app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
-        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE username = $1 AND petName = $2",
+        const results = await db.query("DELETE FROM Owned_Pet WHERE username = $1 AND petName = $2",
             [req.params.username, req.params.petName]);
         res.status(200).json({
             status: "success"
