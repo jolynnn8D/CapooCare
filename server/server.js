@@ -95,15 +95,18 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
         JSON object of the form:
         {
             "username": String,
-            "name": String
+            "name": String,
+            "age": Integer (optional; put null otherwise),
+            "petTypes": String array
         }
 
     Expected status code: 201 Created, or 400 Bad Request
  */
 app.post("/api/v1/caretaker", async (req, res) => {
     try {
-        const results = await db.query("INSERT INTO CareTaker(username, carerName) VALUES ($1, $2) RETURNING *",
-            [req.body.username, req.body.name]);
+        const results = await db.query("INSERT INTO CareTaker(username, carerName, age, petTypes) " +
+            "VALUES ($1, $2, $3, $4) RETURNING *",
+            [req.body.username, req.body.name, req.body.age, req.body.petTypes]);
         res.status(201).json({
             status: "success",
             data: {
@@ -121,12 +124,14 @@ app.post("/api/v1/caretaker", async (req, res) => {
 });
 
 
-// Update an existing Care Taker's name. Stores the name in the query data as the new name.
+// Update an existing Care Taker's name, age, and pet types. Stores all fields in the input object to the database.
 /*
     Expected inputs:
         JSON object of the form:
         {
-            "name": String
+            "name": String,
+            "age": Integer (optional; put null otherwise),
+            "petTypes": String array
         }
 
         Path parameter: username, which represents the unique username of the Care Taker.
@@ -135,8 +140,9 @@ app.post("/api/v1/caretaker", async (req, res) => {
  */
 app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
-        const results = await db.query("UPDATE CareTaker SET carerName = $1 WHERE username = $2 RETURNING *",
-            [req.body.name, req.params.username]);
+        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, petTypes = $3" +
+            " WHERE username = $4 RETURNING *",
+            [req.body.name, req.body.age, req.body.petTypes, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -238,15 +244,16 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
         JSON object of the form:
         {
             "username": String,
-            "name": String
+            "name": String,
+            "age": Integer (optional; put null otherwise)
         }
 
     Expected status code: 201 Created, or 400 Bad Request
  */
 app.post("/api/v1/petowner", async (req, res) => {
     try {
-        const results = await db.query("INSERT INTO PetOwner(username, ownerName) VALUES ($1, $2) RETURNING *",
-            [req.body.username, req.body.name]);
+        const results = await db.query("INSERT INTO PetOwner(username, ownerName, age) VALUES ($1, $2, $3) RETURNING *",
+            [req.body.username, req.body.name, req.body.age]);
         res.status(201).json({
             status: "success",
             data: {
@@ -264,12 +271,13 @@ app.post("/api/v1/petowner", async (req, res) => {
 });
 
 
-// Update an existing Pet Owner's name. Stores the name in the query data as the new name.
+// Update an existing Pet Owner's name and age. Stores the name and age in the query data as the new name and age.
 /*
     Expected inputs:
         JSON object of the form:
         {
-            "name": String
+            "name": String,
+            "age": Integer (optional; put null otherwise)
         }
 
         Path parameter: username, which represents the unique username of the Pet Owner.
@@ -278,8 +286,8 @@ app.post("/api/v1/petowner", async (req, res) => {
  */
 app.put("/api/v1/petowner/:username", async (req, res) => {
     try {
-        const results = await db.query("UPDATE PetOwner SET ownerName = $1 WHERE username = $2 RETURNING *",
-            [req.body.name, req.params.username]);
+        const results = await db.query("UPDATE PetOwner SET ownerName = $1, age = $2 WHERE username = $3 RETURNING *",
+            [req.body.name, req.body.age, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -387,7 +395,7 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
             "petName": String,
             "petType": String,
             "petAge": String,
-            "requirements": String
+            "requirements": String (optional; put null otherwise)
         }
 
     Expected status code: 201 Created, or 400 Bad Request
@@ -422,7 +430,7 @@ app.post("/api/v1/pet", async (req, res) => {
         {
             "petType": String,
             "petAge": String,
-            "requirements": String
+            "requirements": String (optional; put null otherwise)
         }
 
         Path parameter:
