@@ -1,7 +1,5 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
-import { useDispatch, useSelector } from 'react-redux';
-import { listUsers } from '../actions/userActions';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 
 
