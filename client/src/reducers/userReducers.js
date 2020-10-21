@@ -15,7 +15,7 @@ function userListReducer(state = {users: []}, action) { // action send data from
 }
 // Default pets were added for testing
 // Actions are set to return state since backend is currently unavailable.
-function petListReducer(state = { pets: ["Capoo", "Corgi", "Test"] }, action) {
+function petListReducer(state = { pets: ["Capoo", "Corgi", "Test", "More"] }, action) {
   switch(action.type) {
     case PET_LIST_REQUEST:
       // return {loading: true};

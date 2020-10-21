@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, AppBar, Toolbar, Container, TextField, Card, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { classnames } from '@material-ui/data-grid';
+import AddPet from "../components/AddPet";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -126,18 +127,8 @@ const Signup = () => {
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
                     {   isPetOwner 
-                            ? <TextField
-                            variant="outlined"
-                            label="Pet Deets"
-                            required
-                            fullWidth
-                            id="petInformation"
-                            autoComplete="petInformation"
-                            multiline
-                            autoFocus
-                            className={classes.textfield}
-                            onChange={(event) => setPetInformation(event.target.value)}
-                        />
+                            ? 
+                            <AddPet/>
                             : null
                     }
                     <Button
@@ -150,7 +141,7 @@ const Signup = () => {
                         Signup
                     </Button>
                     <Typography variant="h3">
-                        {username}
+                        {username}, {firstName}, {age}
                     </Typography>
                     <Typography variant="h3">
                         {password}
