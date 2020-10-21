@@ -40,6 +40,8 @@ const Signup = () => {
     const classes = useStyles();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [age, setAge] = useState('');
     const [isPetOwner, setPetOwner] = useState(false);
     const [isPetCaretaker, setPetCaretaker] = useState(false);
     const [petInformation, setPetInformation] = useState('');
@@ -82,6 +84,29 @@ const Signup = () => {
                         autoFocus
                         className={classes.textfield}
                         onChange={(event) => setPassword(event.target.value)}
+                    />
+                    <TextField
+                        variant="outlined"
+                        label="First Name"
+                        required
+                        fullWidth
+                        id="firstName"
+                        autoComplete="firstName"
+                        autoFocus
+                        className={classes.textfield}
+                        onChange={(event) => setFirstName(event.target.value)}
+                    />
+                    <TextField
+                        variant="outlined"
+                        label="Age"
+                        required
+                        fullWidth
+                        id="age"
+                        autoComplete="age"
+                        autoFocus
+                        type="number"
+                        className={classes.textfield}
+                        onChange={(event) => setAge(event.target.value)}
                     />
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">Account Roles</FormLabel>
