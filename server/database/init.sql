@@ -110,6 +110,20 @@ CREATE OR REPLACE PROCEDURE
         $$
     LANGUAGE plpgsql;
 
+--/* Views */
+CREATE OR REPLACE VIEW Users AS (
+   SELECT username, aname, age FROM CareTaker
+   UNION
+   SELECT username, aname, age FROM PetOwner
+);
+
+CREATE OR REPLACE VIEW Account AS (
+   SELECT adminName, aname, age FROM PCSAdmin
+   UNION
+   SELECT username, aname, age FROM CareTaker
+   UNION
+   SELECT username, aname, age FROM PetOwner
+);
 
 /* SEED */
 INSERT INTO PCSAdmin VALUES ('Red', 'red', 20);
@@ -128,18 +142,3 @@ INSERT INTO Job VALUES ('marythemess', 'yellowchicken', 'Fido', '101010', '10101
 
 INSERT INTO Transaction VALUES ('marythemess', 'yellowchicken', 'Fido', '101010', '101011', 'Credit', '101010T2359');
 
-
-----/* Views */
---CREATE OR REPLACE VIEW Users AS (
---    SELECT username, aname, age FROM CareTaker
---    UNION
---    SELECT username, aname, age FROM PetOwner
---);
---
---CREATE OR REPLACE VIEW Account AS (
---    SELECT adminName, aname, age FROM PCSAdmin
---    UNION
---    SELECT username, aname, age FROM CareTaker
---    UNION
---    SELECT username, aname, age FROM PetOwner
---);
