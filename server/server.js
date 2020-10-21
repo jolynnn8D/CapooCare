@@ -36,6 +36,7 @@ if (forceInitializeDatabase) {
 
 
 /* API calls for Care Takers */
+// TODO: Possibly switch all queries to db.query().catch() form?
 
 
 // Get all Care Takers.
