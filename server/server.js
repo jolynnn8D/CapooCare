@@ -106,7 +106,7 @@ app.post("/api/v1/caretaker", async (req, res) => {
     try {
         const results = await db.query("INSERT INTO CareTaker(username, carerName, age, petTypes) " +
             "VALUES ($1, $2, $3, $4) RETURNING *",
-            [req.body.username, req.body.name, req.body.age, req.body.petTypes]);
+            [req.body.username, req.body.carername, req.body.age, req.body.pettypes]);
         res.status(201).json({
             status: "success",
             data: {

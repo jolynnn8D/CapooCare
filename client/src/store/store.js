@@ -1,13 +1,12 @@
-import {applyMiddleware, createStore, combineReducers, compose} from 'redux';
-import thunk from 'redux-thunk';
-import { userListReducer, petListReducer } from '../reducers/userReducers';
 
-const initialState = {};
-const reducer = combineReducers({
-  userList: userListReducer,
-  petList: petListReducer,
-})
-const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(reducer, initialState, composeEnhancer(applyMiddleware(thunk)));
+import { createStore } from 'easy-peasy';
+import careTakersModel from './models/careTakersModel';
+
+
+const storeModel = {
+  careTakers: careTakersModel
+};
+
+const store = createStore(storeModel);
 
 export default store;

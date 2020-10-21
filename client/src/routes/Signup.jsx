@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, AppBar, Toolbar, Container, TextField, Card, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import { classnames } from '@material-ui/data-grid';
+import { action, useStoreActions } from 'easy-peasy';
 import AddPet from "../components/AddPet";
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +42,7 @@ const Signup = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
+    const [petType, setPetType] = useState('');
     const [age, setAge] = useState('');
     const [isPetOwner, setPetOwner] = useState(false);
     const [isPetCaretaker, setPetCaretaker] = useState(false);
@@ -54,9 +55,8 @@ const Signup = () => {
     const onPetCaretakerSwitchChange = () => {
         setPetCaretaker(isPetCaretaker => !isPetCaretaker);
     }
-
-
-
+    const addCareTaker = useStoreActions(actions => actions.careTakers.addCareTaker);
+    
     return (
         <div>
             <Container component="main" maxWidth="xs" className={classes.container}>
@@ -109,6 +109,7 @@ const Signup = () => {
                         className={classes.textfield}
                         onChange={(event) => setAge(event.target.value)}
                     />
+                    
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">Account Roles</FormLabel>
                         <FormGroup>
@@ -127,16 +128,32 @@ const Signup = () => {
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
                     {   isPetOwner 
-                            ? 
+                            ?
                             <AddPet/>
-                            : null
+                            : isPetCaretaker ? <TextField
+                                variant="outlined"
+                                label="Pet Type"
+                                required
+                                fullWidth
+                                id="petType"
+                                autoComplete="petType"
+                                autoFocus
+                                className={classes.textfield}
+                                onChange={(event) => setPetType(event.target.value)}
+                            /> : null
                     }
                     <Button
-                        type="submit"
+                        // type="submit"
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        onClick = {() => addCareTaker({
+                            username: username,
+                            carername: firstName,
+                            age: age,
+                            pettypes: [petType]
+                        })}
                     >
                         Signup
                     </Button>

@@ -2,6 +2,8 @@ import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { useDispatch, useSelector } from 'react-redux';
 import { listUsers } from '../actions/userActions';
+import { useStoreActions, useStoreState } from 'easy-peasy';
+
 
 // const columns = [
 //   { field: 'id', headerName: 'ID', width: 70 },
@@ -38,41 +40,30 @@ import { listUsers } from '../actions/userActions';
 //   { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 // ];
 const columns = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'name', headerName: 'First name', width: 130 },
+  { field: 'id', headerName: 'User ID', width: 70 },
+  { field: 'username', headerName: 'Username', width: 70 },
+  { field: 'aname', headerName: 'First name', width: 130 },
+  { field: 'age', headerName: 'Age', width: 130 },
 ];
 
 const CaretakersList = () => {
 
-  React.useEffect(() => {
-    dispatch(listUsers());
-
-    return () => {
-      // no clean up
-    }
-  }, []);
-
-  const userList = useSelector(state => state.userList);
-  const {users, loading, error} = userList;
-  const dispatch = useDispatch();
+ 
+  const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers);
 
   const tests = [{"user_id": 1, "name": "hung"}, {"user_id": 2, "name": "something"}];
 
-  // const rows = users.map(user => ({
-  //   "id" : user.user_id,
-  //   "name" : user.name
-  // }));
-
-  console.log(users);
-  // console.log(rows);
-
+  getCareTakers();
+  const careTakers = useStoreState(state => state.careTakers.users);
+  var id = 0;
   return (
-      loading ? <div>Loading...</div>
-      : error ? <div>{error}</div>
-      : 
-      <DataGrid rows={users.map(user => ({
-        "id": user.user_id,
-        "name": user.name    
+
+      <DataGrid rows={careTakers.map(user => ({
+        "id": ++id,
+        "username": user.username,
+        "aname": user.carername,
+        "age": user.age,   
+        "pettypes": user.pettypes
       }))} columns={columns} pageSize={5} checkboxSelection />
   );
 }

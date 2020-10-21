@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Card, Grid, ListItem, ListItemAvatar, ListItemText, Avatar, Modal } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
 import ProfilePic from "./ProfilePic"
 import { makeStyles } from '@material-ui/core/styles';
 import petImg from "../../assets/userProfile/pet.png"
-import { useDispatch, useSelector } from 'react-redux';
-import { listPets } from "../../actions/userActions";
 import AddPet from "../AddPet";
 
 const useStyles = makeStyles((theme) => ({
@@ -53,17 +51,9 @@ const PetList = () => {
         });
 
     }
-
-    const petList = useSelector(state => state.petList);
-    const {pets, loading, error} = petList;
-    const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(listPets());
-        console.log(pets);
-    })
-
+    const pets = ['test'];
     const classes = useStyles();
-    return loading ? <div> Loading ... </div> : error ? <div>{error}</div> : (
+    return (
         <Card className={classes.root}>
             <h2> Pets Owned </h2>
             <Grid container>
