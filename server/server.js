@@ -42,11 +42,6 @@ if (forceInitializeDatabase) {
 // Used for debugging.
 app.get("/api/v1/caretaker", async (req, res) => {
     try {
-<<<<<<< HEAD
-        const results = await db.query("SELECT * FROM users;");
-        res.send(results.rows);
-        console.log(results);
-=======
         const results = await db.query("SELECT * FROM CareTaker");
         res.status(200).json({
             status: "success",
@@ -55,7 +50,6 @@ app.get("/api/v1/caretaker", async (req, res) => {
                 users: results.rows
             }
         });
->>>>>>> master
     } catch (err) {
         res.status(400).json({
             status: "failed",
