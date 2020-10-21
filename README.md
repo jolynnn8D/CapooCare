@@ -13,8 +13,8 @@
 
 1. Open up the PostgreSQL host. Ensure that it is running. Do this by pressing 'Enter' 4 times, then type in password and press 'Enter' again.
 2. Ensure that a .env file exists in the `server` directory, with all the required environment variables as defined in
- `server/keys.js`. Specifically, ensure that a variable exists called `FORCEINITIALIZEDATABASE`. This file should never be committed.
-3. Navigate to `server` and install all dependencies using `npm install package.json`.
+ `server/keys.js`. This file should never be committed.
+3. Navigate to `server` and install all dependencies using `npm install`.
 4. Run `npm start`. This should run the backend program as a standalone.
 
 ### Troubleshooting

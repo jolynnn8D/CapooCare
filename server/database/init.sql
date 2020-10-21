@@ -10,30 +10,30 @@ DROP TABLE IF EXISTS PartTimer CASCADE;
 DROP TABLE IF EXISTS Has_Availability CASCADE;
 
 CREATE TABLE PCSAdmin (
-    adminName VARCHAR(50) PRIMARY KEY,
-    aname VARCHAR(50) NOT NULL,
-    age   INTEGER NOT NULL
+    username VARCHAR(50) PRIMARY KEY,
+    adminName VARCHAR(50) NOT NULL,
+    age   INTEGER DEFAULT NULL
 );
 
 CREATE TABLE PetOwner (
     username VARCHAR(50) PRIMARY KEY,
-    aname VARCHAR(50) NOT NULL,
-    age   INTEGER NOT NULL
+    ownerName VARCHAR(50) NOT NULL,
+    age   INTEGER DEFAULT NULL
 );
 
 CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
-    aname VARCHAR(50) NOT NULL,
-    age   INTEGER NOT NULL,
-    atype  TEXT[],
-    rating INTEGER,
-    salary INTEGER
+    carerName VARCHAR(50) NOT NULL,
+    age   INTEGER DEFAULT NULL,
+    petTypes  TEXT[] NOT NULL,
+    rating INTEGER DEFAULT NULL,
+    salary INTEGER DEFAULT NULL
 );
 
 CREATE TABLE FullTimer (
     username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username),
-    period1  VARCHAR(50),
-    period2  VARCHAR(50)
+    period1  VARCHAR(50) DEFAULT NULL,
+    period2  VARCHAR(50) DEFAULT NULL
 );
 
 CREATE TABLE PartTimer (
@@ -53,7 +53,7 @@ CREATE TABLE Owned_Pet (
     petType VARCHAR(20) NOT NULL,
     petName VARCHAR(20) NOT NULL,
     petAge INTEGER NOT NULL,
-    requirements VARCHAR(50),
+    requirements VARCHAR(50) DEFAULT NULL,
     PRIMARY KEY (username, petName)
 );
 
@@ -74,7 +74,7 @@ CREATE TABLE Job (
     startDate VARCHAR(20) NOT NULL,
     endDate VARCHAR(20) NOT NULL,
     transferAmount INTEGER NOT NULL,
-    rating VARCHAR(5),
+    rating VARCHAR(5) DEFAULT NULL,
     FOREIGN KEY (ownerUsername, petName) REFERENCES Owned_Pet(username, petName),
     PRIMARY KEY (ownerUsername, carerUsername, petName, startDate, endDate)
 );
@@ -112,25 +112,25 @@ CREATE OR REPLACE PROCEDURE
 
 --/* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT username, aname, age FROM CareTaker
+   SELECT username, carerName, age FROM CareTaker
    UNION
-   SELECT username, aname, age FROM PetOwner
+   SELECT username, ownerName, age FROM PetOwner
 );
 
 CREATE OR REPLACE VIEW Account AS (
-   SELECT adminName, aname, age FROM PCSAdmin
+   SELECT username, adminName, age FROM PCSAdmin
    UNION
-   SELECT username, aname, age FROM CareTaker
+   SELECT username, carerName, age FROM CareTaker
    UNION
-   SELECT username, aname, age FROM PetOwner
+   SELECT username, ownerName, age FROM PetOwner
 );
 
 /* SEED */
-INSERT INTO PCSAdmin VALUES ('Red', 'red', 20);
+INSERT INTO PCSAdmin VALUES ('Red', 'red');
 
-INSERT INTO CareTaker(username, aname, age) VALUES ('yellowchicken', 'chick', 22);
-INSERT INTO CareTaker(username, aname, age) VALUES ('redduck', 'ducklings', 21);
-INSERT INTO CareTaker(username, aname, age, atype) VALUES ('purpledog', 'purple', '25', '{"dog", "cat"}');
+INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('yellowchicken', 'chick', 22, '{"ducks"}');
+INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('redduck', 'ducklings', 21, '{"pokemon"}');
+INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('purpledog', 'purple', '25', '{"dog", "cat"}');
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
