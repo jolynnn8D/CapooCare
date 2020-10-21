@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const AddPet = (props) => {
-    const {parentCallback, ...other} = props;
+    const {parentCallback, parentData, ...other} = props;
     const classes = useStyles();
     const [petName, setPetName] = useState('');
     const [petType, setPetType] = useState('');
@@ -37,6 +37,7 @@ const AddPet = (props) => {
                 fullWidth
                 id="petName"
                 autoComplete="petName"
+                defaultValue={props.parentData.petName}
                 multiline
                 autoFocus
                 className={classes.textfield}
@@ -49,6 +50,7 @@ const AddPet = (props) => {
                 fullWidth
                 id="petType"
                 autoComplete="petType"
+                defaultValue={props.parentData.petType}
                 multiline
                 autoFocus
                 className={classes.textfield}
@@ -61,6 +63,7 @@ const AddPet = (props) => {
                 fullWidth
                 id="petAge"
                 autoComplete="petAge"
+                defaultValue={props.parentData.petAge}
                 multiline
                 autoFocus
                 type="number"
@@ -73,6 +76,7 @@ const AddPet = (props) => {
                 fullWidth
                 id="petRequirements"
                 autoComplete="petRequirements"
+                defaultValue={props.parentData.petRequirements}
                 multiline
                 autoFocus
                 className={classes.textfield}
@@ -92,11 +96,18 @@ const AddPet = (props) => {
 }
 
 AddPet.propTypes = {
-    parentCallback: PropTypes.func
+    parentCallback: PropTypes.func,
+    parentData: PropTypes.object
 };
 AddPet.defaultProps = {
     parentCallback: function() {
         console.log("There is no parent callback function defined");
+    },
+    parentData: {
+        petName: "",
+        petType: "",
+        petAge: "",
+        petRequirements: ""
     }
 }
 export default AddPet

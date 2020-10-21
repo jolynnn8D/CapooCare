@@ -27,19 +27,35 @@ const useStyles = makeStyles((theme) => ({
         border: '2px solid #000',
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
+    },
+    petName: {
+        textAlign: "center"
     }
 }));
 const PetList = () => {
     const [open, setOpen] = React.useState(false);
+    const [petDetails, setPetDetails] = React.useState({});
     const openModal = () => {
         setOpen(true);
     }
     
     const closeModal = () => {
         setOpen(false);
+        setPetDetails({});
     }
+    const clickOnPet = (name, type, age, petReq) => {
+        openModal();
+        setPetDetails({
+            petName: name,
+            petType: type,
+            petAge: age,
+            petRequirements: petReq
+        });
+
+    }
+
     const petList = useSelector(state => state.petList);
-    const {pets, loading ,error} = petList;
+    const {pets, loading, error} = petList;
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(listPets());
@@ -53,9 +69,9 @@ const PetList = () => {
             <Grid container>
                 {pets.map((pet) => {
                     return(
-                        <Grid item className={classes.petAvatar} onClick={openModal}>
+                        <Grid item className={classes.petAvatar} onClick={() => clickOnPet(pet.petname, pet.pettype, pet.petage, pet.requirements)}>
                             <ProfilePic img={petImg} href="#"/>
-                            <p> {pet} </p>
+                            <h6 className={classes.petName}> {pet.petname} </h6>
                         </Grid>)
                 })}
             </Grid>
@@ -73,7 +89,7 @@ const PetList = () => {
                 open={open}
                 onClose={closeModal}>
                 <Card className={classes.modal}>
-                    <AddPet/>
+                    <AddPet parentData={petDetails}/>
                 </Card>
             </Modal>
         </Card>

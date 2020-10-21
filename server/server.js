@@ -328,12 +328,12 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
 // Used for debugging.
 app.get("/api/v1/pet", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet_Belongs");
+        const results = await db.query("SELECT * FROM Owned_Pet");
         res.status(200).json({
             status: "success",
             results: results.rows.length,
             data: {
-                users: results.rows
+                pets: results.rows
             }
         });
     } catch (err) {
