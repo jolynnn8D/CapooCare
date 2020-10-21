@@ -253,7 +253,7 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
 app.post("/api/v1/petowner", async (req, res) => {
     try {
         const results = await db.query("INSERT INTO PetOwner(username, ownerName, age) VALUES ($1, $2, $3) RETURNING *",
-            [req.body.username, req.body.aname, req.body.age]);
+            [req.body.username, req.body.ownername, req.body.age]);
         res.status(201).json({
             status: "success",
             data: {
@@ -287,7 +287,7 @@ app.post("/api/v1/petowner", async (req, res) => {
 app.put("/api/v1/petowner/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE PetOwner SET ownerName = $1, age = $2 WHERE username = $3 RETURNING *",
-            [req.body.aname, req.body.age, req.params.username]);
+            [req.body.ownername, req.body.age, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
