@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types';
 import { Button, TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 const AddPet = (props) => {
-    const {parentCallback, parentData, ...other} = props;
+    const {parentCallback, parentData, closeModal, ...other} = props;
     const classes = useStyles();
     const [petName, setPetName] = useState('');
     const [petType, setPetType] = useState('');
@@ -27,6 +27,19 @@ const AddPet = (props) => {
             "petRequirements": petRequirements
         });
     }
+
+    const handleButtonClick = () => {
+        sendData();
+        closeModal();
+    }
+
+    useEffect(() => {
+        setPetName(props.parentData.petName);
+        setPetType(props.parentData.petType);
+        setPetAge(props.parentData.petAge);
+        setPetRequirements(props.parentData.petRequirements);
+        return () => {};
+    }, [])
 
     return (
         <div>
@@ -86,7 +99,7 @@ const AddPet = (props) => {
                 fullWidth
                 variant="contained"
                 color="inherit"
-                onClick={sendData}
+                onClick={handleButtonClick}
             >
                 Save Pet Information
             </Button>
@@ -97,11 +110,15 @@ const AddPet = (props) => {
 
 AddPet.propTypes = {
     parentCallback: PropTypes.func,
-    parentData: PropTypes.object
+    parentData: PropTypes.object,
+    closeModal: PropTypes.func,
 };
 AddPet.defaultProps = {
     parentCallback: function() {
         console.log("There is no parent callback function defined");
+    },
+    closeModal: function() {
+        console.log("Please pass a close modal function from the parent")
     },
     parentData: {
         petName: "",

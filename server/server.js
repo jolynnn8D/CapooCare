@@ -356,6 +356,35 @@ app.get("/api/v1/pet", async (req, res) => {
     }
 });
 
+// Get all existing pets belonging to a username
+/*
+    Expected inputs:
+        Path parameters:
+            username, which represents the unique username of the Pet's Owner.
+    
+    Expected status code 200 OK, or 400 Bad Request
+*/
+
+app.get("/api/v1/pet/:username", async(req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Owned_Pet WHERE username = $1",
+            [req.params.username]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
 
 // Get an existing Pet.
 /*
@@ -440,12 +469,12 @@ app.post("/api/v1/pet", async (req, res) => {
 
     Expected status code: 204 No Content, or 400 Bad Request
  */
-app.put("/api/v1/pet/:username/:petName", async (req, res) => {
+app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
         const results = await db.query("UPDATE Owned_Pet SET petType = $1, petAge = $2, requirements = $3" +
             " WHERE username = $4 AND petName = $5 RETURNING *",
             [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
-        res.status(204).json({
+        res.status(200).json({
             status: "success",
             data: {
                 pet: results.rows[0]

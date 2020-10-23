@@ -12,7 +12,6 @@ const careTakersModel = {
     }),
 
     addCareTaker: thunk(async (actions, payload) => {
-        console.log(payload);
         const {username, carername, age, pettypes} = {...payload};
         const {data} = await axios.post("http://localhost:5000/api/v1/caretaker", {
             username: username,
