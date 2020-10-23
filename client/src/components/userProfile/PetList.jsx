@@ -6,6 +6,9 @@ import ProfilePic from "./ProfilePic"
 import { makeStyles } from '@material-ui/core/styles';
 import petImg from "../../assets/userProfile/pet.png"
 import AddPet from "../AddPet";
+import { useEffect } from 'react';
+import { useStoreActions, useStoreState } from 'easy-peasy';
+import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,9 +52,18 @@ const PetList = () => {
             petAge: age,
             petRequirements: petReq
         });
-
     }
-    const pets = ['test'];
+
+    const getAllPets = useStoreActions(actions => actions.pets.getAllPets); // use getCareTakers action
+
+    useEffect(() => {
+        getAllPets();
+        return () => {};
+    }, [])
+
+    const pets = useStoreState(state => state.pets.allPets); // right now we just test by getting all the pets in the database
+
+    // const pets = ['test'];
     const classes = useStyles();
     return (
         <Card className={classes.root}>
@@ -59,7 +71,7 @@ const PetList = () => {
             <Grid container>
                 {pets.map((pet) => {
                     return(
-                        <Grid item className={classes.petAvatar} onClick={() => clickOnPet(pet.petname, pet.pettype, pet.petage, pet.requirements)}>
+                        <Grid key={uuidv4()} item className={classes.petAvatar} onClick={() => clickOnPet(pet.petname, pet.pettype, pet.petage, pet.requirements)}>
                             <ProfilePic img={petImg} href="#"/>
                             <h6 className={classes.petName}> {pet.petname} </h6>
                         </Grid>)
