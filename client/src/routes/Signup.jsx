@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, AppBar, Toolbar, Container, TextField, Card, Typography, Button, InputLabel, Select, Input, MenuItem, Chip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import { action, useStoreActions } from 'easy-peasy';
+import { useStoreActions } from 'easy-peasy';
 import AddPet from "../components/AddPet";
+import PetTypeInput from "../components/PetTypeInput"
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -34,15 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
     formControl: {
         margin: theme.spacing(3),
-        marginLeft: 0
     },
-    chip: {
-        margin: 2
-    },
-    chips: {
-        display: 'flex',
-        flexWrap: 'wrap'
-    }
 }));
 
 const defaultPetTypes = ['Dog', 'Cat', 'Bird', 'Fish'];
@@ -167,33 +160,8 @@ const Signup = () => {
                         </FormGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    { isPetCaretaker ? 
-                    <FormControl fullWidth className={classes.formControl}>
-                        <InputLabel id="select-caretaker-petType">Pet Categories</InputLabel>
-                            <Select
-                                labelId="select-caretaker-petType"
-                                id="caretaker-petTypes"
-                                multiple
-                                onChange={onSelectTypes}
-                                value={petType}
-                                input={<Input id="select-multiple-chip"/>}
-                                renderValue={(selected) => (
-                                    <div className={classes.chips}>
-                                    {selected.map((value) => (
-                                        <Chip key={value} label={value} className={classes.chip} />
-                                    ))}
-                                    </div> )}
-                                >
-                                {defaultPetTypes.map((type) => (
-                                    <MenuItem key={type} value={type}>
-                                        {type}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                    </FormControl> : null } 
-                    {   isPetOwner 
-                            ? <AddPet parentCallback = {callbackAddPet}/> : null
-                    }
+                    { isPetCaretaker ? <PetTypeInput parentCallback={onSelectTypes} label = "Choose pet types you can care for"/> : null } 
+                    {  isPetOwner ? <AddPet parentCallback = {callbackAddPet} /> : null }
                     <Button
                         // type="submit"
                         fullWidth
