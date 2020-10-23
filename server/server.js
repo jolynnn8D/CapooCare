@@ -106,7 +106,7 @@ app.post("/api/v1/caretaker", async (req, res) => {
     try {
         const results = await db.query("INSERT INTO CareTaker(username, carerName, age, petTypes) " +
             "VALUES ($1, $2, $3, $4) RETURNING *",
-            [req.body.username, req.body.name, req.body.age, req.body.petTypes]);
+            [req.body.username, req.body.carername, req.body.age, req.body.pettypes]);
         res.status(201).json({
             status: "success",
             data: {
@@ -142,7 +142,7 @@ app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, petTypes = $3" +
             " WHERE username = $4 RETURNING *",
-            [req.body.name, req.body.age, req.body.petTypes, req.params.username]);
+            [req.body.carername, req.body.age, req.body.pettypes, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -253,7 +253,7 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
 app.post("/api/v1/petowner", async (req, res) => {
     try {
         const results = await db.query("INSERT INTO PetOwner(username, ownerName, age) VALUES ($1, $2, $3) RETURNING *",
-            [req.body.username, req.body.name, req.body.age]);
+            [req.body.username, req.body.ownername, req.body.age]);
         res.status(201).json({
             status: "success",
             data: {
@@ -287,7 +287,7 @@ app.post("/api/v1/petowner", async (req, res) => {
 app.put("/api/v1/petowner/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE PetOwner SET ownerName = $1, age = $2 WHERE username = $3 RETURNING *",
-            [req.body.name, req.body.age, req.params.username]);
+            [req.body.ownername, req.body.age, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -368,7 +368,7 @@ app.get("/api/v1/pet", async (req, res) => {
 app.get("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
         const results = await db.query("SELECT * FROM Owned_Pet WHERE username = $1 AND petName = $2",
-            [req.params.username, req.params.petName]);
+            [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
             data: {
@@ -405,7 +405,7 @@ app.post("/api/v1/pet", async (req, res) => {
         const results = await db.query(
             "INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES " +
             "($1, $2, $3, $4, $5) RETURNING *",
-            [req.body.username, req.body.petName, req.body.petType, req.body.petAge, req.body.requirements]);
+            [req.body.username, req.body.petname, req.body.pettype, req.body.petage, req.body.requirements]);
         res.status(201).json({
             status: "success",
             data: {
@@ -443,7 +443,7 @@ app.put("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
         const results = await db.query("UPDATE Owned_Pet SET petType = $1, petAge = $2, requirements = $3" +
             " WHERE username = $4 AND petName = $5 RETURNING *",
-            [req.body.petType, req.body.petAge, req.body.requirements, req.params.username, req.params.petName]);
+            [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
         res.status(204).json({
             status: "success",
             data: {
@@ -473,7 +473,7 @@ app.put("/api/v1/pet/:username/:petName", async (req, res) => {
 app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
         const results = await db.query("DELETE FROM Owned_Pet WHERE username = $1 AND petName = $2",
-            [req.params.username, req.params.petName]);
+            [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success"
         });
