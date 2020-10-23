@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { AppBar, Toolbar, Container, TextField, Card, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { classnames } from '@material-ui/data-grid';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -38,6 +39,13 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const history = useHistory();
+
+    const handleClick = () => {
+        // console.log(username);
+        history.push('/users/' + username);
+    }
+
     return (
         <div>
             <Container component="main" maxWidth="xs" className={classes.container}>
@@ -68,6 +76,7 @@ const Login = () => {
                     onChange={(event)=>setPassword(event.target.value)}
                 />
                 <Button
+                    onClick={handleClick}
                     type="submit"
                     fullWidth
                     variant="contained"

@@ -69,11 +69,11 @@ const App = () => {
                         <Route exact path="/admin" component={Adminpage}/>
                         <Route exact path="/admin/set-price" component={SetPricepage}/>
                         <Route exact path="/admin/view-caretakers" component={ViewCaretakerspage}/>
-                        <Route exact path="/users/:id/caretakers" component={FindCaretakers} />
-                        <Route exact path="/users/:id/update" component={Updatepage} />
-                        <Route exact path="/users/:id" component={UserProfile} />
-                        <Route exact path ="/users/:id/caretaker-admin" component={CaretakerAdmin}/>
-                        <Route exact path ="/users/:id/caretaker" component={CaretakerProfile}/>
+                        <Route exact path="/users/:username/caretakers" component={FindCaretakers} />
+                        <Route exact path="/users/:username/update" component={Updatepage} />
+                        <Route exact path="/users/:username" component={UserProfile} />
+                        <Route exact path ="/users/:username/caretaker-admin" component={CaretakerAdmin}/>
+                        <Route exact path ="/users/:username/caretaker" component={CaretakerProfile}/>
                         <Route exact path="/login" component={Login} />
                         <Route exact path="/signup" component={Signup} />
                     </Switch>
