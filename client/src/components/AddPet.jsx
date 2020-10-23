@@ -85,7 +85,7 @@ const AddPet = (props) => {
             <Button
                 fullWidth
                 variant="contained"
-                color="white"
+                color="inherit"
                 onClick={sendData}
             >
                 Save Pet Information

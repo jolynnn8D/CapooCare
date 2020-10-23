@@ -252,12 +252,13 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
  */
 app.post("/api/v1/petowner", async (req, res) => {
     try {
-        const results = await db.query("INSERT INTO PetOwner(username, ownerName, age) VALUES ($1, $2, $3) RETURNING *",
-            [req.body.username, req.body.ownername, req.body.age]);
+        const results = await db.query("CALL add_petOwner($1, $2, $3, $4, $5, $6, $7)",
+            [req.body.username, req.body.ownername, req.body.age, req.body.pettype, req.body.petname, req.body.petage, req.body.requirements]);
         res.status(201).json({
             status: "success",
             data: {
                 user: results.rows[0]
+
             }
         });
     } catch (err) {
@@ -291,7 +292,7 @@ app.put("/api/v1/petowner/:username", async (req, res) => {
         res.status(204).json({
             status: "success",
             data: {
-                user: results.rows[0]
+                user: results.rows
             }
         });
     } catch (err) {
