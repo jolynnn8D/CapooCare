@@ -1,8 +1,8 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
 
-
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import { makeStyles } from '@material-ui/core/styles';
 
 import ProfilePic from "./ProfilePic"
@@ -25,16 +25,23 @@ const useStyles = makeStyles({
 const UserCard = (props) => {
     const classes = useStyles();
     // console.log(props);
-    const userName = props.userName;
+    const username = props.userName;
+    const getPetOwner = useStoreActions(actions => actions.petOwners.getPetOwner);
+    useEffect(() => {
+        getPetOwner(username);
+        return () => {};
+    }, [])
+    const owner = useStoreState(state => state.petOwners.singleUser);
+ 
     return (
         <Card className={classes.root}>
             <Grid container>
-                <Grid item>
+                <Grid item xs={3}>
                     <ProfilePic img={profileImg} href="/users/:id/update"/>
                 </Grid>
                 <Grid item className={classes.profileTextArea}>
-                    <h2 className={classes.profileText}> Pet Owner: {userName} </h2>
-                    <h4> I love cats and dogs :)</h4>
+                    <h2 className={classes.profileText}> {username} ({owner.ownername})</h2>
+                    <h4> Age: {owner.age}</h4>
                     <h4> Rating: 4.5 / 5 </h4>
                 </Grid>
             </Grid>

@@ -38,17 +38,21 @@ const TEST_USERNAME = "marythemess";
 const CREATE = "create";
 const EDIT = "edit";
 
-const PetList = () => {
+const PetList = (props) => {
     const [open, setOpen] = React.useState(false);
     const [petDetails, setPetDetails] = React.useState({});
     const [modalType, setModalType] = React.useState(CREATE);
+    const {username, ...other} = props;
+
     const openModal = () => {
         setOpen(true);
     }
 
     const closeModal = () => {
         setOpen(false);
+        getUserPets(props.username);
         setPetDetails({});
+        
     }
 
     const openCreateModal = () => {
@@ -70,7 +74,7 @@ const PetList = () => {
     const handleCreateOrEditPet = (petData) => {
         if (modalType == CREATE) {
             createPet({
-                username: TEST_USERNAME,
+                username: props.username,
                 petname: petData.petName,
                 pettype: petData.petType,
                 petage: petData.petAge,
@@ -79,7 +83,7 @@ const PetList = () => {
         }
         if (modalType == EDIT) {
             editPet({
-                username: TEST_USERNAME,
+                username: props.username,
                 petname: petData.petName,
                 pettype: petData.petType,
                 petage: petData.petAge,
@@ -93,7 +97,7 @@ const PetList = () => {
     const editPet = useStoreActions(actions => actions.pets.editPet);
 
     useEffect(() => {
-        getUserPets(TEST_USERNAME);
+        getUserPets(props.username);
         return () => {};
     }, [])
 
