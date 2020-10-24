@@ -8,7 +8,7 @@ import petImg from "../../assets/userProfile/pet.png"
 import AddPet from "../AddPet";
 import { useEffect } from 'react';
 import { useStoreActions, useStoreState } from 'easy-peasy';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -65,13 +65,14 @@ const PetList = () => {
 
     // const pets = ['test'];
     const classes = useStyles();
+    var id = 0;
     return (
         <Card className={classes.root}>
             <h2> Pets Owned </h2>
             <Grid container>
                 {pets.map((pet) => {
                     return(
-                        <Grid key={uuidv4()} item className={classes.petAvatar} onClick={() => clickOnPet(pet.petname, pet.pettype, pet.petage, pet.requirements)}>
+                        <Grid key={v4()} item className={classes.petAvatar} onClick={() => clickOnPet(pet.petname, pet.pettype, pet.petage, pet.requirements)}>
                             <ProfilePic img={petImg} href="#"/>
                             <h6 className={classes.petName}> {pet.petname} </h6>
                         </Grid>)
