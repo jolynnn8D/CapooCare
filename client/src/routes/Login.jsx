@@ -3,6 +3,7 @@ import { AppBar, Toolbar, Container, TextField, Card, Typography, Button } from 
 import { makeStyles } from '@material-ui/core/styles';
 import { classnames } from '@material-ui/data-grid';
 import { useHistory } from 'react-router-dom';
+import Routes from './allRoutes';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -43,6 +44,11 @@ const Login = () => {
 
     const handleClick = () => {
         // console.log(username);
+        Routes[3].path = '/users/' + username;
+        Routes[4].path = '/users/' + username + '/caretaker';
+        Routes[5].path = '/users/' + username + '/caretaker-admin';
+        Routes[7].path = '/users/' + username + '/caretakers';
+
         history.push('/users/' + username);
     }
 

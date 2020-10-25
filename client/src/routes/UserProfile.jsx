@@ -14,12 +14,12 @@ const useStyles = makeStyles({
 
 const UserProfile = (props) => {
     const classes = useStyles();
-    const userName = props.match.params.username;
+    const username = props.match.params.username;
     return (
         <Grid container>
             <Grid item className={classes.verticalSections} xs={7}>
                 <Grid item xs={12}>
-                    <UserCard userName={userName}/>
+                    <UserCard userName={username}/>
                 </Grid>
                 <Grid item>
                     <PetList/>
