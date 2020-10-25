@@ -8,6 +8,9 @@ DROP TABLE IF EXISTS PCSAdmin CASCADE;
 DROP TABLE IF EXISTS FullTimer CASCADE;
 DROP TABLE IF EXISTS PartTimer CASCADE;
 DROP TABLE IF EXISTS Has_Availability CASCADE;
+DROP VIEW IF EXISTS Users CASCADE;
+DROP VIEW IF EXISTS Accounts CASCADE;
+
 
 CREATE TABLE PCSAdmin (
     username VARCHAR(50) PRIMARY KEY,
@@ -112,31 +115,32 @@ CREATE OR REPLACE PROCEDURE
 
 --/* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT username, carerName, age FROM CareTaker
-   UNION
-   SELECT username, ownerName, age FROM PetOwner
+   SELECT username, carerName, age, petTypes, rating, salary, true AS is_carer FROM CareTaker
+   UNION ALL
+   SELECT username, ownerName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer FROM PetOwner
 );
 
-CREATE OR REPLACE VIEW Account AS (
-   SELECT username, adminName, age FROM PCSAdmin
-   UNION
-   SELECT username, carerName, age FROM CareTaker
-   UNION
-   SELECT username, ownerName, age FROM PetOwner
+CREATE OR REPLACE VIEW Accounts AS (
+   SELECT username, adminName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
+   UNION ALL
+   SELECT username, carerName, age, petTypes, rating, salary, true AS is_carer, false AS is_admin FROM CareTaker
+   UNION ALL
+   SELECT username, ownerName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
 );
 
 /* SEED */
-INSERT INTO PCSAdmin VALUES ('Red', 'red');
+INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
 
 INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('yellowchicken', 'chick', 22, '{"ducks"}');
 INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('redduck', 'ducklings', 21, '{"pokemon"}');
-INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('purpledog', 'purple', '25', '{"dog", "cat"}');
+INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('purpledog', 'purple', 25, '{"dog", "cat"}');
+INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('johnthebest', 'John', 50, '{"dog", "cat"}');
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
 
-INSERT INTO Owned_Pet VALUES ('marythemess', 'dog', 'Champ', 10, NULL);
-INSERT INTO Owned_Pet VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
+INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES ('marythemess', 'dog', 'Champ', 10, NULL);
+INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
 
 INSERT INTO Job VALUES ('marythemess', 'yellowchicken', 'Fido', '101010', '101011', 100, NULL);
 
