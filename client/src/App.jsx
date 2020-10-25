@@ -37,11 +37,6 @@ const Routes = [
         component: UserProfile,
     },
     {
-        path: '/users/1/caretaker',
-        sidebarName: 'Caretaker Profile',
-        component: CaretakerProfile,
-    },
-    {
         path: '/users/1/caretaker-admin',
         sidebarName: 'Caretaker Settings',
         component: CaretakerAdmin,
