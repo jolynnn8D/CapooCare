@@ -9,6 +9,8 @@ import AddPet from "../AddPet";
 import { useEffect } from 'react';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { v4 } from 'uuid';
+import { CREATE, EDIT, DELETE } from "../../constants"
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -34,10 +36,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const TEST_USERNAME = "marythemess";
-const CREATE = "create";
-const EDIT = "edit";
-
 const PetList = (props) => {
     const [open, setOpen] = React.useState(false);
     const [petDetails, setPetDetails] = React.useState({});
@@ -48,9 +46,9 @@ const PetList = (props) => {
         setOpen(true);
     }
 
-    const closeModal = () => {
+    const closeModal = async () => {
         setOpen(false);
-        getUserPets(props.username);
+        await getUserPets(props.username);
         setPetDetails({});
         
     }
@@ -71,8 +69,8 @@ const PetList = (props) => {
         });
     }
 
-    const handleCreateOrEditPet = (petData) => {
-        if (modalType == CREATE) {
+    const handleCreateOrEditPet = (petData, action) => {
+        if (action == CREATE) {
             createPet({
                 username: props.username,
                 petname: petData.petName,
@@ -81,7 +79,7 @@ const PetList = (props) => {
                 requirements: petData.petRequirements
             })
         }
-        if (modalType == EDIT) {
+        if (action == EDIT) {
             editPet({
                 username: props.username,
                 petname: petData.petName,
@@ -90,11 +88,18 @@ const PetList = (props) => {
                 requirements: petData.petRequirements
             })
         }
+        if (action == DELETE) {
+            deletePet({
+                username: props.username,
+                petname: petData.petName
+            })
+        }
     }
 
     const getUserPets = useStoreActions(actions => actions.pets.getOwnerPets);
     const createPet = useStoreActions(actions => actions.pets.addPet);
     const editPet = useStoreActions(actions => actions.pets.editPet);
+    const deletePet = useStoreActions(actions => actions.pets.deletePet);
 
     useEffect(() => {
         getUserPets(props.username);
@@ -132,7 +137,7 @@ const PetList = (props) => {
                 open={open}
                 onClose={closeModal}>
                 <Card className={classes.modal}>
-                    <AddPet parentData={petDetails} parentCallback={handleCreateOrEditPet} closeModal={closeModal}/>
+                    <AddPet parentData={petDetails} parentCallback={handleCreateOrEditPet} closeModal={closeModal} modalType={modalType}/>
                 </Card>
             </Modal>
         </Card>

@@ -1,4 +1,4 @@
-import { action, thunk } from 'easy-peasy';
+import { action, thunk, debug } from 'easy-peasy';
 import {serverUrl} from "./serverUrl"
 import axios from 'axios';
 
@@ -9,10 +9,15 @@ const petOwnersModel = {
         const username = payload;
         const url = serverUrl + "/api/v1/petowner/" + username;
         const {data} = await axios.get(url);
-        actions.setUser(data.data.user); 
+        actions.setUser(data.data); 
       }), 
       setUser: action((state, payload) => { // action
-        state.singleUser = payload;
+        console.log(payload);
+        if (payload.user !== null ) {
+            state.singleUser = payload.user;
+        }
+        console.log(debug(state));
+
       }),
 
     addPetOwner: thunk(async (actions, payload) => {

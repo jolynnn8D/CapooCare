@@ -41,8 +41,6 @@ const petsModel = {
   editPet: thunk(async (actions, payload) => {
     const{username, petname, pettype, petage, requirements} = {...payload};
     const url = serverUrl + "/api/v1/pet/" + username + "/" + petname;
-    console.log(url);
-    console.log(payload);
     const {data} = await axios.put(url, {
       pettype: pettype,
       petage: petage,
@@ -50,6 +48,12 @@ const petsModel = {
     });
   }),
   // EDIT ACTION TO UPDATE UI HERE REQUIRED
+
+  deletePet: thunk(async (actions,payload) => {
+    const { username, petname } = {...payload};
+    const url = serverUrl + "/api/v1/pet/" + username + "/" + petname;
+    const {data} = await axios.delete(url);
+  })
 }
 
 export default petsModel;

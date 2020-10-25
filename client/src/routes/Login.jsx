@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AppBar, Toolbar, Container, TextField, Card, Typography, Button } from '@material-ui/core'
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import { makeStyles } from '@material-ui/core/styles';
 import { classnames } from '@material-ui/data-grid';
 import { useHistory } from 'react-router-dom';
+import store from "../store/store"
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -38,13 +40,35 @@ const Login = () => {
     const classes = useStyles();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const getPetOwner = useStoreActions(actions => actions.petOwners.getPetOwner);
+    const owner = useStoreState(state => state.petOwners.singleUser);
+    
+    
+    const checkAccountExists = () => {
+        const curr_owner = store.getState().petOwners.singleUser;
+        if (curr_owner == null || curr_owner.length == 0) {
+            setErrorMessage("Username does not exist");
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     const history = useHistory();
 
-    const handleClick = () => {
-        // console.log(username);
-        history.push('/users/' + username);
+    const handleClick = async (event) => {
+        await getPetOwner(username);
+        const validateAccount = checkAccountExists();
+        if (validateAccount) {
+            history.push('/users/' + username);
+        } else {
+            event.preventDefault();
+        }
     }
+
+
+    
 
     return (
         <div>
@@ -76,8 +100,8 @@ const Login = () => {
                     onChange={(event)=>setPassword(event.target.value)}
                 />
                 <Button
-                    onClick={handleClick}
-                    type="submit"
+                    onClick={(event) => handleClick(event)}
+                    // type="submit"
                     fullWidth
                     variant="contained"
                     color="primary"
@@ -85,11 +109,8 @@ const Login = () => {
                 >
                     Login
                 </Button>
-                <Typography variant="h3">
-                    {username}
-                </Typography>
-                <Typography variant="h3">
-                    {password}
+                <Typography variant="h5">
+                    {errorMessage}
                 </Typography>
             </form>
         </Container>

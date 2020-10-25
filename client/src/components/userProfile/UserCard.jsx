@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react'
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
-
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -25,13 +24,15 @@ const useStyles = makeStyles({
 const UserCard = (props) => {
     const classes = useStyles();
     // console.log(props);
-    const username = props.userName;
+    const username = props.username;
     const getPetOwner = useStoreActions(actions => actions.petOwners.getPetOwner);
     useEffect(() => {
         getPetOwner(username);
         return () => {};
     }, [])
+
     const owner = useStoreState(state => state.petOwners.singleUser);
+    console.log(owner);
  
     return (
         <Card className={classes.root}>
