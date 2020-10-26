@@ -20,7 +20,7 @@ const CaretakerProfile = () => {
             <Grid container>
                 <Grid item className={classes.verticalSections} xs={12}>
                     <Grid item xs={12}>
-                        <UserCard/>
+                        <UserCard username="marythemess"/>
                     </Grid>
                     <Grid item>
                         <Card>

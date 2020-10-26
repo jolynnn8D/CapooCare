@@ -94,6 +94,7 @@ CREATE TABLE Transaction (
     PRIMARY KEY (ownerUsername, carerUsername, petName, startDate, endDate, dateTime)
 );
 
+/*TRIGGERS AND PROCEDURE*/
 CREATE OR REPLACE PROCEDURE
     add_petOwner(uName VARCHAR(50), oName VARCHAR(50), oAge INTEGER, pType VARCHAR(20), pName VARCHAR(20),
         pAge INTEGER, req VARCHAR(50)) AS
@@ -110,7 +111,104 @@ CREATE OR REPLACE PROCEDURE
         $$
     LANGUAGE plpgsql;
 
---/* Views */
+/* Insert into fulltimers, will add into caretakers table */
+CREATE OR REPLACE PROCEDURE add_fulltimers(
+    username VARCHAR(50),
+    aname VARCHAR(50),
+    age   INTEGER,
+    atype  TEXT[] DEFAULT NULL,
+    rating INTEGER DEFAULT NULL,
+    salary INTEGER DEFAULT NULL,
+    period1  VARCHAR(50) DEFAULT NULL, 
+    period2  VARCHAR(50) DEFAULT NULL
+    )  AS $$
+    BEGIN
+        INSERT INTO CareTaker VALUES (username, aname, age, atype,rating,salary);
+        INSERT INTO FullTimer VALUES(username, period1, period2);
+    END;$$
+LANGUAGE plpgsql;
+
+/* add parttime */
+CREATE OR REPLACE PROCEDURE add_parttimers(
+    username VARCHAR(50),
+    aname VARCHAR(50),
+    age   INTEGER,
+    atype  TEXT[] DEFAULT NULL,
+    rating INTEGER DEFAULT NULL,
+    salary INTEGER DEFAULT NULL
+    )  AS $$
+    BEGIN
+        INSERT INTO CareTaker VALUES (username, aname, age, atype,rating,salary);
+        INSERT INTO PartTimer VALUES (username);
+    END;$$
+LANGUAGE plpgsql;
+
+/* check if caretaker is not already part of PartTimer or FullTimer. To fulfill the no-overlap constraint */
+CREATE OR REPLACE FUNCTION not_parttimer_or_fulltimer()
+RETURNS TRIGGER AS
+$$ DECLARE Pctx NUMERIC;
+    DECLARE Fctx NUMERIC;
+    BEGIN
+        SELECT COUNT(*) INTO Pctx 
+        FROM PartTimer P
+        WHERE NEW.username = P.username;
+
+        SELECT COUNT(*) INTO Fctx 
+        FROM FullTimer F
+        WHERE NEW.username = F.username;
+
+        IF (Pctx > 0 OR Fctx > 0) THEN
+            RETURN NULL;
+        ELSE 
+            RETURN NEW;
+        END IF; END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_fulltimer
+BEFORE INSERT OR UPDATE ON CareTaker
+FOR EACH ROW EXECUTE PROCEDURE not_parttimer_or_fulltimer();
+
+/* check if parttimer that is being added is not a fulltimer. To fulfill the no-overlap constraint */
+CREATE OR REPLACE FUNCTION not_fulltimer()
+RETURNS TRIGGER AS
+$$ DECLARE ctx NUMERIC;
+    BEGIN
+        SELECT COUNT(*) INTO ctx 
+        FROM FullTimer F
+        WHERE NEW.username = F.username;
+
+        IF ctx > 0 THEN
+            RETURN NULL;
+        ELSE 
+            RETURN NEW;
+        END IF; END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_parttimer
+BEFORE INSERT OR UPDATE ON PartTimer
+FOR EACH ROW EXECUTE PROCEDURE not_fulltimer();
+
+/* check if fulltimer that is being added is not a parttimer. To fulfill the no-overlap constraint */
+CREATE OR REPLACE FUNCTION not_parttimer()
+RETURNS TRIGGER AS
+$$ DECLARE ctx NUMERIC;
+    BEGIN
+        SELECT COUNT(*) INTO ctx 
+        FROM PartTimer P
+        WHERE NEW.username = P.username;
+
+        IF ctx > 0 THEN
+            RETURN NULL;
+        ELSE 
+            RETURN NEW;
+        END IF; END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_fulltimer
+BEFORE INSERT OR UPDATE ON FullTimer
+FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
+
+/* Views */
 CREATE OR REPLACE VIEW Users AS (
    SELECT username, carerName, age FROM CareTaker
    UNION
@@ -128,9 +226,12 @@ CREATE OR REPLACE VIEW Account AS (
 /* SEED */
 INSERT INTO PCSAdmin VALUES ('Red', 'red');
 
-INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('yellowchicken', 'chick', 22, '{"ducks"}');
-INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('redduck', 'ducklings', 21, '{"pokemon"}');
-INSERT INTO CareTaker(username, carerName, age, petTypes) VALUES ('purpledog', 'purple', '25', '{"dog", "cat"}');
+CALL add_fulltimers('yellowchicken', 'chick', 22, '{"dog", "cat"}');
+CALL add_fulltimers('purpledog', 'purple', 25, '{"cat"}', 8);
+CALL add_fulltimers('redduck', 'ducklings', 20, '{"rabbit", "cat"}', 6);
+
+CALL add_fulltimers('purplefish', 'fish', 30, '{"cat"}', 8);
+CALL add_fulltimers('yellowbird', 'ducklings', 20, '{"rabbit", "cat"}', 6);
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
@@ -141,4 +242,3 @@ INSERT INTO Owned_Pet VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
 INSERT INTO Job VALUES ('marythemess', 'yellowchicken', 'Fido', '101010', '101011', 100, NULL);
 
 INSERT INTO Transaction VALUES ('marythemess', 'yellowchicken', 'Fido', '101010', '101011', 'Credit', '101010T2359');
-
