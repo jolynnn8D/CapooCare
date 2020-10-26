@@ -3,18 +3,17 @@ import {serverUrl} from "./serverUrl"
 import axios from 'axios';
 
 const petOwnersModel = {
-    users: [],
-    singleUser: [],
+    singlePetOwner: null,
     getPetOwner: thunk(async (actions, payload) => {
         const username = payload;
         const url = serverUrl + "/api/v1/petowner/" + username;
         const {data} = await axios.get(url);
-        actions.setUser(data.data); 
+        actions.setPetOwner(data.data); 
       }), 
-      setUser: action((state, payload) => { // action
+      setPetOwner: action((state, payload) => { // action
         console.log(payload);
         if (payload.user !== null ) {
-            state.singleUser = payload.user;
+            state.singlePetOwner = payload.user;
         }
         console.log(debug(state));
 

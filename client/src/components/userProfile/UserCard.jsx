@@ -21,7 +21,7 @@ const useStyles = makeStyles({
         marginBottom: 15
     }
 });
-const UserCard = (props) => {
+const UserCard = (props) => { // currently, when you click on caretaker from FindCaretakers.js, this UserCard is used but it's fetching petowner instead.
     const classes = useStyles();
     // console.log(props);
     const username = props.username;
@@ -32,13 +32,13 @@ const UserCard = (props) => {
     }, [])
 
     const owner = useStoreState(state => state.petOwners.singleUser);
-    console.log(owner);
+    console.log(username);
  
     return (
         <Card className={classes.root}>
             <Grid container>
                 <Grid item xs={3}>
-                    <ProfilePic img={profileImg} href="/users/:id/update"/>
+                    <ProfilePic img={profileImg} href="/users/:username/update"/>
                 </Grid>
                 <Grid item className={classes.profileTextArea}>
                     <h2 className={classes.profileText}> {username} ({owner.ownername})</h2>

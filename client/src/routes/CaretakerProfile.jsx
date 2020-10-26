@@ -4,6 +4,9 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import UserCard from "../components/userProfile/UserCard"
 import PetCareList from "../components/careTakerAdmin/PetCareList"
+import {
+  useParams
+} from "react-router-dom";
 
 import ReviewPanel from "../components/userProfile/careTakerProfile/ReviewPanel"
 
@@ -15,12 +18,13 @@ const useStyles = makeStyles({
 
 const CaretakerProfile = () => {
     const classes = useStyles();
+    const params = useParams();
     return (
         <div>
             <Grid container>
                 <Grid item className={classes.verticalSections} xs={12}>
                     <Grid item xs={12}>
-                        <UserCard username="marythemess"/>
+                        <UserCard username={params.username}/>
                     </Grid>
                     <Grid item>
                         <Card>

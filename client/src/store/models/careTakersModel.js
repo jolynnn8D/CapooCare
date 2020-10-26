@@ -2,13 +2,13 @@ import { action, thunk } from 'easy-peasy';
 import axios from 'axios';
 
 const careTakersModel = {
-    users: [],
+    caretakers: [],
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get("http://localhost:5000/api/v1/caretaker");
       actions.setUsers(data.data.users); 
     }),
     setUsers: action((state, payload) => {
-      state.users = [...payload];
+      state.caretakers = [...payload];
     }),
 
     addCareTaker: thunk(async (actions, payload) => {
