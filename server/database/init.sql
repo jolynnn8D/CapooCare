@@ -230,7 +230,7 @@ CALL add_fulltimers('yellowchicken', 'chick', 22, '{"dog", "cat"}');
 CALL add_fulltimers('purpledog', 'purple', 25, '{"cat"}', 8);
 CALL add_fulltimers('redduck', 'ducklings', 20, '{"rabbit", "cat"}', 6);
 
-CALL add_parttimers('yellowbird', 'bird', 35);
+CALL add_fulltimers('purplefish', 'fish', 30, '{"cat"}', 8);
 CALL add_fulltimers('yellowbird', 'ducklings', 20, '{"rabbit", "cat"}', 6);
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
