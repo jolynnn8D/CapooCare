@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, AppBar, Toolbar, Container, TextField, Card, Typography, Button } from '@material-ui/core'
+import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, Container, TextField, Card, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import { action, useStoreActions } from 'easy-peasy';
+import { useStoreActions } from 'easy-peasy';
 import AddPet from "../components/AddPet";
+import PetTypeInput from "../components/PetTypeInput"
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -37,16 +38,18 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const defaultPetTypes = ['Dog', 'Cat', 'Bird', 'Fish'];
+
 const Signup = () => {
     const classes = useStyles();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
-    const [petType, setPetType] = useState('');
+    const [petType, setPetType] = useState([]);
     const [age, setAge] = useState('');
     const [isPetOwner, setPetOwner] = useState(false);
     const [isPetCaretaker, setPetCaretaker] = useState(false);
-    const [petInformation, setPetInformation] = useState('');
+    const [petInformation, setPetInformation] = useState({});
 
     const onPetOwnerSwitchChange = () => {
         setPetOwner(isPetOwner => !isPetOwner);
@@ -55,7 +58,37 @@ const Signup = () => {
     const onPetCaretakerSwitchChange = () => {
         setPetCaretaker(isPetCaretaker => !isPetCaretaker);
     }
+
+    const onSelectTypes = (event) => {
+        setPetType(event.target.value);
+    }
     const addCareTaker = useStoreActions(actions => actions.careTakers.addCareTaker);
+    const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
+    const addUser = () => {
+        if (isPetOwner) {
+            addPetOwner({
+                username: username,
+                ownername: firstName,
+                age: age,
+                pettype: petInformation.petType,
+                petname: petInformation.petName,
+                petage: petInformation.petAge,
+                requirements: petInformation.petRequirements
+            });
+        }
+        if (isPetCaretaker) {
+            addCareTaker({
+                username: username,
+                carername: firstName,
+                age: age,
+                pettypes: petType
+            })
+        }
+    }
+
+    const callbackAddPet = (childData) => {
+        setPetInformation(childData);
+    }
     
     return (
         <div>
@@ -127,48 +160,18 @@ const Signup = () => {
                         </FormGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    {   isPetOwner 
-                            ?
-                            <AddPet/>
-                            : isPetCaretaker ? <TextField
-                                variant="outlined"
-                                label="Pet Type"
-                                required
-                                fullWidth
-                                id="petType"
-                                autoComplete="petType"
-                                autoFocus
-                                className={classes.textfield}
-                                onChange={(event) => setPetType(event.target.value)}
-                            /> : null
-                    }
+                    { isPetCaretaker ? <PetTypeInput parentCallback={onSelectTypes} label = "Choose pet types you can care for"/> : null } 
+                    {  isPetOwner ? <AddPet parentCallback = {callbackAddPet} /> : null }
                     <Button
                         // type="submit"
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick = {() => addCareTaker({
-                            username: username,
-                            carername: firstName,
-                            age: age,
-                            pettypes: [petType]
-                        })}
+                        onClick = {() => addUser()}
                     >
                         Signup
                     </Button>
-                    <Typography variant="h3">
-                        {username}, {firstName}, {age}
-                    </Typography>
-                    <Typography variant="h3">
-                        {password}
-                    </Typography>
-                    <Typography variant="h3">
-                        {isPetOwner ? "true" : "false"}
-                    </Typography>
-                    <Typography variant="h3">
-                        {isPetCaretaker ? "true" : "false"}
-                    </Typography>
                 </form>
             </Container>
         </div>

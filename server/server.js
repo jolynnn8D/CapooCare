@@ -252,12 +252,13 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
  */
 app.post("/api/v1/petowner", async (req, res) => {
     try {
-        const results = await db.query("INSERT INTO PetOwner(username, ownerName, age) VALUES ($1, $2, $3) RETURNING *",
-            [req.body.username, req.body.ownername, req.body.age]);
+        const results = await db.query("CALL add_petOwner($1, $2, $3, $4, $5, $6, $7)",
+            [req.body.username, req.body.ownername, req.body.age, req.body.pettype, req.body.petname, req.body.petage, req.body.requirements]);
         res.status(201).json({
             status: "success",
             data: {
                 user: results.rows[0]
+
             }
         });
     } catch (err) {
@@ -291,7 +292,7 @@ app.put("/api/v1/petowner/:username", async (req, res) => {
         res.status(204).json({
             status: "success",
             data: {
-                user: results.rows[0]
+                user: results.rows
             }
         });
     } catch (err) {
@@ -341,6 +342,35 @@ app.get("/api/v1/pet", async (req, res) => {
         res.status(200).json({
             status: "success",
             results: results.rows.length,
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+// Get all existing pets belonging to a username
+/*
+    Expected inputs:
+        Path parameters:
+            username, which represents the unique username of the Pet's Owner.
+    
+    Expected status code 200 OK, or 400 Bad Request
+*/
+
+app.get("/api/v1/pet/:username", async(req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Owned_Pet WHERE username = $1",
+            [req.params.username]);
+        res.status(200).json({
+            status: "success",
             data: {
                 pets: results.rows
             }
@@ -439,12 +469,12 @@ app.post("/api/v1/pet", async (req, res) => {
 
     Expected status code: 204 No Content, or 400 Bad Request
  */
-app.put("/api/v1/pet/:username/:petName", async (req, res) => {
+app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
         const results = await db.query("UPDATE Owned_Pet SET petType = $1, petAge = $2, requirements = $3" +
             " WHERE username = $4 AND petName = $5 RETURNING *",
             [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
-        res.status(204).json({
+        res.status(200).json({
             status: "success",
             data: {
                 pet: results.rows[0]

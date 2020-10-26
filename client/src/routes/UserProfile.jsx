@@ -19,10 +19,10 @@ const UserProfile = (props) => {
         <Grid container>
             <Grid item className={classes.verticalSections} xs={7}>
                 <Grid item xs={12}>
-                    <UserCard userName={username}/>
+                    <UserCard username={username}/>
                 </Grid>
                 <Grid item>
-                    <PetList/>
+                    <PetList username={username}/>
                 </Grid>
             </Grid>
             <Grid item className={classes.verticalSections} xs={4}>
