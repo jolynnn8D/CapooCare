@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { NavLink, withRouter } from 'react-router-dom';
-import { Routes } from '../App';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 import {
@@ -14,6 +13,7 @@ import {
     ListItemText,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
+import Routes from '../routes/allRoutes';
 
 const useStyles = makeStyles((theme) => 
     createStyles({

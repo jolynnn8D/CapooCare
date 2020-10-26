@@ -15,49 +15,6 @@ import Signup from "./routes/Signup";
 import FindCaretakers from "./routes/FindCaretakers";
 import NavBar from './components/NavBar';
 
-const Routes = [
-    {
-        path: '/login',
-        sidebarName: 'Login',
-        component: Login,
-    },
-    {
-        path: '/signup',
-        sidebarName: 'Signup',
-        component: Signup,
-    },
-    {
-        path: '/',
-        sidebarName: 'Homepage',
-        component: Homepage,
-    },
-    {
-        path: '/users/1',
-        sidebarName: 'Profile',
-        component: UserProfile,
-    },
-    {
-        path: '/users/1/caretaker',
-        sidebarName: 'Caretaker Profile',
-        component: CaretakerProfile,
-    },
-    {
-        path: '/users/1/caretaker-admin',
-        sidebarName: 'Caretaker Settings',
-        component: CaretakerAdmin,
-    },
-    {
-        path: '/admin',
-        sidebarName: 'PCS Administrator Settings',
-        component: Adminpage,
-    },
-    {
-        path: '/users/1/caretakers',
-        sidebarName: 'Caretakers',
-        component: FindCaretakers,
-    }
-]
-
 const App = () => {
     return (
         <UsersContextProvider>
@@ -84,6 +41,5 @@ const App = () => {
 };
 
 export {
-    App,
-    Routes
+    App
 };

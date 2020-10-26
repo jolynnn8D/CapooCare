@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { classnames } from '@material-ui/data-grid';
 import { useHistory } from 'react-router-dom';
 import store from "../store/store"
+import Routes from './allRoutes';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -57,10 +58,15 @@ const Login = () => {
 
     const history = useHistory();
 
+
     const handleClick = async (event) => {
         await getPetOwner(username);
         const validateAccount = checkAccountExists();
         if (validateAccount) {
+          Routes[3].path = '/users/' + username;
+          Routes[4].path = '/users/' + username + '/caretaker';
+          Routes[5].path = '/users/' + username + '/caretaker-admin';
+          Routes[7].path = '/users/' + username + '/caretakers';
             history.push('/users/' + username);
         } else {
             event.preventDefault();
