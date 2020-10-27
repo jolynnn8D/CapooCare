@@ -634,7 +634,7 @@ app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
 /* API calls for Category */
 
 // Get all the pet categories
-app.get("/api/v1/pet", async (req, res) => {
+app.get("/api/v1/categories", async (req, res) => {
     try {
         const results = await db.query("SELECT * FROM Category");
         res.status(200).json({
