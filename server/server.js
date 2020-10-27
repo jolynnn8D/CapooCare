@@ -75,7 +75,7 @@ app.get("/api/v1/users/:username", async (req, res) => {
         res.status(200).json({
             status: "success",
             data: {
-                user: results.rows
+                user: results.rows[0]
             }
         });
     } catch (err) {
