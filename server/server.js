@@ -75,7 +75,7 @@ app.get("/api/v1/users/:username", async (req, res) => {
         res.status(200).json({
             status: "success",
             data: {
-                user: results.rows[0]
+                user: results.rows
             }
         });
     } catch (err) {
@@ -131,7 +131,7 @@ app.get("/api/v1/accounts/:username", async (req, res) => {
         res.status(200).json({
             status: "success",
             data: {
-                account: results.rows[0]
+                account: results.rows // double-check this
             }
         });
     } catch (err) {

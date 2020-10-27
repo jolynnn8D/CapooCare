@@ -42,13 +42,13 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const getPetOwner = useStoreActions(actions => actions.petOwners.getPetOwner);
-    const owner = useStoreState(state => state.petOwners.singleUser);
+    const getUser = useStoreActions(actions => actions.user.getUser);
+    const user = useStoreState(state => state.user.singleUser);
     
     
     const checkAccountExists = () => {
-        const curr_owner = store.getState().petOwners.singleUser;
-        if (curr_owner == null || curr_owner.length == 0) {
+        const curr_user = store.getState().user.singleUser;
+        if (curr_user == null || curr_user.length == 0) {
             setErrorMessage("Username does not exist");
             return false;
         } else {
@@ -60,14 +60,13 @@ const Login = () => {
 
 
     const handleClick = async (event) => {
-        await getPetOwner(username);
+        await getUser(username);
         const validateAccount = checkAccountExists();
         if (validateAccount) {
           Routes[3].path = '/users/' + username;
           Routes[4].path = '/users/' + username + '/caretaker';
           Routes[5].path = '/users/' + username + '/caretaker-admin';
-          Routes[7].path = '/users/' + username + '/caretakers';
-            history.push('/users/' + username);
+          history.push('homepage');
         } else {
             event.preventDefault();
         }

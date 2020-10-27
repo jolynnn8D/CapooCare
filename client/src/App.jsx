@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { UsersContextProvider } from "./context/UsersContext";
 import Adminpage from "./routes/Adminpage";
 import CaretakerAdmin from "./routes/CaretakerAdmin"
 import Homepage from "./routes/Homepage"
@@ -17,26 +16,24 @@ import NavBar from './components/NavBar';
 
 const App = () => {
     return (
-        <UsersContextProvider>
-            <div className="container">
-                <Router>
-                    <NavBar />
-                    <Switch>
-                        <Route exact path="/" component={Homepage} />
-                        <Route exact path="/admin" component={Adminpage}/>
-                        <Route exact path="/admin/set-price" component={SetPricepage}/>
-                        <Route exact path="/admin/view-caretakers" component={ViewCaretakerspage}/>
-                        <Route exact path="/users/:username/caretakers" component={FindCaretakers} />
-                        <Route exact path="/users/:username/update" component={Updatepage} />
-                        <Route exact path="/users/:username" component={UserProfile} />
-                        <Route exact path ="/users/:username/caretaker-admin" component={CaretakerAdmin}/>
-                        <Route exact path ="/users/:username/caretaker" component={CaretakerProfile}/>
-                        <Route exact path="/login" component={Login} />
-                        <Route exact path="/signup" component={Signup} />
-                    </Switch>
-                </Router>
-            </div>
-        </UsersContextProvider>
+        <div className="container">
+            <Router>
+                <NavBar />
+                <Switch>
+                    <Route exact path="/" component={Login} />
+                    <Route exact path="/admin" component={Adminpage}/>
+                    <Route exact path="/admin/set-price" component={SetPricepage}/>
+                    <Route exact path="/admin/view-caretakers" component={ViewCaretakerspage}/>
+                    <Route exact path="/users/caretakers" component={FindCaretakers} />
+                    <Route exact path="/users/:username/update" component={Updatepage} />
+                    <Route exact path="/users/:username" component={UserProfile} />
+                    <Route exact path ="/users/:username/caretaker-admin" component={CaretakerAdmin}/>
+                    <Route exact path ="/users/:username/caretaker" component={CaretakerProfile}/>
+                    <Route exact path="/homepage" component={Homepage} />
+                    <Route exact path="/signup" component={Signup} />
+                </Switch>
+            </Router>
+        </div>
     )
 };
 
