@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS FullTimer CASCADE;
 DROP TABLE IF EXISTS PartTimer CASCADE;
 DROP TABLE IF EXISTS Category CASCADE;
 DROP TABLE IF EXISTS Has_Availability CASCADE;
-DROP TABLE IF EXISTS cares CASCADE;
+DROP TABLE IF EXISTS Cares CASCADE;
 DROP TABLE IF EXISTS Owned_Pet_Belongs CASCADE;
 DROP TABLE IF EXISTS Bid CASCADE;
 DROP VIEW IF EXISTS Users CASCADE;
@@ -61,12 +61,12 @@ CREATE TABLE Cares (
 );
 
 CREATE TABLE Owned_Pet_Belongs (
-    username VARCHAR(50) NOT NULL REFERENCES PetOwner(username) ON DELETE CASCADE,
+    pouname VARCHAR(50) NOT NULL REFERENCES PetOwner(username) ON DELETE CASCADE,
     petType VARCHAR(20) NOT NULL REFERENCES Category(petType),
     petName VARCHAR(20) NOT NULL,
     petAge INTEGER NOT NULL,
     requirements VARCHAR(50) DEFAULT NULL,
-    PRIMARY KEY (username, petName, petType)
+    PRIMARY KEY (pouname, petName, petType)
 );
 
 /* TODO: reference has_availability */ 
@@ -83,7 +83,7 @@ CREATE TABLE Bid (
     pay_type VARCHAR(50) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
     pay_status BOOLEAN DEFAULT FALSE,
     pet_pickup VARCHAR(50) CHECK(pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
-    FOREIGN KEY (pouname, petName, petType) REFERENCES Owned_Pet_Belongs(username, petName, petType),
+    FOREIGN KEY (pouname, petName, petType) REFERENCES Owned_Pet_Belongs(pouname, petName, petType),
     FOREIGN KEY (ctuname, s_time, e_time) REFERENCES Has_Availability (ctuname, s_time, e_time),
     PRIMARY KEY (pouname, petName, petType, ctuname, s_time, e_time),
     CHECK (pouname <> ctuname)
@@ -219,17 +219,17 @@ FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT username, carerName, age, petTypes, rating, salary, true AS is_carer FROM CareTaker
+   SELECT username, carerName, age, rating, salary, true AS is_carer FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer FROM PetOwner
+   SELECT username, ownerName, age, NULL AS rating, NULL AS salary, false AS is_carer FROM PetOwner
 );
 
 CREATE OR REPLACE VIEW Accounts AS (
-   SELECT username, adminName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
+   SELECT username, adminName, age, NULL AS rating, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
    UNION ALL
-   SELECT username, carerName, age, petTypes, rating, salary, true AS is_carer, false AS is_admin FROM CareTaker
+   SELECT username, carerName, age, rating, salary, true AS is_carer, false AS is_admin FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
+   SELECT username, ownerName, age, NULL AS rating, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
 );
 
 /* SEED */
