@@ -12,8 +12,8 @@ function WaitForStateRehydration({ children }) {
 
 ReactDOM.render(
 <StoreProvider store={store}>
-  <WaitForStateRehydration>
+  {/* <WaitForStateRehydration> */}
   <App />
-  </WaitForStateRehydration>
+  {/* </WaitForStateRehydration> */}
 </StoreProvider>, document.getElementById("root"))
 
