@@ -686,6 +686,49 @@ app.get("/api/v1/categories", async (req, res) => {
     }
 });
 
+app.get("/api/v1/categories/:username", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Cares WHERE ctuname = $1",
+            [req.params.username]);
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+app.post("/api/v1/categories/:username", async (req, res) => {
+    try {
+        const results = await db.query("INSERT INTO Cares(ctuname, pettype, price) VALUES ($1, $2, $3) RETURNING *",
+            [req.params.username, req.body.pettype, req.body.price]);
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                pets: results.rows[0]
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+
 app.listen(port, () => {
     console.log(`server has started on port ${port}`);
 });

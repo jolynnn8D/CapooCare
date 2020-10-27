@@ -73,7 +73,6 @@ const Signup = () => {
         setPetPrice(event.target.value);
     }
 
-    const addCareTaker = useStoreActions(actions => actions.careTakers.addCareTaker);
     const addPartTimeCareTaker = useStoreActions(actions => actions.careTakers.addPartTimeCareTaker);
     const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
     const addFullTimeCareTaker = useStoreActions(actions => actions.careTakers.addFullTimeCareTaker);
