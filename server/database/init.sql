@@ -8,6 +8,9 @@ DROP TABLE IF EXISTS Has_Availability CASCADE;
 DROP TABLE IF EXISTS cares CASCADE;
 DROP TABLE IF EXISTS Owned_Pet_Belongs CASCADE;
 DROP TABLE IF EXISTS Bid CASCADE;
+DROP VIEW IF EXISTS Users CASCADE;
+DROP VIEW IF EXISTS Accounts CASCADE;
+
 
 CREATE TABLE PCSAdmin (
     username VARCHAR(50) PRIMARY KEY,
@@ -216,21 +219,21 @@ FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT username, carerName, age FROM CareTaker
-   UNION
-   SELECT username, ownerName, age FROM PetOwner
+   SELECT username, carerName, age, petTypes, rating, salary, true AS is_carer FROM CareTaker
+   UNION ALL
+   SELECT username, ownerName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer FROM PetOwner
 );
 
-CREATE OR REPLACE VIEW Account AS (
-   SELECT username, adminName, age FROM PCSAdmin
-   UNION
-   SELECT username, carerName, age FROM CareTaker
-   UNION
-   SELECT username, ownerName, age FROM PetOwner
+CREATE OR REPLACE VIEW Accounts AS (
+   SELECT username, adminName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
+   UNION ALL
+   SELECT username, carerName, age, petTypes, rating, salary, true AS is_carer, false AS is_admin FROM CareTaker
+   UNION ALL
+   SELECT username, ownerName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
 );
 
 /* SEED */
-INSERT INTO PCSAdmin VALUES ('Red', 'red');
+INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
 
 INSERT INTO Category VALUES ('dog'),('cat'),('rabbit'),('big dogs'),('lizard'),('bird');
 

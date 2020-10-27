@@ -35,8 +35,118 @@ if (forceInitializeDatabase) {
 //route handles = (req, res) aka request object and response object
 
 
+/* API calls for Users */
+
+// Get all Users. The same username can represent both a Pet Owner and Care Taker. A User is represented via the truth
+// value of the is_carer attribute.
+// Used for debugging.
+app.get("/api/v1/users", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Users");
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                users: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+
+// Get an existing User.
+/*
+    Expected inputs:
+        Path parameter: username, which represents the unique username of the User. If the User is both a Pet Owner and
+                            a Care Taker, the differences will be seen via the is_carer attribute.
+
+    Expected status code: 200 OK, or 400 Bad Request
+ */
+app.get("/api/v1/users/:username", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Users WHERE username = $1", [req.params.username]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                user: results.rows[0]
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+
+
+/* API calls for Accounts */
+
+// Get all Account holders. This follows the rules of the Users API above, but includes the PCSAdmins.
+// Used for debugging.
+app.get("/api/v1/accounts", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Accounts");
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                accounts: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+
+// Get an existing Account holder.
+/*
+    Expected inputs:
+        Path parameter: username, which represents the unique username of the Account holder. If the Account holder is
+                            a PCSAdmin, this will be shown via the is_admin attribute. Else, if the Account holder is a
+                            User who is both a Pet Owner and a Care Taker, the differences will be seen via the is_carer
+                            attribute.
+
+    Expected status code: 200 OK, or 400 Bad Request
+ */
+app.get("/api/v1/accounts/:username", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Accounts WHERE username = $1", [req.params.username]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                account: results.rows[0]
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+
+
 /* API calls for Care Takers */
-// TODO: Possibly switch all queries to db.query().catch() form?
 
 
 // Get all Care Takers.
@@ -176,7 +286,7 @@ app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, petTypes = $3" +
             " WHERE username = $4 RETURNING *",
-            [req.body.name, req.body.age, req.body.petTypes, req.params.username]);
+            [req.body.carername, req.body.age, req.body.pettypes, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -287,7 +397,7 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
 app.post("/api/v1/petowner", async (req, res) => {
     try {
         const results = await db.query("INSERT INTO PetOwner(username, ownerName, age) VALUES ($1, $2, $3) RETURNING *",
-            [req.body.username, req.body.name, req.body.age]);
+            [req.body.username, req.body.ownername, req.body.age]);
         res.status(201).json({
             status: "success",
             data: {
@@ -321,7 +431,7 @@ app.post("/api/v1/petowner", async (req, res) => {
 app.put("/api/v1/petowner/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE PetOwner SET ownerName = $1, age = $2 WHERE username = $3 RETURNING *",
-            [req.body.name, req.body.age, req.params.username]);
+            [req.body.ownername, req.body.age, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -402,7 +512,7 @@ app.get("/api/v1/pet", async (req, res) => {
 app.get("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
         const results = await db.query("SELECT * FROM Owned_Pet WHERE username = $1 AND petName = $2",
-            [req.params.username, req.params.petName]);
+            [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
             data: {
@@ -439,7 +549,7 @@ app.post("/api/v1/pet", async (req, res) => {
         const results = await db.query(
             "INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES " +
             "($1, $2, $3, $4, $5) RETURNING *",
-            [req.body.username, req.body.petName, req.body.petType, req.body.petAge, req.body.requirements]);
+            [req.body.username, req.body.petname, req.body.pettype, req.body.petage, req.body.requirements]);
         res.status(201).json({
             status: "success",
             data: {
@@ -477,7 +587,7 @@ app.put("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
         const results = await db.query("UPDATE Owned_Pet SET petType = $1, petAge = $2, requirements = $3" +
             " WHERE username = $4 AND petName = $5 RETURNING *",
-            [req.body.petType, req.body.petAge, req.body.requirements, req.params.username, req.params.petName]);
+            [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
         res.status(204).json({
             status: "success",
             data: {
@@ -507,7 +617,7 @@ app.put("/api/v1/pet/:username/:petName", async (req, res) => {
 app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
         const results = await db.query("DELETE FROM Owned_Pet WHERE username = $1 AND petName = $2",
-            [req.params.username, req.params.petName]);
+            [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success"
         });
