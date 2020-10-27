@@ -1,13 +1,13 @@
-DROP TABLE IF EXISTS Bid CASCADE;
-DROP TABLE IF EXISTS Owned_Pet CASCADE;
+DROP TABLE IF EXISTS PCSAdmin CASCADE;
 DROP TABLE IF EXISTS PetOwner CASCADE;
 DROP TABLE IF EXISTS CareTaker CASCADE;
-DROP TABLE IF EXISTS Job CASCADE;
-DROP TABLE IF EXISTS Transaction CASCADE;
-DROP TABLE IF EXISTS PCSAdmin CASCADE;
 DROP TABLE IF EXISTS FullTimer CASCADE;
 DROP TABLE IF EXISTS PartTimer CASCADE;
+DROP TABLE IF EXISTS Category CASCADE;
 DROP TABLE IF EXISTS Has_Availability CASCADE;
+DROP TABLE IF EXISTS Cares CASCADE;
+DROP TABLE IF EXISTS Owned_Pet_Belongs CASCADE;
+DROP TABLE IF EXISTS Bid CASCADE;
 DROP VIEW IF EXISTS Users CASCADE;
 DROP VIEW IF EXISTS Accounts CASCADE;
 
@@ -28,7 +28,6 @@ CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
     carerName VARCHAR(50) NOT NULL,
     age   INTEGER DEFAULT NULL,
-    petTypes  TEXT[] NOT NULL,
     rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL
 );
@@ -43,58 +42,51 @@ CREATE TABLE PartTimer (
     username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username)
 );
 
-CREATE TABLE Has_Availability (
-    username VARCHAR(50) REFERENCES CareTaker(username) ON DELETE CASCADE,
-    s_date INTEGER,
-    s_time INTEGER,
-    e_time INTEGER,
-    PRIMARY KEY (username, s_date, s_time, e_time)
+CREATE TABLE Category (
+     petType VARCHAR(20) PRIMARY KEY
 );
 
-CREATE TABLE Owned_Pet (
-    username VARCHAR(50) NOT NULL REFERENCES PetOwner(username) ON DELETE CASCADE,
-    petType VARCHAR(20) NOT NULL,
+CREATE TABLE Has_Availability (
+    ctuname VARCHAR(50) REFERENCES CareTaker(username) ON DELETE CASCADE,
+    s_time TIMESTAMP,
+    e_time TIMESTAMP,
+    PRIMARY KEY(ctuname, s_time, e_time)
+);
+
+CREATE TABLE Cares (
+    ctuname VARCHAR(50) REFERENCES CareTaker(username),
+    petType VARCHAR(20) REFERENCES Category(petType),
+    price INTEGER NOT NULL,
+    PRIMARY KEY (ctuname, petType)
+);
+
+CREATE TABLE Owned_Pet_Belongs (
+    pouname VARCHAR(50) NOT NULL REFERENCES PetOwner(username) ON DELETE CASCADE,
+    petType VARCHAR(20) NOT NULL REFERENCES Category(petType),
     petName VARCHAR(20) NOT NULL,
     petAge INTEGER NOT NULL,
     requirements VARCHAR(50) DEFAULT NULL,
-    PRIMARY KEY (username, petName)
+    PRIMARY KEY (pouname, petName, petType)
 );
 
+/* TODO: reference has_availability */ 
 CREATE TABLE Bid (
-    carerUsername VARCHAR(50) REFERENCES CareTaker(username),
-    ownerUsername VARCHAR(50),
-    petName   VARCHAR(20),
-    startDate VARCHAR(50) NOT NULL,
-    endDate VARCHAR(50) NOT NULL,
-    FOREIGN KEY (ownerUsername, petName) REFERENCES Owned_Pet(username, petName),
-    PRIMARY KEY (carerUsername, ownerUsername, petname)
-);
-
-CREATE TABLE Job (
-    ownerUsername VARCHAR(50),
-    carerUsername VARCHAR(50) REFERENCES CareTaker(username),
-    petName VARCHAR(20),
-    startDate VARCHAR(20) NOT NULL,
-    endDate VARCHAR(20) NOT NULL,
-    transferAmount INTEGER NOT NULL,
-    rating VARCHAR(5) DEFAULT NULL,
-    FOREIGN KEY (ownerUsername, petName) REFERENCES Owned_Pet(username, petName),
-    PRIMARY KEY (ownerUsername, carerUsername, petName, startDate, endDate)
-);
-
-CREATE TABLE Transaction (
-    ownerUsername VARCHAR(50),
-    carerUsername VARCHAR(50),
-    petName VARCHAR(20),
-    startDate VARCHAR(20),
-    endDate VARCHAR(20),
-    paymentMethod VARCHAR(20) NOT NULL,
-    dateTime VARCHAR(30) NOT NULL,
-    status VARCHAR(20) DEFAULT 'incomplete',
-    FOREIGN KEY (ownerUsername, carerUsername, petName, startDate, endDate)
-        REFERENCES Job(ownerUsername, carerUsername, petName, startDate, endDate)
-        ON DELETE CASCADE,
-    PRIMARY KEY (ownerUsername, carerUsername, petName, startDate, endDate, dateTime)
+    pouname VARCHAR(50),
+    petName VARCHAR(20), 
+    petType VARCHAR(20),
+    ctuname VARCHAR(50),
+    s_time TIMESTAMP,
+    e_time TIMESTAMP,
+    is_win BOOLEAN DEFAULT FALSE,
+    rating INTEGER CHECK((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
+    review VARCHAR(100),
+    pay_type VARCHAR(50) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
+    pay_status BOOLEAN DEFAULT FALSE,
+    pet_pickup VARCHAR(50) CHECK(pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
+    FOREIGN KEY (pouname, petName, petType) REFERENCES Owned_Pet_Belongs(pouname, petName, petType),
+    FOREIGN KEY (ctuname, s_time, e_time) REFERENCES Has_Availability (ctuname, s_time, e_time),
+    PRIMARY KEY (pouname, petName, petType, ctuname, s_time, e_time),
+    CHECK (pouname <> ctuname)
 );
 
 /*TRIGGERS AND PROCEDURE*/
@@ -109,40 +101,54 @@ CREATE OR REPLACE PROCEDURE
             IF ctx = 0 THEN
                 INSERT INTO PetOwner VALUES (uName, oName, oAge);
             END IF;
-            INSERT INTO Owned_Pet VALUES (uName, pType, pName, pAge, req);
+            INSERT INTO Owned_Pet_Belongs VALUES (uName, pType, pName, pAge, req);
         END;
         $$
     LANGUAGE plpgsql;
 
 /* Insert into fulltimers, will add into caretakers table */
 CREATE OR REPLACE PROCEDURE add_fulltimers(
-    username VARCHAR(50),
+    ctuname VARCHAR(50),
     aname VARCHAR(50),
     age   INTEGER,
-    atype  TEXT[] DEFAULT NULL,
+    petType VARCHAR(20),
+    price INTEGER,
     rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL,
     period1  VARCHAR(50) DEFAULT NULL, 
     period2  VARCHAR(50) DEFAULT NULL
     )  AS $$
+    DECLARE ctx NUMERIC;
     BEGIN
-        INSERT INTO CareTaker VALUES (username, aname, age, atype,rating,salary);
-        INSERT INTO FullTimer VALUES(username, period1, period2);
+            SELECT COUNT(*) INTO ctx FROM FullTimer
+                WHERE FullTimer.username = ctuname;
+            IF ctx = 0 THEN
+                INSERT INTO CareTaker VALUES (ctuname, aname, age, rating, salary);
+                INSERT INTO FullTimer VALUES (ctuname, period1, period2);
+            END IF;
+            INSERT INTO Cares VALUES (ctuname, petType, price);
     END;$$
 LANGUAGE plpgsql;
 
 /* add parttime */
 CREATE OR REPLACE PROCEDURE add_parttimers(
-    username VARCHAR(50),
+    ctuname VARCHAR(50),
     aname VARCHAR(50),
     age   INTEGER,
-    atype  TEXT[] DEFAULT NULL,
+    petType VARCHAR(20),
+    price INTEGER,
     rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL
     )  AS $$
+    DECLARE ctx NUMERIC;
     BEGIN
-        INSERT INTO CareTaker VALUES (username, aname, age, atype,rating,salary);
-        INSERT INTO PartTimer VALUES (username);
+        SELECT COUNT(*) INTO ctx FROM PartTimer
+                WHERE PartTimer.username = ctuname;
+        IF ctx = 0 THEN
+            INSERT INTO CareTaker VALUES (ctuname, aname, age, rating, salary);
+            INSERT INTO PartTimer VALUES (ctuname);
+        END IF;
+        INSERT INTO Cares VALUES (ctuname, petType, price);
     END;$$
 LANGUAGE plpgsql;
 
@@ -228,31 +234,33 @@ CREATE OR REPLACE VIEW Users AS (
 );
 
 CREATE OR REPLACE VIEW Accounts AS (
-   SELECT username, adminName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
+   SELECT username, adminName, age, NULL AS rating, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
    UNION ALL
-   SELECT username, carerName, age, petTypes, rating, salary, true AS is_carer, false AS is_admin FROM CareTaker
+   SELECT username, carerName, age, rating, salary, true AS is_carer, false AS is_admin FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS petTypes, NULL AS rating, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
+   SELECT username, ownerName, age, NULL AS rating, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
 );
 
 /* SEED */
 INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
 
-CALL add_fulltimers('yellowchicken', 'chick', 22, '{"dog", "cat"}');
-CALL add_fulltimers('purpledog', 'purple', 25, '{"cat"}', 8);
-CALL add_fulltimers('redduck', 'ducklings', 20, '{"rabbit", "cat"}', 6);
+INSERT INTO Category VALUES ('dog'),('cat'),('rabbit'),('big dogs'),('lizard'),('bird');
 
-CALL add_fulltimers('purplefish', 'fish', 30, '{"cat"}', 8);
-CALL add_parttimers('yellowbird', 'bird', 35, '{"dog"}');
-CALL add_fulltimers('johnthebest', 'John', 50, '{"dog", "cat"}');
-CALL add_fulltimers('yellowbird', 'ducklings', 20, '{"rabbit", "cat"}', 6);
+CALL add_fulltimers('yellowchicken', 'chick', 22, 'bird', 50);
+CALL add_fulltimers('purpledog', 'purple', 25, 'dog', 60);
+CALL add_fulltimers('redduck', 'ducklings', 20, 'rabbit', 35);
+
+CALL add_parttimers('yellowbird', 'bird', 35, 'cat', 60);
+/*this seed is not meant to appear in the database*/
+CALL add_fulltimers('yellowbird', 'ducklings', 20, 'lizard', 70);
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
 
-INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES ('marythemess', 'dog', 'Champ', 10, NULL);
-INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'dog', 'Champ', 10, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
 
-INSERT INTO Job VALUES ('marythemess', 'yellowchicken', 'Fido', '101010', '101011', 100, NULL);
-
-INSERT INTO Transaction VALUES ('marythemess', 'yellowchicken', 'Fido', '101010', '101011', 'Credit', '101010T2359');
+INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 40);
+INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
+INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
+INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
