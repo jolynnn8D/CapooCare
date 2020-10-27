@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     }
 })
 
-const CaretakerProfile = () => {
+const CaretakerProfile = (props) => {
     const classes = useStyles();
     const params = useParams();
     return (
@@ -24,7 +24,7 @@ const CaretakerProfile = () => {
             <Grid container>
                 <Grid item className={classes.verticalSections} xs={12}>
                     <Grid item xs={12}>
-                        <UserCard username={params.username}/>
+                        <UserCard display={'caretaker'}/>
                     </Grid>
                     <Grid item>
                         <Card>

@@ -1,5 +1,5 @@
 
-import { createStore } from 'easy-peasy';
+import { createStore, persist } from 'easy-peasy';
 import careTakersModel from './models/careTakersModel';
 import petOwnersModel from './models/petOwnersModel'
 import petsModel from './models/petsModel';
@@ -13,6 +13,6 @@ const storeModel = {
   user: userModel
 };
 
-const store = createStore(storeModel);
+const store = createStore(persist(storeModel));
 
 export default store;
