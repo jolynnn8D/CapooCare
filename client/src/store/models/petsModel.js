@@ -5,6 +5,7 @@ import {serverUrl} from "./serverUrl"
 const petsModel = {
   allPets: [],
   ownerSpecificPets: [],
+  petCategories: [],
   getAllPets: thunk(async (actions, payload) => {
       const {data} = await axios.get(serverUrl + "/api/v1/pet"); // get all pets
       actions.setAllPets(data.data.pets); 
@@ -53,7 +54,18 @@ const petsModel = {
     const { username, petname } = {...payload};
     const url = serverUrl + "/api/v1/pet/" + username + "/" + petname;
     const {data} = await axios.delete(url);
-  })
+  }),
+
+  getPetCategories: thunk(async (actions,payload) => {
+    const url = serverUrl + "/api/v1/categories";
+    const {data} = await axios.get(url);
+    actions.getAllCategories(data.data.pets);
+  }), 
+  getAllCategories: action((state, payload) => {
+    state.petCategories = [...payload];
+  }),
+
+
 }
 
 export default petsModel;

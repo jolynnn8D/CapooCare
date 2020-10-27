@@ -215,7 +215,7 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
  */
 app.post("/api/v1/fulltimer", async (req, res) => {
     try {
-        const results = await db.query("Call add_fulltimers($1, $2, $3, $4, $5) RETURNING *",
+        const results = await db.query("Call add_fulltimers($1, $2, $3, $4, $5)",
             [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
         res.status(201).json({
             status: "success",
@@ -250,7 +250,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
 app.post("/api/v1/parttimer", async (req, res) => {
     try {
         console.log(req.body);
-        const results = await db.query("Call add_parttimers($1, $2, $3, $4, $5) RETURNING *",
+        const results = await db.query("Call add_parttimers($1, $2, $3, $4, $5)",
             [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
         console.log(res);
         res.status(200).json({

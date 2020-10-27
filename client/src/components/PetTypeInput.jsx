@@ -1,7 +1,9 @@
 import { Chip, FormControl, Input, InputLabel, NativeSelect, Select, FormHelperText, TextField} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types';
+import { useStoreActions, useStoreState } from 'easy-peasy';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -15,12 +17,15 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const defaultPetTypes = ['Dog', 'Cat', 'Bird', 'Fish'];
 
 const PetTypeInput = (props) => {
     const [petType, setPetType] = useState();
     const [price, setPrice] = useState();
     const {parentType, parentPrice, label, ...other} = props;
+    const getPetCategories = useStoreActions(actions => actions.pets.getPetCategories);
+    const petCategories = useStoreState(state => state.pets.petCategories);
+
+
     const handleChange = (event) => {
         setPetType(event.target.value);
         parentType(event);
@@ -30,6 +35,12 @@ const PetTypeInput = (props) => {
         setPrice(event.target.value);
         parentPrice(event);
     }
+
+    useEffect(() => {
+        getPetCategories();
+        return () => {};
+    }, [])
+
     const classes = useStyles();
     return (
         <div>
@@ -45,9 +56,10 @@ const PetTypeInput = (props) => {
                             id: 'select-caretaker-petType',
                         }}
                     >
-                        {defaultPetTypes.map((type) => (
-                                <option key={type} value={type}>
-                                    {type}
+                        <option aria-label="None" value="" />
+                        {petCategories.map((type) => (
+                                <option key={type.pettype} value={type.pettype}>
+                                    {type.pettype}
                                 </option>
                         ))}
                     </Select>

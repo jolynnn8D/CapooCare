@@ -11,36 +11,28 @@ const careTakersModel = {
     setUsers: action((state, payload) => {
       state.users = [...payload];
     }),
-
-    addCareTaker: thunk(async (actions, payload) => {
-        const {username, carername, age, pettypes} = {...payload};
-        const {data} = await axios.post("http://localhost:5000/api/v1/caretaker", {
-            username: username,
-            carername: carername,
-            age: age,
-            pettypes: pettypes
-        });
-        actions.addUsers(data); 
-      }),
-      addUsers: action((state, payload) => {
-        state.users.push(payload);
-      }),
-
     addPartTimeCareTaker: thunk(async (actions, payload) => {
-      const {username, carername, age, pettype, price} = {...payload};
+      const {username, name, age, pettype, price} = {...payload};
       const url = serverUrl + "/api/v1/parttimer";
       const {data} = await axios.post(url, {
           username: username,
-          name: carername,
+          name: name,
           age: age,
           pettype: pettype,
           price: price
       });
-      actions.addUsers(data); 
     }),
-    addUsers: action((state, payload) => {
-      state.users.push(payload);
-    })
+    addFullTimeCareTaker: thunk(async (actions, payload) => {
+      const {username, name, age, pettype, price} = {...payload};
+      const url = serverUrl + "/api/v1/fulltimer";
+      const {data} = await axios.post(url, {
+          username: username,
+          name: name,
+          age: age,
+          pettype: pettype,
+          price: price
+      });
+    }),
 
   
   }

@@ -46,8 +46,8 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [petType, setPetType] = useState('');
-    const [petPrice, setPetPrice] = useState('');
-    const [age, setAge] = useState('');
+    const [petPrice, setPetPrice] = useState(0);
+    const [age, setAge] = useState(0);
     const [isPetOwner, setPetOwner] = useState(false);
     const [isPetCaretaker, setPetCaretaker] = useState(false);
     const [caretakerType, setCaretakerType] = useState("parttime");
@@ -76,6 +76,8 @@ const Signup = () => {
     const addCareTaker = useStoreActions(actions => actions.careTakers.addCareTaker);
     const addPartTimeCareTaker = useStoreActions(actions => actions.careTakers.addPartTimeCareTaker);
     const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
+    const addFullTimeCareTaker = useStoreActions(actions => actions.careTakers.addFullTimeCareTaker);
+
     const addUser = () => {
         if (isPetOwner) {
             addPetOwner({
@@ -90,17 +92,28 @@ const Signup = () => {
         }
         if (isPetCaretaker) {
             if (caretakerType=='parttime') {
-                console.log({username: username,
-                    name: firstName,
-                    age: age,
-                    pettype: petType,
-                    price: petPrice});
                 addPartTimeCareTaker({
                     username: username,
                     name: firstName,
-                    age: age,
+                    age: parseInt(age),
                     pettype: petType,
-                    price: petPrice
+                    price: parseInt(petPrice)
+                })
+            }
+            if (caretakerType == 'fulltime') {
+                console.log({
+                    username: username,
+                    name: firstName,
+                    age: parseInt(age),
+                    pettype: petType,
+                    price: parseInt(petPrice)
+                })
+                addFullTimeCareTaker({
+                    username: username,
+                    name: firstName,
+                    age: parseInt(age),
+                    pettype: petType,
+                    price: parseInt(petPrice)
                 })
             }
         }
