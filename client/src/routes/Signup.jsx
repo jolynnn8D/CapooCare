@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, Container, TextField, Card, Typography, Button } from '@material-ui/core'
+import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, Container, Radio, RadioGroup, TextField, Card, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { useStoreActions } from 'easy-peasy';
 import AddPet from "../components/AddPet";
@@ -45,10 +45,12 @@ const Signup = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
-    const [petType, setPetType] = useState([]);
+    const [petType, setPetType] = useState('');
+    const [petPrice, setPetPrice] = useState('');
     const [age, setAge] = useState('');
     const [isPetOwner, setPetOwner] = useState(false);
     const [isPetCaretaker, setPetCaretaker] = useState(false);
+    const [caretakerType, setCaretakerType] = useState("parttime");
     const [petInformation, setPetInformation] = useState({});
 
     const onPetOwnerSwitchChange = () => {
@@ -59,10 +61,20 @@ const Signup = () => {
         setPetCaretaker(isPetCaretaker => !isPetCaretaker);
     }
 
-    const onSelectTypes = (event) => {
+    const onChangeCaretakerType = (event) => {
+        setCaretakerType(event.target.value);
+    }
+
+    const onSelectType = (event) => {
         setPetType(event.target.value);
     }
+    
+    const onInputPrice = (event) => {
+        setPetPrice(event.target.value);
+    }
+
     const addCareTaker = useStoreActions(actions => actions.careTakers.addCareTaker);
+    const addPartTimeCareTaker = useStoreActions(actions => actions.careTakers.addPartTimeCareTaker);
     const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
     const addUser = () => {
         if (isPetOwner) {
@@ -77,12 +89,20 @@ const Signup = () => {
             });
         }
         if (isPetCaretaker) {
-            addCareTaker({
-                username: username,
-                carername: firstName,
-                age: age,
-                pettypes: petType
-            })
+            if (caretakerType=='parttime') {
+                console.log({username: username,
+                    name: firstName,
+                    age: age,
+                    pettype: petType,
+                    price: petPrice});
+                addPartTimeCareTaker({
+                    username: username,
+                    name: firstName,
+                    age: age,
+                    pettype: petType,
+                    price: petPrice
+                })
+            }
         }
     }
 
@@ -160,7 +180,17 @@ const Signup = () => {
                         </FormGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    { isPetCaretaker ? <PetTypeInput parentCallback={onSelectTypes} label = "Choose pet types you can care for"/> : null } 
+                    { isPetCaretaker ? 
+                    <>
+                    <FormControl component="fieldset" className={classes.formControl}>
+                        <FormLabel component="legend">Type of caretaker</FormLabel>
+                        <RadioGroup value={caretakerType} onChange={onChangeCaretakerType}>
+                            <FormControlLabel value="parttime" control={<Radio />} label="Part-time" />
+                            <FormControlLabel value="fulltime" control={<Radio />} label="Full-time" />
+                        </RadioGroup>
+                        <FormHelperText>Choose at least one role!</FormHelperText>
+                    </FormControl>
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> </> : null } 
                     {  isPetOwner ? <AddPet parentCallback = {callbackAddPet} /> : null }
                     <Button
                         // type="submit"

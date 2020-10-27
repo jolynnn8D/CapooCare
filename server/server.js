@@ -199,7 +199,7 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
 });
 
 
-// Create a new Care Taker.
+// Create a new FullTimer.
 /*
     Expected inputs:
         JSON object of the form:
@@ -207,17 +207,53 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
             "username": String,
             "name": String,
             "age": Integer (optional; put null otherwise),
-            "petTypes": String array
+            "petType": String
+            "price" : Integer
         }
 
     Expected status code: 201 Created, or 400 Bad Request
  */
-app.post("/api/v1/caretaker", async (req, res) => {
+app.post("/api/v1/fulltimer", async (req, res) => {
     try {
-        const results = await db.query("INSERT INTO CareTaker(username, carerName, age, petTypes) " +
-            "VALUES ($1, $2, $3, $4) RETURNING *",
-            [req.body.username, req.body.carername, req.body.age, req.body.pettypes]);
+        const results = await db.query("Call add_fulltimers($1, $2, $3, $4, $5) RETURNING *",
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
         res.status(201).json({
+            status: "success",
+            data: {
+                user: results.rows[0]
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+// Create a new PartTimer.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "username": String,
+            "name": String,
+            "age": Integer (optional; put null otherwise),
+            "petTypes": String
+            "price" : Integer
+        }
+
+    Expected status code: 201 Created, or 400 Bad Request
+ */
+app.post("/api/v1/parttimer", async (req, res) => {
+    try {
+        console.log(req.body);
+        const results = await db.query("Call add_parttimers($1, $2, $3, $4, $5) RETURNING *",
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
+        console.log(res);
+        res.status(200).json({
             status: "success",
             data: {
                 user: results.rows[0]
@@ -627,7 +663,28 @@ app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
     }
 });
 
+/* API calls for Category */
 
+// Get all the pet categories
+app.get("/api/v1/categories", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Category");
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
 
 app.listen(port, () => {
     console.log(`server has started on port ${port}`);
