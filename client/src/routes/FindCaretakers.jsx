@@ -80,18 +80,19 @@ const FindCaretakers = () => {
     const [search, setSearch] = useState("");
     const [filteredCaretakers, setFilteredCaretakers] = useState([]);
 
-    const getCareTakers = useStoreActions(state => state.careTakers.getCareTakers);
+    const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers);
     useEffect(() => {
         getCareTakers();
         return () => {};
     }, [])
 
     const careTakers = useStoreState(state => state.careTakers.caretakers);
+    console.log(careTakers);
 
     useEffect(() => {
         setFilteredCaretakers(
             careTakers.filter(caretaker => {
-                return caretaker.pettypes.join().toLowerCase().includes(search.toLowerCase());
+                return caretaker.username.toLowerCase().includes(search.toLowerCase());
             })
         )
     }, [search, careTakers])
@@ -140,7 +141,7 @@ const FindCaretakers = () => {
                                     )}
                                 <Typography variant="body2" component="p">
                                     {/* Takes care of: {caretaker.pettypes.join(", ")} */}
-                                    Takes care of: {caretaker.pettypes.join()}
+                                    Takes care of: Pettypes here
                                 </Typography>
                                 <Button size="small" color="primary">
                                     Learn More
