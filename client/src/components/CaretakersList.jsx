@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { useStoreActions, useStoreState } from 'easy-peasy';
+import { useEffect } from 'react';
+import { v4 } from 'uuid';
 
 
 // const columns = [
@@ -46,12 +48,12 @@ const columns = [
 
 const CaretakersList = () => {
 
- 
-  const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers);
+  const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers); // use getCareTakers action
 
-  const tests = [{"user_id": 1, "name": "hung"}, {"user_id": 2, "name": "something"}];
-
-  getCareTakers();
+  useEffect(() => {
+    getCareTakers();
+    return () => {};
+  }, [])
   const careTakers = useStoreState(state => state.careTakers.users);
   var id = 0;
   return (

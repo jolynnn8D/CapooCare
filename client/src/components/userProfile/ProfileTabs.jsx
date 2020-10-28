@@ -13,6 +13,7 @@ import OrderList from "./OrderList"
 
 function ProfileTabs(props) {
   const { children, value, index, ...other } = props;
+  // console.log(other);
 
   return (
     <div
@@ -22,7 +23,7 @@ function ProfileTabs(props) {
     >
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          <span>{children}</span>
         </Box>
       )}
     </div>
@@ -64,7 +65,7 @@ export default function FullWidthTabs() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="white">
+      <AppBar position="static" color="default">
         <Tabs
           value={value}
           onChange={handleChange}
@@ -86,7 +87,7 @@ export default function FullWidthTabs() {
           <OrderList type="Order"/>
         </ProfileTabs>
         <ProfileTabs value={value} index={1} dir={theme.direction}>
-        <OrderList type="Job"/>
+          <OrderList type="Job"/>
         </ProfileTabs>
       </SwipeableViews>
     </div>
