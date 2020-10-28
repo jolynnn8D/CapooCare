@@ -3,6 +3,7 @@ import { Card, Typography, Grid,  } from '@material-ui/core';
 import Calendar from 'react-calendar'
 import { makeStyles } from '@material-ui/core/styles';
 import BidList from "./BidList"
+import { isEmpty } from "lodash"
 
 const useStyles = makeStyles({
     root: {
@@ -28,7 +29,7 @@ const bidList = [
         petType: 'Corgi Dog',
         ctuname: 'johnthebest',
         s_time: new Date('2020-10-10'),
-        e_time: new Date('2020-10-31'),
+        e_time: new Date('2020-11-02'),
         pay_status: false,
         pay_type: 'Incomplete',
         price: 60.0
@@ -49,23 +50,42 @@ const bidList = [
 const BidPanel = () => {
     const classes = useStyles()
     const [date, setDate] = useState(new Date());
+    const [selectedBid, setSelectedBid] = useState({});
+
+    const handleSelectedBid = (newSelectedBid) => {
+        setSelectedBid(newSelectedBid)
+    }
 
     return (
         <div>
             <Grid container>
                 <Grid item xs={8}>
                     <Calendar className={classes.calendar}
-                        onChange={(res) => setDate(res)}
+                        onChange={(res) => {
+                            setSelectedBid({})
+                            setDate(res)
+                        }}
                     />
                 </Grid>
                 <Grid item xs={4}>
-                    <BidList subheader={months} bids={bidList}/>
-                    {/* <Typography variant="body">{date.toString()}</Typography> */}
+                    <BidList 
+                        subheader={months} 
+                        bids={bidList}
+                        onClick={handleSelectedBid}
+                    />
                 </Grid>
-
             </Grid>
             {bidList
-                .filter((bidInfo) => (date <= bidInfo.e_time && date >= bidInfo.s_time))
+                .filter((bidInfo) => !isEmpty(selectedBid)
+                    ? (
+                        bidInfo.pouname == selectedBid.pouname &&
+                        bidInfo.petName == selectedBid.petName &&
+                        bidInfo.petType == selectedBid.petType &&
+                        bidInfo.ctuname == selectedBid.ctuname &&
+                        bidInfo.s_time == selectedBid.s_time &&
+                        bidInfo.e_time == selectedBid.e_time
+                        )
+                    : (date <= bidInfo.e_time && date >= bidInfo.s_time))
                 .map((bidInfo) => (
                     <Card className={classes.root}>
                         <Typography variant="h4">
