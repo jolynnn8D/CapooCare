@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import ProfilePic from "./ProfilePic"
 import profileImg from "../../assets/userProfile/userProfile.png"
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles({
     root: {
@@ -23,20 +24,22 @@ const useStyles = makeStyles({
 });
 const UserCard = (props) => { // currently, when you click on caretaker from FindCaretakers.js, this UserCard is used but it's fetching petowner instead.
     const classes = useStyles();
-    // console.log(props);
-    // const username = props.username;
-    // const getPetOwner = useStoreActions(actions => actions.petOwners.getPetOwner);
-    // useEffect(() => {
-    //     getPetOwner(username);
-    //     return () => {};
-    // }, [])
+    
+    const username = props.username;
 
-    // const owner = useStoreState(state => state.petOwners.singleUser);
-    // console.log(username);
- 
-    const user = useStoreState(state => state.user.singleUser);
+    console.log(username);
 
-    if (user.is_petowner && user.is_carer && props.display === 'petowner') {
+    const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
+    const displayedUser = useStoreState(state => state.user.displayedUser);
+    const singleUser = useStoreState(state => state.user.singleUser);
+
+
+    useEffect(() => {
+        getDisplayedUser(username);
+        return () => {};
+    }, [])
+
+    if (props.display === 'petowner') {
         return (
             <Card className={classes.root}>
                 <Grid container>
@@ -44,38 +47,8 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
                         <ProfilePic img={profileImg} href="/users/:username/update"/>
                     </Grid>
                     <Grid item className={classes.profileTextArea}>
-                        <h2 className={classes.profileText}> {user.username} ({user.firstname})</h2>
-                        <h4> Age: {user.age}</h4>
-                        {/* <h4> Rating: 4.5 / 5 </h4> */}
-                    </Grid>
-                </Grid>
-            </Card>
-        )
-    } else if (user.is_carer && user.is_petowner && props.display === 'caretaker') {
-        return (
-            <Card className={classes.root}>
-                <Grid container>
-                    <Grid item xs={3}>
-                        <ProfilePic img={profileImg} href="/users/:username/update"/>
-                    </Grid>
-                    <Grid item className={classes.profileTextArea}>
-                        <h2 className={classes.profileText}> {user.username} ({user.firstname})</h2>
-                        <h4> Age: {user.age}</h4>
-                        <h4> Rating: {user.rating} </h4>
-                    </Grid>
-                </Grid>
-            </Card>
-        )
-    } else if (user.is_petowner && !user.is_carer) {
-        return (
-            <Card className={classes.root}>
-                <Grid container>
-                    <Grid item xs={3}>
-                        <ProfilePic img={profileImg} href="/users/:username/update"/>
-                    </Grid>
-                    <Grid item className={classes.profileTextArea}>
-                        <h2 className={classes.profileText}> {user.username} ({user.firstname})</h2>
-                        <h4> Age: {user.age}</h4>
+                        <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
+                        <h4> Age: {displayedUser.age}</h4>
                         {/* <h4> Rating: 4.5 / 5 </h4> */}
                     </Grid>
                 </Grid>
@@ -89,9 +62,9 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
                         <ProfilePic img={profileImg} href="/users/:username/update"/>
                     </Grid>
                     <Grid item className={classes.profileTextArea}>
-                        <h2 className={classes.profileText}> {user.username} ({user.firstname})</h2>
-                        <h4> Age: {user.age}</h4>
-                        <h4> Rating: {user.rating} </h4>
+                        <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
+                        <h4> Age: {displayedUser.age}</h4>
+                        <h4> Rating: {displayedUser.rating} </h4>
                     </Grid>
                 </Grid>
             </Card>

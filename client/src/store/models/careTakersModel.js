@@ -3,8 +3,9 @@ import axios from 'axios';
 import { serverUrl } from './serverUrl';
 
 const careTakersModel = {
-    petCareList: [],
     caretakers: [],
+    petCareList: [],
+    petTypeList: [],
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get("http://localhost:5000/api/v1/caretaker");
       actions.setUsers(data.data.users); 
@@ -55,6 +56,16 @@ const careTakersModel = {
     addPetCareList: action((state, payload) => {
       state.petCareList.push(payload);
     }),
+
+    getPetTypeList: thunk(async(actions, payload) => {
+      const url = serverUrl + "/api/v1/pettype";
+      const {data} = await axios.get(url);
+      console.log(data);
+      actions.setPetTypeList(data.data.pettypes);
+    }),
+    setPetTypeList: action((state, payload) => {
+      state.petTypeList = [...payload];
+    })
 
   
   }
