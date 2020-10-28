@@ -29,13 +29,15 @@ export default function BidList(props) {
 
     return (
     <List className={classes.root} subheader={<li />}>
-        {props.subheader.map((sectionId) => (
+        {props.subheader.map((sectionId, sectionIndex) => (
         <li key={`section-${sectionId}`} className={classes.listSection}>
             <ul className={classes.ul}>
             <ListSubheader>{`${sectionId}`}</ListSubheader>
-            {[0, 1, 2].map((item) => (
-                <ListItem button key={`item-${sectionId}-${item}`}>
-                <ListItemText primary={`Bid ${item}`} />
+            {bids
+              .filter((bid) => bid.s_time.getMonth() == sectionIndex || bid.e_time.getMonth() == sectionIndex)
+              .map((bid) => (
+                <ListItem button key={`item-${sectionId}-${bid}`}>
+                  <ListItemText primary={`${bid.petName} (${bid.petType})`} />
                 </ListItem>
             ))}
             </ul>

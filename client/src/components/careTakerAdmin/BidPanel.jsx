@@ -59,7 +59,7 @@ const BidPanel = () => {
                     />
                 </Grid>
                 <Grid item xs={4}>
-                    <BidList subheader={months} />
+                    <BidList subheader={months} bids={bidList}/>
                     {/* <Typography variant="body">{date.toString()}</Typography> */}
                 </Grid>
 
@@ -84,7 +84,7 @@ const BidPanel = () => {
                             Duration: {bidInfo.s_time.toDateString()} to {bidInfo.e_time.toDateString()}
                         </Typography>
                         <Typography variant="h6">
-                            Price: {bidInfo.price}
+                            Price: ${bidInfo.price.toFixed(2)}
                         </Typography>
                         <Typography variant="h6">
                             Payment Made: {bidInfo.pay_type}
