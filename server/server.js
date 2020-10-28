@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
-const db = require("./database/queries");
+const db = require("./database/init");
 const morgan = require('morgan');
 const { Pool } = require('pg');
 const keys = require("./keys");
@@ -727,6 +727,70 @@ app.post("/api/v1/categories/:username", async (req, res) => {
         });
     }
 });
+
+
+
+/* API calls for Bid */
+
+// Adds a Bid.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            petName: String,
+            petType: String,
+            s_time: Timestamp,
+            e_time: Timestamp
+        }
+
+        Path parameters:
+            ctuname, which represents the Care Taker involved in the Bid.
+            pouname, which represents the Pet Owner involved in the Bid.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+        409 Conflict, if petType of Pet does not fit the Care Taker's possible pet types.
+ */
+app.post("api/v1/bid/:pouname/:ctuname", async (req, res) => {
+
+    // TODO: Check if the requested pet type is valid for the CT.
+
+    db.query("INSERT INTO Bid(pouname, petName, petType, ctuname, s_time, e_time) VALUES ($1, $2, $3, $4, to_timestamp($5), to_timestamp($6)) RETURNING *",
+        [req.params.pouname, req.body.petName, req.body.petType, req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bid: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+
+app.post("*", async (req, res) => {
+    res.status(400).json({
+        status: "failure",
+        data: {
+            error: "Invalid API address.",
+            address: req.originalUrl,
+            body: req.body
+        }
+    })
+})
 
 
 app.listen(port, () => {
