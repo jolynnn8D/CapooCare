@@ -225,7 +225,7 @@ CREATE OR REPLACE VIEW Users AS (
             ELSE C.carername END AS firstname, 
         CASE WHEN C.age IS NULL THEN P.age 
             ELSE C.age END AS age, 
-        petTypes, rating, salary, 
+        rating, salary, 
         CASE WHEN P.username IS NULL THEN false  
             ELSE true END AS is_petowner, 
         CASE WHEN C.username IS NULL THEN false 

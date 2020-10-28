@@ -13,7 +13,7 @@ import BidPanel from "./BidPanel"
 import PetCareList from "./PetCareList"
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, username, ...other } = props;
 
   return (
     <div
@@ -52,7 +52,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FullWidthTabs() {
+export default function FullWidthTabs(props) {
+  const {username} = props;
   const classes = useStyles();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
@@ -95,7 +96,7 @@ export default function FullWidthTabs() {
           Salary details
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <PetCareList owner={true}/>
+          <PetCareList owner={true} username={props.username}/>
         </TabPanel>
       </SwipeableViews>
     </div>

@@ -17,10 +17,12 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import BidModal from '../userProfile/careTakerProfile/BidModal';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import PetTypeInput from '../PetTypeInput';
+import { v4 } from 'uuid';
+
 
 
 const PetCareList = (props) => {
-    const { owner, ...other} = props;
+    const { owner, username, ...other} = props;
     const [open, setOpen] = useState(false);
     const [addCareOpen, setCareOpen] = useState(false);
     const [petType, setPetType] = useState("");
@@ -59,14 +61,14 @@ const PetCareList = (props) => {
             price: parseInt(petPrice)
         })
         addPetCareItem({
-            username:"yellowbird",
+            username: username,
             pettype: petType,
             price: parseInt(petPrice)
         })
     }
 
     useEffect(() => {
-        getPetCareList("yellowbird")
+        getPetCareList(username)
         return () => {};
     }, [])
 
@@ -76,7 +78,7 @@ const PetCareList = (props) => {
             <List>
                 {petCareList.map((careItem) => (
                 <>
-                <ListItem>
+                <ListItem key={v4()}>
                 <ListItemAvatar>
                     <Avatar>
                       <PetsIcon />
