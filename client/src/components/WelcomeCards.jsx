@@ -52,7 +52,7 @@ const welcomeCardsInfo = [
     {
         name: 'Caretaker Settings',
         available: true,
-        link: '/users/1/caretaker-admin',
+        link: '/users/marythemess/caretaker-admin',
         description: 'Edit your caretaker profile',
         imageLink: 'https://storage.googleapis.com/petbacker/images/blog/2018/pet-care-dog-sitting-services.jpg',
     },
