@@ -50,7 +50,6 @@ const CaretakersList = () => {
 
   const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers); // use getCareTakers action
 
-  // const tests = [{"user_id": 1, "name": "hung"}, {"user_id": 2, "name": "something"}];
   useEffect(() => {
     getCareTakers();
     return () => {};
