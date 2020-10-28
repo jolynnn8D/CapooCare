@@ -50,30 +50,30 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const caretakersList = [
-    {
-        name: 'Caretaker 1',
-        id: '1',
-        available: true,
-        takesCareOf: [
-            'Dogs',
-            'Cats',
-            'Birds'
-        ],
-        rating: 4.5
-    },
-    {
-        name: 'Caretaker 2',
-        id: '2',
-        available: true,
-        takesCareOf: [
-            'Dogs',
-            'Cats',
-            'Birds'
-        ],
-        rating: 3.6
-    },
-]
+// const caretakersList = [
+//     {
+//         name: 'Caretaker 1',
+//         id: '1',
+//         available: true,
+//         takesCareOf: [
+//             'Dogs',
+//             'Cats',
+//             'Birds'
+//         ],
+//         rating: 4.5
+//     },
+//     {
+//         name: 'Caretaker 2',
+//         id: '2',
+//         available: true,
+//         takesCareOf: [
+//             'Dogs',
+//             'Cats',
+//             'Birds'
+//         ],
+//         rating: 3.6
+//     },
+// ]
 
 const FindCaretakers = () => {
     const classes = useStyles();
@@ -81,18 +81,26 @@ const FindCaretakers = () => {
     const [filteredCaretakers, setFilteredCaretakers] = useState([]);
 
     const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers);
+    const getPetTypeList = useStoreActions(actions => actions.careTakers.getPetTypeList);
     useEffect(() => {
         getCareTakers();
+        getPetTypeList();
         return () => {};
     }, [])
 
     const careTakers = useStoreState(state => state.careTakers.caretakers);
+    const petTypes = useStoreState(state => state.careTakers.petTypeList);
+
+    careTakers.map(caretaker => caretaker.pettypes = [...petTypes].filter(pettype => pettype.ctuname === caretaker.username));
+    careTakers.map(caretaker => caretaker.pettypes = caretaker.pettypes.map(pettype => pettype.pettype).join(", "))
+
+    // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
     console.log(careTakers);
 
     useEffect(() => {
         setFilteredCaretakers(
             careTakers.filter(caretaker => {
-                return caretaker.username.toLowerCase().includes(search.toLowerCase());
+                return caretaker.pettypes.toLowerCase().includes(search.toLowerCase());
             })
         )
     }, [search, careTakers])
@@ -140,8 +148,8 @@ const FindCaretakers = () => {
                                         </Button>
                                     )}
                                 <Typography variant="body2" component="p">
-                                    {/* Takes care of: {caretaker.pettypes.join(", ")} */}
-                                    Takes care of: Pettypes here
+                                    Takes care of: {caretaker.pettypes}
+                                    {/* Takes care of: {caretaker.pettypes.map(pettype => pettype.pettype).join(", ")} */}
                                 </Typography>
                                 <Button size="small" color="primary">
                                     Learn More
