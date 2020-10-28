@@ -77,7 +77,7 @@ CREATE TABLE Bid (
     ctuname VARCHAR(50),
     s_time TIMESTAMP,
     e_time TIMESTAMP,
-    is_win BOOLEAN DEFAULT FALSE,
+    is_win BOOLEAN DEFAULT NULL,
     rating INTEGER CHECK((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
     review VARCHAR(100),
     pay_type VARCHAR(50) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
@@ -255,3 +255,5 @@ INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 40);
 INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
 INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
+
+INSERT INTO Has_Availability VALUES ('yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
