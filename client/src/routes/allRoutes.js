@@ -9,7 +9,7 @@ import UserProfile from "./UserProfile";
 
 var Routes = [ // updated after login
     {
-        path: '/login',
+        path: '/',
         sidebarName: 'Login',
         component: Login,
     },
@@ -19,13 +19,13 @@ var Routes = [ // updated after login
         component: Signup,
     },
     {
-        path: '/',
+        path: '/homepage',
         sidebarName: 'Homepage',
         component: Homepage,
     },
     {
         path: '/users/marythemess',
-        sidebarName: 'Profile',
+        sidebarName: 'Petowner Profile',
         component: UserProfile,
     },
     {
@@ -44,8 +44,8 @@ var Routes = [ // updated after login
         component: Adminpage,
     },
     {
-        path: '/users/marythemess/caretakers',
-        sidebarName: 'Caretakers',
+        path: '/users/caretakers',
+        sidebarName: 'Look for Caretakers',
         component: FindCaretakers,
     }
 ]
