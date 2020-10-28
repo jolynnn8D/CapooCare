@@ -3,7 +3,7 @@ import {serverUrl} from "./serverUrl"
 import axios from 'axios';
 
 const userModel = {
-    singleUser: null,
+    singleUser: [],
     getUser: thunk(async (actions, payload) => {
         const username = payload;
         const url = serverUrl + "/api/v1/users/" + username;
@@ -19,7 +19,7 @@ const userModel = {
 
       }),
 
-    displayedUser: null,
+    displayedUser: [],
     getDisplayedUser: thunk(async (actions, payload) => {
       const username = payload;
       const url = serverUrl + "/api/v1/users/" + username;

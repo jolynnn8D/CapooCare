@@ -29,6 +29,7 @@ const PetCareList = (props) => {
     const [petPrice, setPetPrice] = useState("");
     const getPetCareList = useStoreActions(actions => actions.careTakers.getPetCareList);
     const addPetCareItem = useStoreActions(actions => actions.careTakers.addPetCareItem);
+    const deletePetCareItem = useStoreActions(actions => actions.careTakers.deletePetType);
     const petCareList = useStoreState(state => state.careTakers.petCareList);
 
     const openModal = () => {
@@ -92,7 +93,7 @@ const PetCareList = (props) => {
                 />
                 {props.owner ? 
                 <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="delete">
+                    <IconButton edge="end" aria-label="delete" onClick={() => deletePetCareItem({username: username, pettype: careItem.pettype})}>
                       <DeleteIcon />
                     </IconButton>
                 </ListItemSecondaryAction> : null } 

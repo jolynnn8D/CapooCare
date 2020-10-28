@@ -728,6 +728,23 @@ app.post("/api/v1/categories/:username", async (req, res) => {
     }
 });
 
+app.delete("/api/v1/categories/:username/:pettype", async (req, res) => {
+    try {
+        const results = await db.query("DELETE FROM Cares WHERE ctuname = $1 AND pettype = $2",
+            [req.params.username, req.params.pettype]);
+        res.status(200).json({
+            status: "success"
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
 
 app.listen(port, () => {
     console.log(`server has started on port ${port}`);
