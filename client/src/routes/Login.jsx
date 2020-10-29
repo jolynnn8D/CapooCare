@@ -1,7 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AppBar, Toolbar, Container, TextField, Card, Typography, Button } from '@material-ui/core'
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import { makeStyles } from '@material-ui/core/styles';
 import { classnames } from '@material-ui/data-grid';
+import { useHistory } from 'react-router-dom';
+import store from "../store/store"
+import Routes from './allRoutes';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -37,6 +41,36 @@ const Login = () => {
     const classes = useStyles();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const getUser = useStoreActions(actions => actions.user.getUser);
+    const user = useStoreState(state => state.user.singleUser);
+    
+    
+    const checkAccountExists = () => {
+        const curr_user = store.getState().user.singleUser;
+        if (curr_user == null || curr_user.length == 0) {
+            setErrorMessage("Username does not exist");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    const history = useHistory();
+
+
+    const handleClick = async (event) => {
+        await getUser(username);
+        const validateAccount = checkAccountExists();
+        if (validateAccount) {
+          Routes[3].path = '/users/' + username;
+          Routes[4].path = '/users/' + username + '/caretaker';
+          Routes[5].path = '/users/' + username + '/caretaker-admin';
+          history.push('homepage');
+        } else {
+            event.preventDefault();
+        }
+    }
 
     return (
         <div>
@@ -68,7 +102,8 @@ const Login = () => {
                     onChange={(event)=>setPassword(event.target.value)}
                 />
                 <Button
-                    type="submit"
+                    onClick={(event) => handleClick(event)}
+                    // type="submit"
                     fullWidth
                     variant="contained"
                     color="primary"
@@ -76,11 +111,8 @@ const Login = () => {
                 >
                     Login
                 </Button>
-                <Typography variant="h3">
-                    {username}
-                </Typography>
-                <Typography variant="h3">
-                    {password}
+                <Typography variant="h5">
+                    {errorMessage}
                 </Typography>
             </form>
         </Container>

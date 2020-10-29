@@ -12,24 +12,23 @@ const useStyles = makeStyles({
     }
 })
 
-const UserProfile = () => {
+const UserProfile = (props) => {
     const classes = useStyles();
+    const username = props.match.params.username;
     return (
-        <div>
-            <Grid container>
-                <Grid item className={classes.verticalSections} xs={7}>
-                    <Grid item xs={12}>
-                        <UserCard/>
-                    </Grid>
-                    <Grid item>
-                        <PetList/>
-                    </Grid>
+        <Grid container>
+            <Grid item className={classes.verticalSections} xs={7}>
+                <Grid item xs={12}>
+                    <UserCard display={'petowner'}/>
                 </Grid>
-                <Grid item className={classes.verticalSections} xs={4}>
-                    <ProfileTabs/>
+                <Grid item>
+                    <PetList username={username}/>
                 </Grid>
             </Grid>
-        </div>
+            <Grid item className={classes.verticalSections} xs={4}>
+                <ProfileTabs/>
+            </Grid>
+        </Grid>
     )
 }
 

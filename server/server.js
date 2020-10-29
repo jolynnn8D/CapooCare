@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
-const db = require("./database/queries");
+const db = require("./database/init");
 const morgan = require('morgan');
 const { Pool } = require('pg');
 const keys = require("./keys");
@@ -75,7 +75,7 @@ app.get("/api/v1/users/:username", async (req, res) => {
         res.status(200).json({
             status: "success",
             data: {
-                user: results.rows[0]
+                user: results.rows
             }
         });
     } catch (err) {
@@ -131,7 +131,7 @@ app.get("/api/v1/accounts/:username", async (req, res) => {
         res.status(200).json({
             status: "success",
             data: {
-                account: results.rows[0]
+                account: results.rows // double-check this
             }
         });
     } catch (err) {
@@ -215,8 +215,8 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
  */
 app.post("/api/v1/fulltimer", async (req, res) => {
     try {
-        const results = await db.query("Call add_fulltimer($1, $2, $3, $4, $5) RETURNING *",
-            [req.body.username, req.body.name, req.body.age, req.body.petType, req.body.price]);
+        const results = await db.query("Call add_fulltimers($1, $2, $3, $4, $5)",
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
         res.status(201).json({
             status: "success",
             data: {
@@ -249,9 +249,11 @@ app.post("/api/v1/fulltimer", async (req, res) => {
  */
 app.post("/api/v1/parttimer", async (req, res) => {
     try {
-        const results = await db.query("Call add_parttimer($1, $2, $3, $4, $5) RETURNING *",
-            [req.body.username, req.body.name, req.body.age, req.body.petType, req.body.price]);
-        res.status(201).json({
+        console.log(req.body);
+        const results = await db.query("Call add_parttimers($1, $2, $3, $4, $5)",
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
+        console.log(res);
+        res.status(200).json({
             status: "success",
             data: {
                 user: results.rows[0]
@@ -396,12 +398,13 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
  */
 app.post("/api/v1/petowner", async (req, res) => {
     try {
-        const results = await db.query("INSERT INTO PetOwner(username, ownerName, age) VALUES ($1, $2, $3) RETURNING *",
-            [req.body.username, req.body.ownername, req.body.age]);
+        const results = await db.query("CALL add_petOwner($1, $2, $3, $4, $5, $6, $7)",
+            [req.body.username, req.body.ownername, req.body.age, req.body.pettype, req.body.petname, req.body.petage, req.body.requirements]);
         res.status(201).json({
             status: "success",
             data: {
                 user: results.rows[0]
+
             }
         });
     } catch (err) {
@@ -435,7 +438,7 @@ app.put("/api/v1/petowner/:username", async (req, res) => {
         res.status(204).json({
             status: "success",
             data: {
-                user: results.rows[0]
+                user: results.rows
             }
         });
     } catch (err) {
@@ -481,10 +484,39 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
 // Used for debugging.
 app.get("/api/v1/pet", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet");
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs");
         res.status(200).json({
             status: "success",
             results: results.rows.length,
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+// Get all existing pets belonging to a username
+/*
+    Expected inputs:
+        Path parameters:
+            username, which represents the unique username of the Pet's Owner.
+    
+    Expected status code 200 OK, or 400 Bad Request
+*/
+
+app.get("/api/v1/pet/:username", async(req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1",
+            [req.params.username]);
+        res.status(200).json({
+            status: "success",
             data: {
                 pets: results.rows
             }
@@ -511,7 +543,7 @@ app.get("/api/v1/pet", async (req, res) => {
  */
 app.get("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet WHERE username = $1 AND petName = $2",
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1 AND petName = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -547,7 +579,7 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
 app.post("/api/v1/pet", async (req, res) => {
     try {
         const results = await db.query(
-            "INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES " +
+            "INSERT INTO Owned_Pet_Belongs(username, petName, petType, petAge, requirements) VALUES " +
             "($1, $2, $3, $4, $5) RETURNING *",
             [req.body.username, req.body.petname, req.body.pettype, req.body.petage, req.body.requirements]);
         res.status(201).json({
@@ -583,12 +615,12 @@ app.post("/api/v1/pet", async (req, res) => {
 
     Expected status code: 204 No Content, or 400 Bad Request
  */
-app.put("/api/v1/pet/:username/:petName", async (req, res) => {
+app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("UPDATE Owned_Pet SET petType = $1, petAge = $2, requirements = $3" +
+        const results = await db.query("UPDATE Owned_Pet_Belongs SET petType = $1, petAge = $2, requirements = $3" +
             " WHERE username = $4 AND petName = $5 RETURNING *",
             [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
-        res.status(204).json({
+        res.status(200).json({
             status: "success",
             data: {
                 pet: results.rows[0]
@@ -616,7 +648,7 @@ app.put("/api/v1/pet/:username/:petName", async (req, res) => {
  */
 app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
-        const results = await db.query("DELETE FROM Owned_Pet WHERE username = $1 AND petName = $2",
+        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE username = $1 AND petName = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success"
@@ -653,6 +685,106 @@ app.get("/api/v1/categories", async (req, res) => {
         });
     }
 });
+
+app.get("/api/v1/categories/:username", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Cares WHERE ctuname = $1",
+            [req.params.username]);
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+app.post("/api/v1/categories/:username", async (req, res) => {
+    try {
+        const results = await db.query("INSERT INTO Cares(ctuname, pettype, price) VALUES ($1, $2, $3) RETURNING *",
+            [req.params.username, req.body.pettype, req.body.price]);
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                pets: results.rows[0]
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+
+
+/* API calls for Bid */
+
+// Adds a Bid.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            ctuname: String,
+            pouname: String,
+            petname: String,
+            pettype: String,
+            s_time: Integer (which will be converted by API to Timestamp),
+            e_time: Integer (which will be converted by API to Timestamp)
+        }
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.post("/api/v1/bid/", async (req, res) => {
+    db.query("CALL add_bid($1, $2, $3, $4, $5::date, $6::date)",
+        [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bid: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// app.post("*", async (req, res) => {
+//     res.status(400).json({
+//         status: "failure",
+//         data: {
+//             error: "Invalid API address.",
+//             address: req.originalUrl,
+//             body: req.body
+//         }
+//     })
+// })
+
 
 app.listen(port, () => {
     console.log(`server has started on port ${port}`);
