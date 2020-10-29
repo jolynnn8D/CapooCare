@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Typography, Grid, Modal, Button, FormControl, FormControlLabel, Switch } from '@material-ui/core';
+import { Card, Typography, Grid, Modal, Button, FormControl, FormControlLabel, FormLabel, Switch } from '@material-ui/core';
 import Calendar from 'react-calendar'
 import { makeStyles } from '@material-ui/core/styles';
 import BidList from "./BidList"
@@ -128,7 +128,10 @@ const BidPanel = () => {
                         <Typography variant="h6">
                             Payment Made: {bidInfo.pay_type}
                         </Typography>
+                        <br />
+
                         <FormControl>
+                            <FormLabel color="primary" focused>Accept bid?</FormLabel>
                             <FormControlLabel
                                 control={
                                     <Switch
