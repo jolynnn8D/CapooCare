@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { Card, Typography, Grid,  } from '@material-ui/core';
+import { Card, Typography, Grid, Modal, Button, FormControl, FormControlLabel, Switch } from '@material-ui/core';
 import Calendar from 'react-calendar'
 import { makeStyles } from '@material-ui/core/styles';
 import BidList from "./BidList"
 import { isEmpty } from "lodash"
+import BidModal from '../userProfile/careTakerProfile/BidModal';
 
 const useStyles = makeStyles({
     root: {
@@ -51,9 +52,27 @@ const BidPanel = () => {
     const classes = useStyles()
     const [date, setDate] = useState(new Date());
     const [selectedBid, setSelectedBid] = useState({});
+    const [open, setOpen] = useState(false);
+
+    const openModal = () => {
+        setOpen(true);
+    }
+
+    const closeModal = () => {
+        setOpen(false);
+    }
+
+    const submitData = (selectedVals) => {
+        console.log(selectedVals);
+        setOpen(false);
+    }
 
     const handleSelectedBid = (newSelectedBid) => {
         setSelectedBid(newSelectedBid)
+    }
+
+    const updatePayStatus = (newPayStatus) => {
+        console.log("Changing pay status on backend!")
     }
 
     return (
@@ -68,8 +87,8 @@ const BidPanel = () => {
                     />
                 </Grid>
                 <Grid item xs={4}>
-                    <BidList 
-                        subheader={months} 
+                    <BidList
+                        subheader={months}
                         bids={bidList}
                         onClick={handleSelectedBid}
                     />
@@ -78,13 +97,13 @@ const BidPanel = () => {
             {bidList
                 .filter((bidInfo) => !isEmpty(selectedBid)
                     ? (
-                        bidInfo.pouname == selectedBid.pouname &&
-                        bidInfo.petName == selectedBid.petName &&
-                        bidInfo.petType == selectedBid.petType &&
-                        bidInfo.ctuname == selectedBid.ctuname &&
-                        bidInfo.s_time == selectedBid.s_time &&
-                        bidInfo.e_time == selectedBid.e_time
-                        )
+                        bidInfo.pouname === selectedBid.pouname &&
+                        bidInfo.petName === selectedBid.petName &&
+                        bidInfo.petType === selectedBid.petType &&
+                        bidInfo.ctuname === selectedBid.ctuname &&
+                        bidInfo.s_time === selectedBid.s_time &&
+                        bidInfo.e_time === selectedBid.e_time
+                    )
                     : (date <= bidInfo.e_time && date >= bidInfo.s_time))
                 .map((bidInfo) => (
                     <Card className={classes.root}>
@@ -109,8 +128,28 @@ const BidPanel = () => {
                         <Typography variant="h6">
                             Payment Made: {bidInfo.pay_type}
                         </Typography>
+                        <FormControl>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={bidInfo.pay_status}
+                                        onChange={(event) => updatePayStatus(event.target.checked)}
+                                        color="primary"
+                                    />
+                                }
+                                label="Accepted"
+                            />
+                        </FormControl>
                     </Card>
-            ))}
+                ))}
+            <Button variant="contained" onClick={openModal} color="primary">
+                Create Bid (temp)
+            </Button>
+            <Modal
+                open={open}
+                onClose={closeModal}>
+                <BidModal closeModal={closeModal} submitData={submitData} />
+            </Modal>
         </div>
     )
 }
