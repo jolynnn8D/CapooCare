@@ -775,6 +775,40 @@ app.post("/api/v1/bid/", async (req, res) => {
 });
 
 
+// Gets all Bids for a Caretaker.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:ctuname", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1",
+        [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
 // Gets all Bids between a Caretaker and a Petowner.
 /*
     Expected inputs:
@@ -887,6 +921,49 @@ app.delete("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
     ).catch(
         (error) => {
             res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Marks a Bid between a Caretaker and a Petowner, of a specified timeframe. This will only mark a Bid that is referred
+// to exactly via its s_time and e_time. The GET APIs should be used to verify the exact s_time and e_time.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "s_time": Integer (which will be converted into a Timestamp),
+            "e_time": Integer (which will be converted into a Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        409 Conflict, if caretaker has exceeded their allowed number of Pets at that time.
+ */
+app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
+    db.query("UPDATE Bid SET is_win = True WHERE ctuname = $1 AND pouname = $2 AND s_time = to_timestamp($3) AND e_time = to_timestamp($4) RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bid: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(409).json({
                 status: "failed",
                 data: {
                     "error": error
