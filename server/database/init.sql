@@ -219,18 +219,18 @@ FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT CASE WHEN C.username IS NULL THEN P.username 
-            ELSE C.username END AS username, 
-        CASE WHEN C.carername IS NULL THEN P.ownername 
-            ELSE C.carername END AS firstname, 
-        CASE WHEN C.age IS NULL THEN P.age 
-            ELSE C.age END AS age, 
-        petTypes, rating, salary, 
-        CASE WHEN P.username IS NULL THEN false  
-            ELSE true END AS is_petowner, 
-        CASE WHEN C.username IS NULL THEN false 
-            ELSE true END AS is_carer 
-    FROM petowner P FULL OUTER JOIN caretaker C ON P.username = C.username
+   SELECT CASE WHEN C.username IS NULL THEN P.username
+            ELSE C.username END AS username,
+        CASE WHEN C.carername IS NULL THEN P.ownername
+            ELSE C.carername END AS firstname,
+        CASE WHEN C.age IS NULL THEN P.age
+            ELSE C.age END AS age,
+         rating, salary,
+        CASE WHEN P.username IS NULL THEN false 
+            ELSE true END AS is_petowner,
+        CASE WHEN C.username IS NULL THEN false
+            ELSE true END AS is_carer
+FROM petowner P FULL OUTER JOIN caretaker C ON P.username = C.username
 );
 
 CREATE OR REPLACE VIEW Accounts AS (

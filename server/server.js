@@ -198,6 +198,26 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
     }
 });
 
+app.get("/api/v1/pettype", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM cares");
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                pettypes: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
 
 // Create a new FullTimer.
 /*
