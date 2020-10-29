@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const defaultPetTypes = ['Dog', 'Cat', 'Bird', 'Fish'];
 
 const Signup = () => {
     const classes = useStyles();
@@ -79,8 +78,8 @@ const Signup = () => {
     }
 
     const addPartTimeCareTaker = useStoreActions(actions => actions.careTakers.addPartTimeCareTaker);
-    const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
     const addFullTimeCareTaker = useStoreActions(actions => actions.careTakers.addFullTimeCareTaker);
+    const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
     const getAllUsers = useStoreActions(actions => actions.user.getAllUsers);
     const allUsers = useStoreState(state => state.user.allUsers);
     

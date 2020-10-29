@@ -20,9 +20,23 @@ import PetTypeInput from '../PetTypeInput';
 import { v4 } from 'uuid';
 
 
+const useStyles = makeStyles((theme) => ({
+    modal: {
+        width: "40%",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        position: 'absolute',
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
+}))
 
 const PetCareList = (props) => {
     const { owner, username, ...other} = props;
+    const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [addCareOpen, setCareOpen] = useState(false);
     const [petType, setPetType] = useState("");
@@ -127,7 +141,7 @@ const PetCareList = (props) => {
             <Modal
                 open={addCareOpen}
                 onClose={closeCareModal}>
-                <Card>
+                <Card className={classes.modal}>
                     <PetTypeInput parentType={onPetTypeSet} parentPrice={onPetPriceSet}/>
                     <Button onClick={handleAddNewPet} color="primary"> Add new pet type </Button>
                 </Card>
