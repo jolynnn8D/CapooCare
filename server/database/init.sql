@@ -283,3 +283,6 @@ INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
 
 INSERT INTO Has_Availability VALUES ('yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
+
+INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
+
