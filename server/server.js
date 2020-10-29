@@ -774,16 +774,160 @@ app.post("/api/v1/bid/", async (req, res) => {
 });
 
 
-// app.post("*", async (req, res) => {
-//     res.status(400).json({
-//         status: "failure",
-//         data: {
-//             error: "Invalid API address.",
-//             address: req.originalUrl,
-//             body: req.body
-//         }
-//     })
-// })
+
+/* API calls for Availability */
+
+// Adds an Availability.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Timestamp),
+            e_time: Integer (which will be converted by API to Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.post("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("INSERT INTO Has_Availability VALUES ($1, to_timestamp($2), to_timestamp($3)) RETURNING *",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availability: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Availabilities.
+// Used for debugging.
+app.get("/api/v1/availability/", async (req, res) => {
+    db.query(
+        "SELECT * FROM Has_Availability"
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Availabilities from a Caretaker within a timeframe. All availabilities indicated by the caretaker will be
+// returned in this query, within the s_time and e_time indicated in this API call.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Timestamp),
+            e_time: Integer (which will be converted by API to Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_timestamp($2) AND e_time <= to_timestamp($3)",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Deletes all Availabilities from a Caretaker within a timeframe. All availabilities indicated by the caretaker that
+// entirely intersect the s_time and e_time indicated will be deleted. This does not include partial overlaps.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Timestamp),
+            e_time: Integer (which will be converted by API to Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.delete("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("DELETE FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_timestamp($2) AND e_time <= to_timestamp($3) RETURNING *",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
 
 
 app.listen(port, () => {
