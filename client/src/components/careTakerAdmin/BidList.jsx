@@ -38,7 +38,7 @@ export default function BidList(props) {
               .map((bid) => (
                 <ListItem 
                   button
-                  key={`item-${sectionId}-${bid}`}
+                  key={`item-${sectionId}-${bid.pouname}-${bid.petName}-${bid.petType}-${bid.ctuname}-${bid.s_time}-${bid.e_time}`}
                   onClick={() => onClick(
                     {
                       pouname: bid.pouname,
