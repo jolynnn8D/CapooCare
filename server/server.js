@@ -737,27 +737,21 @@ app.post("/api/v1/categories/:username", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            petName: String,
-            petType: String,
-            s_time: Timestamp,
-            e_time: Timestamp
+            ctuname: String,
+            pouname: String,
+            petname: String,
+            pettype: String,
+            s_time: Integer (which will be converted by API to Timestamp),
+            e_time: Integer (which will be converted by API to Timestamp)
         }
-
-        Path parameters:
-            ctuname, which represents the Care Taker involved in the Bid.
-            pouname, which represents the Pet Owner involved in the Bid.
 
     Expected status code:
         200 OK, if successful
         400 Bad Request, if general failure
-        409 Conflict, if petType of Pet does not fit the Care Taker's possible pet types.
  */
-app.post("api/v1/bid/:pouname/:ctuname", async (req, res) => {
-
-    // TODO: Check if the requested pet type is valid for the CT.
-
-    db.query("INSERT INTO Bid(pouname, petName, petType, ctuname, s_time, e_time) VALUES ($1, $2, $3, $4, to_timestamp($5), to_timestamp($6)) RETURNING *",
-        [req.params.pouname, req.body.petName, req.body.petType, req.params.ctuname, req.body.s_time, req.body.e_time]
+app.post("/api/v1/bid/", async (req, res) => {
+    db.query("CALL add_bid($1, $2, $3, $4, $5::date, $6::date)",
+        [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
             res.status(200).json({
@@ -780,17 +774,16 @@ app.post("api/v1/bid/:pouname/:ctuname", async (req, res) => {
 });
 
 
-
-app.post("*", async (req, res) => {
-    res.status(400).json({
-        status: "failure",
-        data: {
-            error: "Invalid API address.",
-            address: req.originalUrl,
-            body: req.body
-        }
-    })
-})
+// app.post("*", async (req, res) => {
+//     res.status(400).json({
+//         status: "failure",
+//         data: {
+//             error: "Invalid API address.",
+//             address: req.originalUrl,
+//             body: req.body
+//         }
+//     })
+// })
 
 
 app.listen(port, () => {

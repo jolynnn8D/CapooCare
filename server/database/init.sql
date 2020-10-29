@@ -43,7 +43,7 @@ CREATE TABLE PartTimer (
 );
 
 CREATE TABLE Category (
-     petType VARCHAR(20) PRIMARY KEY
+    petType VARCHAR(20) PRIMARY KEY
 );
 
 CREATE TABLE Has_Availability (
@@ -216,6 +216,32 @@ LANGUAGE plpgsql;
 CREATE TRIGGER check_fulltimer
 BEFORE INSERT OR UPDATE ON FullTimer
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
+
+
+CREATE OR REPLACE PROCEDURE add_bid(
+    pouname VARCHAR(50),
+    petname VARCHAR(20),
+    pettype VARCHAR(20),
+    ctuname VARCHAR(50),
+    s_time DATE,
+    e_time DATE
+    ) AS
+        $$
+        DECLARE ctx NUMERIC;
+        BEGIN
+            SELECT COUNT(*) INTO ctx FROM Cares
+                WHERE Cares.ctuname = ctuname;
+--            RAISE EXCEPTION 'test';
+            IF ctx = 0 THEN
+                RAISE EXCEPTION 'Caretaker is unable to care for this pet type.';
+            END IF;
+            INSERT INTO Bid(pouname, petName, petType, ctuname, s_time, e_time)
+                VALUES (pouname, petname, pettype, ctuname, s_time, e_time)
+                RETURNING *;
+        END;
+        $$
+    LANGUAGE plpgsql;
+
 
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
