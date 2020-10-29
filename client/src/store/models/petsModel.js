@@ -53,6 +53,7 @@ const petsModel = {
   deletePet: thunk(async (actions,payload) => {
     const { username, petname } = {...payload};
     const url = serverUrl + "/api/v1/pet/" + username + "/" + petname;
+    console.log(url)
     const {data} = await axios.delete(url);
   }),
 

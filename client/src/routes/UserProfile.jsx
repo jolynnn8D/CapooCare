@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import UserCard from "../components/userProfile/UserCard"
 import PetList from "../components/userProfile/PetList"
 import ProfileTabs from "../components/userProfile/ProfileTabs"
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles({
     verticalSections: {
@@ -12,14 +13,17 @@ const useStyles = makeStyles({
     }
 })
 
-const UserProfile = (props) => {
+const UserProfile = () => {
     const classes = useStyles();
-    const username = props.match.params.username;
+    const params = useParams();
+
+    console.log(params);
+    const username = params.username;
     return (
         <Grid container>
             <Grid item className={classes.verticalSections} xs={7}>
                 <Grid item xs={12}>
-                    <UserCard display={'petowner'}/>
+                    <UserCard username={username} display={'petowner'}/>
                 </Grid>
                 <Grid item>
                     <PetList username={username}/>

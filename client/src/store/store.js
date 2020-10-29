@@ -13,6 +13,7 @@ const storeModel = {
   user: userModel
 };
 
-const store = createStore(persist(storeModel));
+// const store = createStore(persist(storeModel));
+const store = createStore(storeModel);
 
 export default store;

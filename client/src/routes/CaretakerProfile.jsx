@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 
 import ReviewPanel from "../components/userProfile/careTakerProfile/ReviewPanel"
+import { useStoreState } from 'easy-peasy';
 
 const useStyles = makeStyles({
     verticalSections: {
@@ -19,16 +20,21 @@ const useStyles = makeStyles({
 const CaretakerProfile = (props) => {
     const classes = useStyles();
     const params = useParams();
+
+    // console.log(params);
+    const username = params.username;
+    // console.log(caretaker);
+
     return (
         <div>
             <Grid container>
                 <Grid item className={classes.verticalSections} xs={12}>
                     <Grid item xs={12}>
-                        <UserCard display={'caretaker'}/>
+                        <UserCard display={'caretaker'} username={username}/>
                     </Grid>
                     <Grid item>
                         <Card>
-                            <PetCareList owner={false}/>
+                            <PetCareList owner={false} username={username}/>
                         </Card>
                     </Grid>
                 </Grid>

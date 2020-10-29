@@ -43,7 +43,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const getUser = useStoreActions(actions => actions.user.getUser);
-    const user = useStoreState(state => state.user.singleUser);
+    const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
     
     
     const checkAccountExists = () => {
@@ -61,6 +61,7 @@ const Login = () => {
 
     const handleClick = async (event) => {
         await getUser(username);
+        await getDisplayedUser(username);
         const validateAccount = checkAccountExists();
         if (validateAccount) {
           Routes[3].path = '/users/' + username;
