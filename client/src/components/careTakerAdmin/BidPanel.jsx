@@ -137,7 +137,7 @@ const BidPanel = () => {
                                         color="primary"
                                     />
                                 }
-                                label="Accepted"
+                                label={bidInfo.pay_status ? "Accepted" : "Pending"}
                             />
                         </FormControl>
                     </Card>
