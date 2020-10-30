@@ -220,9 +220,8 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
 
 app.post("/api/v1/fulltimer", async (req, res) => {
     try {
-        const results = await db.query("Call add_fulltimer($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price, to_date(req.body.period1_s, 'YYYYMMDD'), 
-            to_date(req.body.period1_e, 'YYYYMMDD'), to_date(req.body.period2_s, 'YYYYMMDD'), to_date(req.body.period2_e, 'YYYYMMDD')]);
+        const results = await db.query("Call add_fulltimer($1, $2, $3, $4, $5, to_date($6, 'YYYYMMDD'), to_date($7, 'YYYYMMDD'), to_date($8, 'YYYYMMDD'), to_date($9, 'YYYYMMDD'))",
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price, req.body.period1_s, req.body.period1_e, req.body.period2_s, req.body.period2_e]);
         res.status(201).json({
             status: "success",
             data: {
