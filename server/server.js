@@ -209,18 +209,20 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
             "age": Integer,
             "pettype": String,
             "price" : Integer,
-            "rating" : Integer,
-            "salary" : Integer,
-            "period1" : null,
-            "period2" : null
+            "period1_s" : string (to be converted to date),
+            "period1_e" : string (to be converted to date),
+            "period2_s" : string (to be converted to date),
+            "period2_e" : string (to be converted to date)
         }
 
     Expected status code: 201 Created, or 400 Bad Request
  */
+
 app.post("/api/v1/fulltimer", async (req, res) => {
     try {
         const results = await db.query("Call add_fulltimer($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price, req.body.rating, req.body.salary, req.body.period1, req.body.period2]);
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price, to_date(req.body.period1_s, 'YYYYMMDD'), 
+            to_date(req.body.period1_e, 'YYYYMMDD'), to_date(req.body.period2_s, 'YYYYMMDD'), to_date(req.body.period2_e, 'YYYYMMDD')]);
         res.status(201).json({
             status: "success",
             data: {

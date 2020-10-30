@@ -11,7 +11,10 @@ DROP TABLE IF EXISTS Bid CASCADE;
 DROP VIEW IF EXISTS Users CASCADE;
 DROP VIEW IF EXISTS Accounts CASCADE;
 DROP PROCEDURE IF EXISTS add_bid(character varying,character varying,character varying,character varying,date,date);
-
+DROP PROCEDURE IF EXISTS add_bid;
+DROP PROCEDURE IF EXISTS add_fulltimer;
+DROP PROCEDURE IF EXISTS add_parttimer;
+DROP PROCEDURE IF EXISTS add_petOwner;
 
 CREATE TABLE PCSAdmin (
     username VARCHAR(50) PRIMARY KEY,
@@ -35,8 +38,10 @@ CREATE TABLE CareTaker (
 
 CREATE TABLE FullTimer (
     username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username),
-    period1  VARCHAR(50) DEFAULT NULL,
-    period2  VARCHAR(50) DEFAULT NULL
+    period1_s  DATE NOT NULL,
+    period1_e  DATE NOT NULL,
+    period2_s  DATE NOT NULL,
+    period2_e  DATE NOT NULL
 );
 
 CREATE TABLE PartTimer (
@@ -114,18 +119,18 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
     age   INTEGER,
     pettype VARCHAR(20),
     price INTEGER,
-    rating INTEGER DEFAULT NULL,
-    salary INTEGER DEFAULT NULL,
-    period1  VARCHAR(50) DEFAULT NULL, 
-    period2  VARCHAR(50) DEFAULT NULL
+    period1_s DATE, 
+    period1_e DATE, 
+    period2_s DATE,
+    period2_e DATE
     )  AS $$
     DECLARE ctx NUMERIC;
     BEGIN
             SELECT COUNT(*) INTO ctx FROM FullTimer
                 WHERE FullTimer.username = ctuname;
             IF ctx = 0 THEN
-                INSERT INTO CareTaker VALUES (ctuname, aname, age, rating, salary);
-                INSERT INTO FullTimer VALUES (ctuname, period1, period2);
+                INSERT INTO CareTaker VALUES (ctuname, aname, age, null, null);
+                INSERT INTO FullTimer VALUES (ctuname, period1_s, period1_e, period2_s, period2_e);
             END IF;
             INSERT INTO Cares VALUES (ctuname, pettype, price);
     END;$$
@@ -380,9 +385,9 @@ INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
 
 INSERT INTO Category VALUES ('dog'),('cat'),('rabbit'),('big dogs'),('lizard'),('bird');
 
-CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 50);
-CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60);
-CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35);
+CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 50, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
 
 CALL add_parttimer('yellowbird', 'bird', 35, 'cat', 60);
 
@@ -409,3 +414,17 @@ INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
 CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-02', '2020-02-03');
 CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-01', '2020-02-20');
+
+
+ /* Expected outcome: 'marythemess' wins both bids at timestamp 1-4 and 2-4. This causes 'johnthebest' to lose the 2-4		
+     bid. The 1-4 bid by 'johnthebest' that is inserted afterwards immediately loses as well, since 'yellowbird' has		
+     reached their maximum capacity already.*/		
+--  INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));		
+--  INSERT INTO Bid VALUES ('marythemess', 'Champ', 'big dogs', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));		
+--  INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));		
+--  INSERT INTO Bid VALUES ('marythemess', 'Meow', 'cat', 'yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
+
+--  UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Fido' AND pettype = 'dog' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');		
+--  UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
+
+--  INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
