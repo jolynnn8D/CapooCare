@@ -10,15 +10,10 @@ DROP TABLE IF EXISTS Owned_Pet_Belongs CASCADE;
 DROP TABLE IF EXISTS Bid CASCADE;
 DROP VIEW IF EXISTS Users CASCADE;
 DROP VIEW IF EXISTS Accounts CASCADE;
---DROP PROCEDURE IF EXISTS add_bid(character varying,character varying,character varying,character varying,date,date) CASCADE;
---DROP PROCEDURE IF EXISTS add_bid(unknown, unknown, unknown, unknown, unknown, unknown) CASCADE;
---DROP PROCEDURE IF EXISTS add_bid CASCADE;
---DROP PROCEDURE IF EXISTS add_fulltimer CASCADE;
---DROP PROCEDURE IF EXISTS add_parttimer CASCADE;
---DROP PROCEDURE IF EXISTS add_petOwner CASCADE;
 
-/* The code block below drops all functions, aggregates, and procedures from the database.
-   This is required because PostgreSQL can't handle overloaded functions and procedures. */
+/*                                      **IMPORTANT**
+    The code block below drops all functions, aggregates, and procedures from the database.
+    This is required because PostgreSQL can't handle overloaded functions and procedures. */
 DO
 $do$
 DECLARE
