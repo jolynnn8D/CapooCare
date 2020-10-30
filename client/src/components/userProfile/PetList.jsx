@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Grid, ListItem, ListItemAvatar, ListItemText, Avatar, Modal } from '@material-ui/core';
+import { Card, Grid, ListItem, ListItemAvatar, ListItemText, Avatar, Modal, TextField } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
 import ProfilePic from "./ProfilePic"
@@ -41,6 +41,10 @@ const PetList = (props) => {
     const [petDetails, setPetDetails] = React.useState({});
     const [modalType, setModalType] = React.useState(CREATE);
     const {username, ...other} = props;
+    const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
+    const singleUser = useStoreState(state => state.user.singleUser);
+    const getUser = useStoreActions(actions => actions.user.getUser);
+    const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
 
     const openModal = () => {
         setOpen(true);
@@ -71,6 +75,21 @@ const PetList = (props) => {
 
     const handleCreateOrEditPet = (petData, action) => {
         if (action == CREATE) {
+            if (!singleUser.is_petowner) {
+                addPetOwner({
+                    username: singleUser.username,
+                    ownername: singleUser.firstname,
+                    age: singleUser.age,
+                    pettype: petData.petType,
+                    petname: petData.petName,
+                    petage: petData.petAge,
+                    requirements: petData.petRequirements
+                })
+
+                getUser(singleUser.username);
+                getDisplayedUser(singleUser.username);
+            }
+
             createPet({
                 username: props.username,
                 petname: petData.petName,
@@ -129,9 +148,16 @@ const PetList = (props) => {
                             <AddIcon/>
                         </Avatar>
                     </ListItemAvatar>
-                    <ListItemText
-                        primary="Click to add new pet"
-                    />
+            {!singleUser.is_petowner ? 
+            <>
+                <ListItemText
+                    primary="Click to add new pet to become a pet owner!"
+                />
+            </> : <>
+                <ListItemText
+                    primary="Click to add new pet"
+                />
+            </> }
             </ListItem>
             <Modal
                 open={open}
