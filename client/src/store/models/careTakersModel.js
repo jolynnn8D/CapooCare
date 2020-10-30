@@ -6,6 +6,7 @@ const careTakersModel = {
     caretakers: [],
     petCareList: [],
     petTypeList: [],
+    availabilityList: [],
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get("http://localhost:5000/api/v1/caretaker");
       actions.setUsers(data.data.users); 
@@ -89,9 +90,20 @@ const careTakersModel = {
         })
         state.petCareList.splice(index, 1);
         
-    })
+    }),
 
-  
+    getAvailabilityList: thunk(async(actions, payload) => {
+      const {username, s_time, e_time} = payload;
+      const url = serverUrl + "/api/v1/availability/" + username;
+      const {data} = await axios.get(url, {
+        s_time: s_time,
+        e_time: e_time
+      });
+      actions.setAvailabilityList(data.data.availabilities);
+    }), 
+    setAvailabilityList: action((state, payload) => {
+      state.availabilityList = [...payload];
+    }),
   }
 
 export default careTakersModel;

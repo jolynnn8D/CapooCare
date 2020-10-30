@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Typography, InputLabel, Select, MenuItem, FormControl, FormControlLabel, Switch } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import { addDays } from 'date-fns';
-import { useStoreState } from 'easy-peasy';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 
 const handleSelect = (ranges) => {
     console.log(ranges);
@@ -55,6 +55,7 @@ const pickupTypes = {
 const BidModal = (props) => {
     const classes = useStyles();
     const { closeModal, submitData, ...other } = props
+    const username = "yellowchicken"
     const [dateRange, setDateRange] = useState([
         {
             startDate: new Date(),
@@ -65,6 +66,17 @@ const BidModal = (props) => {
     const [petChoice, setPetChoice] = useState("")
     const [paymentType, setPaymentType] = useState("")
     const [pickupType, setPickupType] = useState("")
+    const getAvailabilityList = useStoreActions(actions => actions.careTakers.getAvailabilityList);
+    const availabilityList = useStoreState(state => state.careTakers.availabilityList);
+
+
+    useEffect(() => {
+        getAvailabilityList({
+            username: username,
+            s_time: 20190101,
+            e_time: 20210101
+        })
+    }, [])
 
     return (
         <div className={classes.paper}>
@@ -76,6 +88,7 @@ const BidModal = (props) => {
                 moveRangeOnFirstSelection={false}
                 ranges={dateRange}
                 direction="horizontal"
+                minDate = {new Date()}
             />
 
             <FormControl className={classes.formControl}>
