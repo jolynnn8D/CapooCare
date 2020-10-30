@@ -206,17 +206,22 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
         {
             "username": String,
             "name": String,
-            "age": Integer (optional; put null otherwise),
-            "petType": String
-            "price" : Integer
+            "age": Integer,
+            "pettype": String,
+            "price" : Integer,
+            "period1_s" : string (to be converted to date),
+            "period1_e" : string (to be converted to date),
+            "period2_s" : string (to be converted to date),
+            "period2_e" : string (to be converted to date)
         }
 
     Expected status code: 201 Created, or 400 Bad Request
  */
+
 app.post("/api/v1/fulltimer", async (req, res) => {
     try {
-        const results = await db.query("Call add_fulltimers($1, $2, $3, $4, $5)",
-            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
+        const results = await db.query("Call add_fulltimer($1, $2, $3, $4, $5, to_date($6, 'YYYYMMDD'), to_date($7, 'YYYYMMDD'), to_date($8, 'YYYYMMDD'), to_date($9, 'YYYYMMDD'))",
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price, req.body.period1_s, req.body.period1_e, req.body.period2_s, req.body.period2_e]);
         res.status(201).json({
             status: "success",
             data: {
@@ -241,7 +246,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
             "username": String,
             "name": String,
             "age": Integer (optional; put null otherwise),
-            "petTypes": String
+            "pettype": String
             "price" : Integer
         }
 
@@ -250,7 +255,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
 app.post("/api/v1/parttimer", async (req, res) => {
     try {
         console.log(req.body);
-        const results = await db.query("Call add_parttimers($1, $2, $3, $4, $5)",
+        const results = await db.query("Call add_parttimer($1, $2, $3, $4, $5)",
             [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
         console.log(res);
         res.status(200).json({
@@ -270,14 +275,14 @@ app.post("/api/v1/parttimer", async (req, res) => {
 });
 
 
-// Update an existing Care Taker's name, age, and pet types. Stores all fields in the input object to the database.
+// Update an existing Care Taker's name, age, and pet type. Stores all fields in the input object to the database.
 /*
     Expected inputs:
         JSON object of the form:
         {
             "name": String,
             "age": Integer (optional; put null otherwise),
-            "petTypes": String array
+            "pettype": String
         }
 
         Path parameter: username, which represents the unique username of the Care Taker.
@@ -286,9 +291,9 @@ app.post("/api/v1/parttimer", async (req, res) => {
  */
 app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
-        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, petTypes = $3" +
+        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, pettype = $3" +
             " WHERE username = $4 RETURNING *",
-            [req.body.carername, req.body.age, req.body.pettypes, req.params.username]);
+            [req.body.carername, req.body.age, req.body.pettype, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -537,13 +542,13 @@ app.get("/api/v1/pet/:username", async(req, res) => {
     Expected inputs:
         Path parameters:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 200 OK, or 400 Bad Request
  */
-app.get("/api/v1/pet/:username/:petName", async (req, res) => {
+app.get("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1 AND petName = $2",
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1 AND petname = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -568,7 +573,7 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
         JSON object of the form:
         {
             "username": String,
-            "petName": String,
+            "petname": String,
             "petType": String,
             "petAge": String,
             "requirements": String (optional; put null otherwise)
@@ -579,7 +584,7 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
 app.post("/api/v1/pet", async (req, res) => {
     try {
         const results = await db.query(
-            "INSERT INTO Owned_Pet_Belongs(username, petName, petType, petAge, requirements) VALUES " +
+            "INSERT INTO Owned_Pet_Belongs(username, petname, petType, petAge, requirements) VALUES " +
             "($1, $2, $3, $4, $5) RETURNING *",
             [req.body.username, req.body.petname, req.body.pettype, req.body.petage, req.body.requirements]);
         res.status(201).json({
@@ -604,21 +609,21 @@ app.post("/api/v1/pet", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            "petType": String,
-            "petAge": String,
+            "pettype": String,
+            "petage": String,
             "requirements": String (optional; put null otherwise)
         }
 
         Path parameter:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 204 No Content, or 400 Bad Request
  */
 app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("UPDATE Owned_Pet_Belongs SET petType = $1, petAge = $2, requirements = $3" +
-            " WHERE username = $4 AND petName = $5 RETURNING *",
+        const results = await db.query("UPDATE Owned_Pet_Belongs SET pettype = $1, petage = $2, requirements = $3" +
+            " WHERE username = $4 AND petname = $5 RETURNING *",
             [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -642,13 +647,13 @@ app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     Expected inputs:
         Path parameter:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 200 OK, or 400 Bad Request
  */
-app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
+app.delete("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE username = $1 AND petName = $2",
+        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE username = $1 AND petname = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success"
@@ -741,8 +746,8 @@ app.post("/api/v1/categories/:username", async (req, res) => {
             pouname: String,
             petname: String,
             pettype: String,
-            s_time: Integer (which will be converted by API to Timestamp),
-            e_time: Integer (which will be converted by API to Timestamp)
+            s_time: Integer (which will be converted by API to Date),
+            e_time: Integer (which will be converted by API to Date)
         }
 
     Expected status code:
@@ -750,8 +755,7 @@ app.post("/api/v1/categories/:username", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/bid/", async (req, res) => {
-    db.query("INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time)" +
-        "VALUES ($1, $2, $3, $4, to_timestamp($5), to_timestamp($6)) RETURNING *",
+    db.query("Call add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'))",
         [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -852,8 +856,8 @@ app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            "s_time": Integer (which will be converted into a Timestamp),
-            "e_time": Integer (which will be converted into a Timestamp)
+            "s_time": Integer (which will be converted into a Date),
+            "e_time": Integer (which will be converted into a Date)
         }
 
         Path parameters:
@@ -865,7 +869,7 @@ app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
-    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND s_time >= to_timestamp($5) AND e_time <= to_timestamp($6)",
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND s_time >= to_date($5,'YYYYMMDD') AND e_time <= to_date($6,'YYYYMMDD')",
         [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -897,8 +901,8 @@ app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Timestamp),
-            "e_time": Integer (which will be converted into a Timestamp)
+            "s_time": Integer (which will be converted into a Date),
+            "e_time": Integer (which will be converted into a Date)
         }
 
         Path parameters:
@@ -910,7 +914,7 @@ app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
-    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time >= to_timestamp($5) AND e_time <= to_timestamp($6)",
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time >= to_date($5,'YYYYMMDD') AND e_time <= to_date($6,'YYYYMMDD')",
         [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -942,8 +946,8 @@ app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Timestamp),
-            "e_time": Integer (which will be converted into a Timestamp)
+            "s_time": Integer (which will be converted into a Date),
+            "e_time": Integer (which will be converted into a Date)
         }
 
         Path parameters:
@@ -955,7 +959,7 @@ app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
-    db.query("DELETE FROM Bid WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time >= to_timestamp($5) AND e_time <= to_timestamp($6) RETURNING *",
+    db.query("DELETE FROM Bid WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time >= to_date($5,'YYYYMMDD') AND e_time <= to_date($6,'YYYYMMDD') RETURNING *",
         [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -987,8 +991,8 @@ app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Timestamp),
-            "e_time": Integer (which will be converted into a Timestamp)
+            "s_time": Integer (which will be converted into a Date),
+            "e_time": Integer (which will be converted into a Date)
         }
 
         Path parameters:
@@ -1000,7 +1004,7 @@ app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
         409 Conflict, if caretaker has exceeded their allowed number of Pets at that time.
  */
 app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
-    db.query("UPDATE Bid SET is_win = True WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time = to_timestamp($5) AND e_time = to_timestamp($6) RETURNING *",
+    db.query("UPDATE Bid SET is_win = True WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time = to_date($5,'YYYYMMDD') AND e_time = to_date($6,'YYYYMMDD') RETURNING *",
         [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -1032,8 +1036,8 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Timestamp),
-            e_time: Integer (which will be converted by API to Timestamp)
+            s_time: Integer (which will be converted by API to Date),
+            e_time: Integer (which will be converted by API to Date)
         }
 
         Path parameters:
@@ -1044,7 +1048,7 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/availability/:ctuname", async (req, res) => {
-    db.query("INSERT INTO Has_Availability VALUES ($1, to_timestamp($2), to_timestamp($3)) RETURNING *",
+    db.query("INSERT INTO Has_Availability VALUES ($1, to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD')) RETURNING *",
         [req.params.ctuname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -1101,8 +1105,8 @@ app.get("/api/v1/availability/", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Timestamp),
-            e_time: Integer (which will be converted by API to Timestamp)
+            s_time: Integer (which will be converted by API to Date),
+            e_time: Integer (which will be converted by API to Date)
         }
 
         Path parameters:
@@ -1113,7 +1117,7 @@ app.get("/api/v1/availability/", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get("/api/v1/availability/:ctuname", async (req, res) => {
-    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_timestamp($2) AND e_time <= to_timestamp($3)",
+    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD')",
         [req.params.ctuname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -1143,8 +1147,8 @@ app.get("/api/v1/availability/:ctuname", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Timestamp),
-            e_time: Integer (which will be converted by API to Timestamp)
+            s_time: Integer (which will be converted by API to Date),
+            e_time: Integer (which will be converted by API to Date)
         }
 
         Path parameters:
@@ -1155,7 +1159,7 @@ app.get("/api/v1/availability/:ctuname", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.delete("/api/v1/availability/:ctuname", async (req, res) => {
-    db.query("DELETE FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_timestamp($2) AND e_time <= to_timestamp($3) RETURNING *",
+    db.query("DELETE FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD') RETURNING *",
         [req.params.ctuname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
