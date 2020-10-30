@@ -236,7 +236,7 @@ DECLARE rate NUMERIC;
 
         IF pet > 0 THEN -- If a winning bid has already been made for the same Pet which overlaps this new Bid
             RAISE EXCEPTION 'This Pet will be taken care of by another caretaker during that period.';
-        ELSIF matchtype = 0 AND NEW.is_win = True THEN -- Else if the caretaker is incapable of taking care of this Pet type
+        ELSIF matchtype = 0 THEN -- Else if the caretaker is incapable of taking care of this Pet type
             RAISE EXCEPTION 'This caretaker is unable to take care of that Pet type.';
         END IF;
 
@@ -386,6 +386,7 @@ INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dogs', 'Champ', 10, NU
 INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
 
 INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 40);
+INSERT INTO Cares VALUES ('yellowchicken', 'dog', 40);
 INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
 INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
