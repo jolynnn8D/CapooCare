@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, Typography, Grid, Modal, Button, FormControl, FormControlLabel, FormLabel, Switch } from '@material-ui/core';
 import Calendar from 'react-calendar'
 import { makeStyles } from '@material-ui/core/styles';
 import BidList from "./BidList"
 import { isEmpty } from "lodash"
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import BidModal from '../userProfile/careTakerProfile/BidModal';
+import { sqlToJsDate } from '../../utils';
 
 const useStyles = makeStyles({
     root: {
@@ -23,36 +25,38 @@ const useStyles = makeStyles({
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const bidList = [
-    {
-        pouname: 'busypetowner123',
-        petName: 'Max',
-        petType: 'Corgi Dog',
-        ctuname: 'johnthebest',
-        s_time: new Date('2020-10-10'),
-        e_time: new Date('2020-11-02'),
-        pay_status: false,
-        pay_type: 'Incomplete',
-        price: 60.0
-    },
-    {
-        pouname: 'tiredowner',
-        petName: 'Jess',
-        petType: 'Labrapoodle Dog',
-        ctuname: 'johnthebest',
-        s_time: new Date('2020-10-26'),
-        e_time: new Date('2020-10-30'),
-        pay_status: false,
-        pay_type: 'Incomplete',
-        price: 40.0
-    }
-]
+// const bidList = [
+//     {
+//         pouname: 'busypetowner123',
+//         petName: 'Max',
+//         petType: 'Corgi Dog',
+//         ctuname: 'johnthebest',
+//         s_time: new Date('2020-10-10'),
+//         e_time: new Date('2020-11-02'),
+//         pay_status: false,
+//         pay_type: 'Incomplete',
+//         cost: 60.0
+//     },
+//     {
+//         pouname: 'tiredowner',
+//         petName: 'Jess',
+//         petType: 'Labrapoodle Dog',
+//         ctuname: 'johnthebest',
+//         s_time: new Date('2020-10-26'),
+//         e_time: new Date('2020-10-30'),
+//         pay_status: false,
+//         pay_type: 'Incomplete',
+//         cost: 40.0
+//     }
+// ]
 
-const BidPanel = () => {
+const BidPanel = (props) => {
     const classes = useStyles()
     const [date, setDate] = useState(new Date());
     const [selectedBid, setSelectedBid] = useState({});
     const [open, setOpen] = useState(false);
+    const getUserBids = useStoreActions(actions => actions.bids.getUserBids);
+    const bidList = useStoreState(state => state.bids.userBids);
 
     const openModal = () => {
         setOpen(true);
@@ -74,6 +78,12 @@ const BidPanel = () => {
     const updatePayStatus = (newPayStatus) => {
         console.log("Changing pay status on backend!")
     }
+
+    useEffect(() => {
+        getUserBids(props.username);
+        return () => {};
+    }, [])
+
 
     return (
         <div>
@@ -98,13 +108,13 @@ const BidPanel = () => {
                 .filter((bidInfo) => !isEmpty(selectedBid)
                     ? (
                         bidInfo.pouname === selectedBid.pouname &&
-                        bidInfo.petName === selectedBid.petName &&
-                        bidInfo.petType === selectedBid.petType &&
+                        bidInfo.petname === selectedBid.petname &&
+                        bidInfo.pettype === selectedBid.pettype &&
                         bidInfo.ctuname === selectedBid.ctuname &&
                         bidInfo.s_time === selectedBid.s_time &&
                         bidInfo.e_time === selectedBid.e_time
                     )
-                    : (date <= bidInfo.e_time && date >= bidInfo.s_time))
+                    : (date <= sqlToJsDate(bidInfo.e_time) && date >= sqlToJsDate(bidInfo.s_time)))
                 .map((bidInfo) => (
                     <Card className={classes.root}>
                         <Typography variant="h4">
@@ -114,16 +124,16 @@ const BidPanel = () => {
                             User: {bidInfo.pouname}
                         </Typography>
                         <Typography variant="h6">
-                            Pet: {bidInfo.petName} ({bidInfo.petType})
+                            Pet: {bidInfo.petname} ({bidInfo.pettype})
                         </Typography>
                         <Typography variant="h6">
                             Caretaker: {bidInfo.ctuname}
                         </Typography>
                         <Typography variant="h6">
-                            Duration: {bidInfo.s_time.toDateString()} to {bidInfo.e_time.toDateString()}
+                            Duration: {sqlToJsDate(bidInfo.s_time).toDateString()} to {sqlToJsDate(bidInfo.e_time).toDateString()}
                         </Typography>
                         <Typography variant="h6">
-                            Price: ${bidInfo.price.toFixed(2)}
+                            Price: ${bidInfo.cost.toFixed(2)}
                         </Typography>
                         <Typography variant="h6">
                             Payment Made: {bidInfo.pay_type}

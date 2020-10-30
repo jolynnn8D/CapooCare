@@ -90,7 +90,7 @@ export default function FullWidthTabs(props) {
       >
         <TabPanel value={value} index={0} dir={theme.direction}>
           {/* <CalendarView/> */}
-          <BidPanel/>
+          <BidPanel username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
           Salary details
