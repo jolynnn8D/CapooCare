@@ -746,8 +746,8 @@ app.post("/api/v1/categories/:username", async (req, res) => {
             pouname: String,
             petname: String,
             pettype: String,
-            s_time: Integer (which will be converted by API to Date),
-            e_time: Integer (which will be converted by API to Date)
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
         }
 
     Expected status code:
@@ -755,7 +755,7 @@ app.post("/api/v1/categories/:username", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/bid/", async (req, res) => {
-    db.query("Call add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'))",
+    db.query("CALL add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'))",
         [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -856,8 +856,8 @@ app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            "s_time": Integer (which will be converted into a Date),
-            "e_time": Integer (which will be converted into a Date)
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
         }
 
         Path parameters:
@@ -901,8 +901,8 @@ app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Date),
-            "e_time": Integer (which will be converted into a Date)
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
         }
 
         Path parameters:
@@ -1006,8 +1006,8 @@ app.put("/api/v1/bid/", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Date),
-            "e_time": Integer (which will be converted into a Date)
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
         }
 
         Path parameters:
@@ -1051,8 +1051,8 @@ app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Date),
-            "e_time": Integer (which will be converted into a Date)
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
         }
 
         Path parameters:
@@ -1102,8 +1102,8 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Date),
-            e_time: Integer (which will be converted by API to Date)
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
         }
 
         Path parameters:
@@ -1171,8 +1171,8 @@ app.get("/api/v1/availability/", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Date),
-            e_time: Integer (which will be converted by API to Date)
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
         }
 
         Path parameters:
@@ -1213,8 +1213,8 @@ app.get("/api/v1/availability/:ctuname", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Date),
-            e_time: Integer (which will be converted by API to Date)
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
         }
 
         Path parameters:
