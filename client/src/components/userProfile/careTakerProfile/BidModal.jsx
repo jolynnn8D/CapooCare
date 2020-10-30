@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Typography, InputLabel, Select, MenuItem, FormControl, FormControlLabel, Switch } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import { addDays } from 'date-fns';
-import { useStoreState } from 'easy-peasy';
+import { useStoreActions, useStoreState } from 'easy-peasy';
+import convertDate from '../../../store/utils';
 
 const handleSelect = (ranges) => {
     console.log(ranges);
@@ -35,11 +36,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const petChoices = [
-    'Max',
-    'Jess',
-    'Roger'
-]
 
 const paymentTypes = {
     'Credit Card': 'credit card',
@@ -65,7 +61,36 @@ const BidModal = (props) => {
     const [petChoice, setPetChoice] = useState("")
     const [paymentType, setPaymentType] = useState("")
     const [pickupType, setPickupType] = useState("")
+    const singleUser = useStoreState(state => state.user.singleUser);
+    const getOwnerPetsOfType = useStoreActions(actions => actions.pets.getOwnerPetsOfType);
+    const biddablePets = useStoreState(state => state.pets.biddablePets);
+    const addBid = useStoreActions(actions => actions.bids.addBid);
+    console.log(props.petType)
+    console.log(props.ctuname);
+    useEffect(() => {
+        getOwnerPetsOfType({
+            username: singleUser.username,
+            pettype: props.petType
+        })
+        return () => {};
+    }, [])
 
+    const handleSubmit = () => {
+        const startDateInt = convertDate(dateRange[0].startDate);
+        const endDateInt = convertDate(dateRange[0].endDate)
+        addBid({
+            pouname: singleUser.username,
+            petname: petChoice,
+            pettype: props.petType,
+            ctuname: props.ctuname,
+            s_time: startDateInt,
+            e_time: endDateInt,
+            pay_type: paymentType,
+            pet_pickup: pickupType
+        })
+        closeModal();
+       
+    }
     return (
         <div className={classes.paper}>
             <Typography id="simple-modal-title" variant="h5">Select desired dates</Typography>
@@ -87,8 +112,8 @@ const BidModal = (props) => {
                     onChange={(event) => setPetChoice(event.target.value)}
                     autoWidth
                 >
-                    {petChoices.map((choiceOfPet) => {
-                        return <MenuItem value={choiceOfPet}>{choiceOfPet}</MenuItem>
+                    {biddablePets.map((choiceOfPet) => {
+                        return <MenuItem value={choiceOfPet.petname}>{choiceOfPet.petname}</MenuItem>
                     })}
                 </Select>
                 <Typography>{petChoice}</Typography>
@@ -130,14 +155,7 @@ const BidModal = (props) => {
                 <Button className={classes.button}
                     variant="outlined"
                     color="primary"
-                    onClick={() => props.submitData(
-                        {
-                            s_time: dateRange[0].startDate,
-                            e_time: dateRange[0].endDate,
-                            petName: petChoice,
-                            pay_type: paymentType,
-                            pet_pickup: pickupType
-                        })}>
+                    onClick={() => handleSubmit()}>
                     Confirm
                 </Button>
                 <Button className={classes.button}

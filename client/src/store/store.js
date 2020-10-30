@@ -4,6 +4,7 @@ import petOwnersModel from './models/petOwnersModel'
 import petsModel from './models/petsModel';
 import routesModel from './models/routesModel';
 import userModel from './models/userModel';
+import bidModel from "./models/bidModel"
 
 
 const storeModel = {
@@ -11,7 +12,8 @@ const storeModel = {
   petOwners: petOwnersModel,
   pets: petsModel,
   user: userModel, 
-  routes: routesModel
+  routes: routesModel,
+  bids: bidModel
 };
 
 const store = createStore(persist(storeModel, {mergeStrategy: 'mergeShallow'}));

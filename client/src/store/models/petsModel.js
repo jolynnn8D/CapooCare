@@ -6,6 +6,8 @@ const petsModel = {
   allPets: [],
   ownerSpecificPets: [],
   petCategories: [],
+  biddablePets: [],
+
   getAllPets: thunk(async (actions, payload) => {
       const {data} = await axios.get(serverUrl + "/api/v1/pet"); // get all pets
       actions.setAllPets(data.data.pets); 
@@ -22,6 +24,17 @@ const petsModel = {
     }),
   setOwnerPets: action((state, payload) => {
     state.ownerSpecificPets = [...payload];
+  }),
+
+  getOwnerPetsOfType: thunk(async (actions, payload) => {
+    const { username, pettype } = payload;
+    const url = serverUrl + "/api/v1/pet/" + username + "/" + pettype;
+    console.log(url);
+    const {data} = await axios.get(url); 
+    actions.setBiddablePets(data.data.pets); 
+  }),
+  setBiddablePets: action((state, payload) => {
+    state.biddablePets = [...payload];
   }),
 
   addPet: thunk(async (actions, payload) => {

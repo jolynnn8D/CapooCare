@@ -556,6 +556,34 @@ app.get("/api/v1/pet/:username", async(req, res) => {
     }
 });
 
+// Get all existing pets belonging to a username of a certain pet type
+/*
+    Expected inputs:
+        Path parameters:
+            username, which represents the unique username of the Pet's Owner.
+            pettype, which represents the pet type that to retrieve.
+    
+    Expected status code 200 OK, or 400 Bad Request
+*/
+app.get("/api/v1/pet/:username/:pettype", async(req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE pouname = $1 AND pettype = $2",
+            [req.params.username, req.params.pettype]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
 
 // Get an existing Pet.
 /*
