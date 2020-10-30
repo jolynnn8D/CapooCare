@@ -180,7 +180,7 @@ $$ DECLARE Pctx NUMERIC;
 LANGUAGE plpgsql;
 
 CREATE TRIGGER check_fulltimer
-BEFORE INSERT OR UPDATE ON CareTaker
+BEFORE INSERT ON CareTaker
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer_or_fulltimer();
 
 /* check if parttimer that is being added is not a fulltimer. To fulfill the no-overlap constraint */
@@ -200,7 +200,7 @@ $$ DECLARE ctx NUMERIC;
 LANGUAGE plpgsql;
 
 CREATE TRIGGER check_parttimer
-BEFORE INSERT OR UPDATE ON PartTimer
+BEFORE INSERT ON PartTimer
 FOR EACH ROW EXECUTE PROCEDURE not_fulltimer();
 
 /* check if fulltimer that is being added is not a parttimer. To fulfill the no-overlap constraint */
@@ -220,7 +220,7 @@ $$ DECLARE ctx NUMERIC;
 LANGUAGE plpgsql;
 
 CREATE TRIGGER check_fulltimer
-BEFORE INSERT OR UPDATE ON FullTimer
+BEFORE INSERT ON FullTimer
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 
 
