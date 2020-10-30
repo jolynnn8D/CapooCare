@@ -27,8 +27,26 @@ const userModel = {
             state.singleUser = payload;
         }
         // console.log(debug(state));
-
       }),
+    editUser: thunk(async (actions, payload) => {
+      const {username, firstname, age, usertype} = {...payload};
+      let url = "";
+      if (usertype === 'petowner') {
+        url = serverUrl + '/api/v1/petowner/' + username;
+        const {data} = await axios.put(url, {
+          username: username,
+          ownername: firstname,
+          age: age
+        });
+
+        actions.getUser(username);
+        actions.getDisplayedUser(username);
+        // console.log(editedUser);
+        // actions.setUser(editedUser);
+        // actions.setDisplayedUser(editedUser);
+      }
+
+    }),
 
     displayedUser: [],
     getDisplayedUser: thunk(async (actions, payload) => {
