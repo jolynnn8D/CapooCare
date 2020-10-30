@@ -22,7 +22,10 @@ const careTakersModel = {
           age: age,
           pettype: pettype,
           price: price
-      });
+      })
+
+      return data.status;
+      
     }),
     addFullTimeCareTaker: thunk(async (actions, payload) => {
       const {username, name, age, pettype, price} = {...payload};
@@ -34,6 +37,8 @@ const careTakersModel = {
           pettype: pettype,
           price: price
       });
+      
+      return data.status;
     }),
     getPetCareList: thunk(async(actions, payload) => {
       const username = payload;

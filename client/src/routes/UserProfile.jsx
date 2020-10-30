@@ -19,6 +19,7 @@ const UserProfile = () => {
 
     console.log(params);
     const username = params.username;
+
     return (
         <Grid container>
             <Grid item className={classes.verticalSections} xs={7}>
