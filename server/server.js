@@ -809,6 +809,7 @@ app.get("/api/v1/bid/:ctuname", async (req, res) => {
     )
 });
 
+
 // Gets all Bids between a Caretaker and a Petowner.
 /*
     Expected inputs:
@@ -864,7 +865,7 @@ app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
-    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND s_time >= to_timestamp($3) AND e_time <= to_timestamp($4)",
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND s_time >= to_timestamp($5) AND e_time <= to_timestamp($6)",
         [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -888,12 +889,14 @@ app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
 });
 
 
-// Deletes all Bids between a Caretaker and a Petowner, within a specified timeframe. This will delete all Bids that
-// entirely intersect the specified s_time and e_time. Partial overlaps will not be deleted.
+// Gets all Bids between a Caretaker and a specific Pet, within a specified timeframe. This will return all Bids that
+// entirely intersect the specified s_time and e_time. Partial overlaps will not be returned.
 /*
     Expected inputs:
         JSON object of the form:
         {
+            "petname": String,
+            "pettype": String,
             "s_time": Integer (which will be converted into a Timestamp),
             "e_time": Integer (which will be converted into a Timestamp)
         }
@@ -906,9 +909,9 @@ app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
         200 OK, if successful
         400 Bad Request, if general failure
  */
-app.delete("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
-    db.query("DELETE FROM Bid WHERE ctuname = $1 AND pouname = $2 AND s_time >= to_timestamp($3) AND e_time <= to_timestamp($4) RETURNING *",
-        [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
+app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time >= to_timestamp($5) AND e_time <= to_timestamp($6)",
+        [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
             res.status(200).json({
@@ -931,12 +934,59 @@ app.delete("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
 });
 
 
-// Marks a Bid between a Caretaker and a Petowner, of a specified timeframe. This will only mark a Bid that is referred
+// Deletes all Bids between a Caretaker and a specific Pet, within a specified timeframe. This will delete all Bids that
+// entirely intersect the specified s_time and e_time. Partial overlaps will not be deleted.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "petname": String,
+            "pettype": String,
+            "s_time": Integer (which will be converted into a Timestamp),
+            "e_time": Integer (which will be converted into a Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
+    db.query("DELETE FROM Bid WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time >= to_timestamp($5) AND e_time <= to_timestamp($6) RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Marks a Bid between a Caretaker's Availability and a specific Pet. This will only mark a Bid that is referred
 // to exactly via its s_time and e_time. The GET APIs should be used to verify the exact s_time and e_time.
 /*
     Expected inputs:
         JSON object of the form:
         {
+            "petname": String,
+            "pettype": String,
             "s_time": Integer (which will be converted into a Timestamp),
             "e_time": Integer (which will be converted into a Timestamp)
         }
@@ -950,8 +1000,8 @@ app.delete("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
         409 Conflict, if caretaker has exceeded their allowed number of Pets at that time.
  */
 app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
-    db.query("UPDATE Bid SET is_win = True WHERE ctuname = $1 AND pouname = $2 AND s_time = to_timestamp($3) AND e_time = to_timestamp($4) RETURNING *",
-        [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
+    db.query("UPDATE Bid SET is_win = True WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time = to_timestamp($5) AND e_time = to_timestamp($6) RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
             res.status(200).json({
