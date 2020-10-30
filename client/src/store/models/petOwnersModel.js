@@ -9,6 +9,7 @@ const petOwnersModel = {
         const url = serverUrl + "/api/v1/petowner/" + username;
         const {data} = await axios.get(url);
         actions.setPetOwner(data.data); 
+        return data.status;
       }), 
       setPetOwner: action((state, payload) => { // action
         console.log(payload);
@@ -30,7 +31,7 @@ const petOwnersModel = {
             petname: petname,
             petage: petage,
             requirements: requirements
-        });
+        })
       }),
 }
 

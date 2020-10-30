@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
-const db = require("./database/queries");
+const db = require("./database/init");
 const morgan = require('morgan');
 const { Pool } = require('pg');
 const keys = require("./keys");
@@ -226,17 +226,22 @@ app.get("/api/v1/pettype", async (req, res) => {
         {
             "username": String,
             "name": String,
-            "age": Integer (optional; put null otherwise),
-            "petType": String
-            "price" : Integer
+            "age": Integer,
+            "pettype": String,
+            "price" : Integer,
+            "period1_s" : string (to be converted to date),
+            "period1_e" : string (to be converted to date),
+            "period2_s" : string (to be converted to date),
+            "period2_e" : string (to be converted to date)
         }
 
     Expected status code: 201 Created, or 400 Bad Request
  */
+
 app.post("/api/v1/fulltimer", async (req, res) => {
     try {
-        const results = await db.query("Call add_fulltimers($1, $2, $3, $4, $5)",
-            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
+        const results = await db.query("Call add_fulltimer($1, $2, $3, $4, $5, to_date($6, 'YYYYMMDD'), to_date($7, 'YYYYMMDD'), to_date($8, 'YYYYMMDD'), to_date($9, 'YYYYMMDD'))",
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price, req.body.period1_s, req.body.period1_e, req.body.period2_s, req.body.period2_e]);
         res.status(201).json({
             status: "success",
             data: {
@@ -261,7 +266,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
             "username": String,
             "name": String,
             "age": Integer (optional; put null otherwise),
-            "petTypes": String
+            "pettype": String
             "price" : Integer
         }
 
@@ -270,7 +275,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
 app.post("/api/v1/parttimer", async (req, res) => {
     try {
         console.log(req.body);
-        const results = await db.query("Call add_parttimers($1, $2, $3, $4, $5)",
+        const results = await db.query("Call add_parttimer($1, $2, $3, $4, $5)",
             [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
         console.log(res);
         res.status(200).json({
@@ -290,14 +295,14 @@ app.post("/api/v1/parttimer", async (req, res) => {
 });
 
 
-// Update an existing Care Taker's name, age, and pet types. Stores all fields in the input object to the database.
+// Update an existing Care Taker's name, age, and pet type. Stores all fields in the input object to the database.
 /*
     Expected inputs:
         JSON object of the form:
         {
             "name": String,
             "age": Integer (optional; put null otherwise),
-            "petTypes": String array
+            "pettype": String
         }
 
         Path parameter: username, which represents the unique username of the Care Taker.
@@ -557,11 +562,11 @@ app.get("/api/v1/pet/:username", async(req, res) => {
     Expected inputs:
         Path parameters:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 200 OK, or 400 Bad Request
  */
-app.get("/api/v1/pet/:username/:petName", async (req, res) => {
+app.get("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
         const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE pouname = $1 AND petName = $2",
             [req.params.username, req.params.petname]);
@@ -588,7 +593,7 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
         JSON object of the form:
         {
             "username": String,
-            "petName": String,
+            "petname": String,
             "petType": String,
             "petAge": String,
             "requirements": String (optional; put null otherwise)
@@ -624,21 +629,21 @@ app.post("/api/v1/pet", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            "petType": String,
-            "petAge": String,
+            "pettype": String,
+            "petage": String,
             "requirements": String (optional; put null otherwise)
         }
 
         Path parameter:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 204 No Content, or 400 Bad Request
  */
 app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("UPDATE Owned_Pet_Belongs SET petType = $1, petAge = $2, requirements = $3" +
-            " WHERE username = $4 AND petName = $5 RETURNING *",
+        const results = await db.query("UPDATE Owned_Pet_Belongs SET pettype = $1, petage = $2, requirements = $3" +
+            " WHERE pouname = $4 AND petname = $5 RETURNING *",
             [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -662,7 +667,7 @@ app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     Expected inputs:
         Path parameter:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 200 OK, or 400 Bad Request
  */
@@ -764,6 +769,456 @@ app.delete("/api/v1/categories/:username/:pettype", async (req, res) => {
         });
     }
 });
+
+
+
+/* API calls for Bid */
+
+// Adds a Bid.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            ctuname: String,
+            pouname: String,
+            petname: String,
+            pettype: String,
+            s_time: Integer (which will be converted by API to Date),
+            e_time: Integer (which will be converted by API to Date)
+        }
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.post("/api/v1/bid/", async (req, res) => {
+    db.query("Call add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'))",
+        [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bid: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Bids for a Caretaker.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:ctuname", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1",
+        [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Bids between a Caretaker and a Petowner.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2",
+        [req.params.ctuname, req.params.pouname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Bids between a Caretaker and a Petowner, within a specified timeframe. This will return all Bids that
+// entirely intersect the specified s_time and e_time. Partial overlaps will not be returned.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "s_time": Integer (which will be converted into a Date),
+            "e_time": Integer (which will be converted into a Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND s_time >= to_date($5,'YYYYMMDD') AND e_time <= to_date($6,'YYYYMMDD')",
+        [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Bids between a Caretaker and a specific Pet, within a specified timeframe. This will return all Bids that
+// entirely intersect the specified s_time and e_time. Partial overlaps will not be returned.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "petname": String,
+            "pettype": String,
+            "s_time": Integer (which will be converted into a Date),
+            "e_time": Integer (which will be converted into a Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time >= to_date($5,'YYYYMMDD') AND e_time <= to_date($6,'YYYYMMDD')",
+        [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Deletes all Bids between a Caretaker and a specific Pet, within a specified timeframe. This will delete all Bids that
+// entirely intersect the specified s_time and e_time. Partial overlaps will not be deleted.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "petname": String,
+            "pettype": String,
+            "s_time": Integer (which will be converted into a Date),
+            "e_time": Integer (which will be converted into a Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
+    db.query("DELETE FROM Bid WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time >= to_date($5,'YYYYMMDD') AND e_time <= to_date($6,'YYYYMMDD') RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Marks a Bid between a Caretaker's Availability and a specific Pet. This will only mark a Bid that is referred
+// to exactly via its s_time and e_time. The GET APIs should be used to verify the exact s_time and e_time.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "petname": String,
+            "pettype": String,
+            "s_time": Integer (which will be converted into a Date),
+            "e_time": Integer (which will be converted into a Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        409 Conflict, if caretaker has exceeded their allowed number of Pets at that time.
+ */
+app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
+    db.query("UPDATE Bid SET is_win = True WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time = to_date($5,'YYYYMMDD') AND e_time = to_date($6,'YYYYMMDD') RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bid: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(409).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+
+/* API calls for Availability */
+
+// Adds an Availability.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Date),
+            e_time: Integer (which will be converted by API to Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.post("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("INSERT INTO Has_Availability VALUES ($1, to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD')) RETURNING *",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availability: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Availabilities.
+// Used for debugging.
+app.get("/api/v1/availability/", async (req, res) => {
+    db.query(
+        "SELECT * FROM Has_Availability"
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Availabilities from a Caretaker within a timeframe. All availabilities indicated by the caretaker will be
+// returned in this query, within the s_time and e_time indicated in this API call.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Date),
+            e_time: Integer (which will be converted by API to Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD')",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Deletes all Availabilities from a Caretaker within a timeframe. All availabilities indicated by the caretaker that
+// entirely intersect the s_time and e_time indicated will be deleted. This does not include partial overlaps.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Date),
+            e_time: Integer (which will be converted by API to Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.delete("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("DELETE FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD') RETURNING *",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
 
 
 app.listen(port, () => {

@@ -62,6 +62,18 @@ const userModel = {
         // console.log(debug(state));
 
       }),
+    allUsers: [],
+    getAllUsers: thunk(async (actions, payload) => {
+      const url = serverUrl + "/api/v1/users"
+      const {data} = await axios.get(url);
+      actions.setAllUsers(data.data);
+    }),
+    setAllUsers: action((state, payload) => {
+      if(payload.users !== null) {
+        state.allUsers = payload.users;
+      }
+    })
+
 }
 
 export default userModel;

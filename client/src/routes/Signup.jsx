@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, Container, Radio, RadioGroup, TextField, Card, Typography, Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import { useStoreActions } from 'easy-peasy';
+import { useHistory } from 'react-router-dom';
+import { useStoreActions, useStoreState } from 'easy-peasy';
 import AddPet from "../components/AddPet";
 import PetTypeInput from "../components/PetTypeInput"
 
@@ -38,10 +39,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const defaultPetTypes = ['Dog', 'Cat', 'Bird', 'Fish'];
 
 const Signup = () => {
     const classes = useStyles();
+    const history = useHistory();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -52,6 +53,9 @@ const Signup = () => {
     const [isPetCaretaker, setPetCaretaker] = useState(false);
     const [caretakerType, setCaretakerType] = useState("parttime");
     const [petInformation, setPetInformation] = useState({});
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('An error occurred.');
+    const [finalStatus, setFinalStatus] = useState(true);
 
     const onPetOwnerSwitchChange = () => {
         setPetOwner(isPetOwner => !isPetOwner);
@@ -74,9 +78,76 @@ const Signup = () => {
     }
 
     const addPartTimeCareTaker = useStoreActions(actions => actions.careTakers.addPartTimeCareTaker);
-    const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
     const addFullTimeCareTaker = useStoreActions(actions => actions.careTakers.addFullTimeCareTaker);
+    const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
+    const getAllUsers = useStoreActions(actions => actions.user.getAllUsers);
+    const allUsers = useStoreState(state => state.user.allUsers);
+    
+    useEffect(() => {
+        getAllUsers();
+        console.log(history)
+        return () => {};
+    }, []);
+    
+    const userInDatabase = () => {
+        var result = false;
+        allUsers.map((user) => {
+            if (user.username == username) {
+                result = true;
+            }
+        })
+        return result;
+    }
 
+    const fieldsAreValid = () => {
+        if (userInDatabase()) {
+            setErrorMessage('Username is taken')
+            setError(true);
+            return false;
+        } 
+        if (!(isPetOwner || isPetCaretaker)) {
+            setErrorMessage('Please select either pet owner or caretaker');
+            setError(true);
+            return false;
+        }
+        if (firstName == '' || age == 0) {
+            setErrorMessage('Please fill up the empty fields');
+            setError(true);
+            return false;
+        }
+        if (isPetCaretaker) {
+            if (petType == '') {
+                setErrorMessage('Please select a valid pet type to care for')
+                setError(true);
+                return false;
+            }
+            if (petPrice == 0) {
+                setErrorMessage('Price per day cannot be 0 or empty')
+                setError(true);
+                return false;
+            }
+        }
+        if (isPetOwner) {
+            if (Object.keys(petInformation).length === 0) {
+                setErrorMessage("Please click on the Save Pet Information button");
+                setError(true);
+                return false;
+            }
+            if (petInformation.petName == '' || petInformation.petType == '') {
+                setErrorMessage("Please fill up the empty pet information")
+                setError(true);
+                return false;
+            }
+        }
+        return true;
+    }
+    const submit = async () => {
+        if (!fieldsAreValid()) {
+            return;
+        }
+        addUser();
+        handlePageChange()
+    }
     const addUser = () => {
         if (isPetOwner) {
             addPetOwner({
@@ -99,14 +170,7 @@ const Signup = () => {
                     price: parseInt(petPrice)
                 })
             }
-            if (caretakerType == 'fulltime') {
-                console.log({
-                    username: username,
-                    name: firstName,
-                    age: parseInt(age),
-                    pettype: petType,
-                    price: parseInt(petPrice)
-                })
+            else if (caretakerType == 'fulltime') { 
                 addFullTimeCareTaker({
                     username: username,
                     name: firstName,
@@ -116,6 +180,10 @@ const Signup = () => {
                 })
             }
         }
+    }
+
+    const handlePageChange = () => {
+        history.push('/');
     }
 
     const callbackAddPet = (childData) => {
@@ -210,10 +278,11 @@ const Signup = () => {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick = {() => addUser()}
+                        onClick = {() => submit()}
                     >
                         Signup
                     </Button>
+                    {error ? <Typography> {errorMessage} </Typography> : null}
                 </form>
             </Container>
         </div>
