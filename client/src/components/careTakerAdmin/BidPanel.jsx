@@ -57,6 +57,7 @@ const BidPanel = (props) => {
     const [open, setOpen] = useState(false);
     const getUserBids = useStoreActions(actions => actions.bids.getUserBids);
     const bidList = useStoreState(state => state.bids.userBids);
+    const acceptBid = useStoreActions(actions => actions.bids.acceptBid);
 
     const openModal = () => {
         setOpen(true);
@@ -75,8 +76,17 @@ const BidPanel = (props) => {
         setSelectedBid(newSelectedBid)
     }
 
-    const updatePayStatus = (newPayStatus) => {
-        console.log("Changing pay status on backend!")
+    const updateBidStatus = (bidInfo) => {
+        console.log("Changing bid status on backend!")
+        acceptBid({
+            pouname: bidInfo.pouname,
+            petname: bidInfo.petname,
+            pettype: bidInfo.pettype,
+            ctuname: bidInfo.ctuname,
+            s_time: bidInfo.s_time,
+            e_time: bidInfo.e_time
+        })
+        
     }
 
     useEffect(() => {
@@ -145,24 +155,24 @@ const BidPanel = (props) => {
                             <FormControlLabel
                                 control={
                                     <Switch
-                                        checked={bidInfo.pay_status}
-                                        onChange={(event) => updatePayStatus(event.target.checked)}
+                                        checked={bidInfo.is_win == true ? true : false}
+                                        onChange={(event) => updateBidStatus(bidInfo)}
                                         color="primary"
                                     />
                                 }
-                                label={bidInfo.pay_status ? "Accepted" : "Pending"}
+                                label={bidInfo.is_win ? "Bid Accepted" : "Pending"}
                             />
                         </FormControl>
                     </Card>
                 ))}
-            <Button variant="contained" onClick={openModal} color="primary">
+            {/* <Button variant="contained" onClick={openModal} color="primary">
                 Create Bid (temp)
             </Button>
             <Modal
                 open={open}
                 onClose={closeModal}>
                 <BidModal closeModal={closeModal} submitData={submitData} />
-            </Modal>
+            </Modal> */}
         </div>
     )
 }
