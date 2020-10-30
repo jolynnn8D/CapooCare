@@ -6,7 +6,7 @@ import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
 import { addDays } from 'date-fns';
 import { useStoreActions, useStoreState } from 'easy-peasy';
-import convertDate from '../../../store/utils';
+import {convertDate} from '../../../utils';
 
 const handleSelect = (ranges) => {
     console.log(ranges);
