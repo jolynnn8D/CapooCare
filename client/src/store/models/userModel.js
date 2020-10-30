@@ -7,13 +7,24 @@ const userModel = {
     getUser: thunk(async (actions, payload) => {
         const username = payload;
         const url = serverUrl + "/api/v1/users/" + username;
-        const {data} = await axios.get(url);
-        actions.setUser(data.data); 
+        const data = await axios.get(url).then(response => {
+          // console.log(response);
+          if (response.data.status === "success") {
+            return response.data.data.user;
+          } else {
+            alert(`Username does not exist in the database!`);
+          }
+        }).catch((error) => {
+          alert("Please choose a different username!");
+        });
+
+        // console.log(data);
+        actions.setUser(data); 
       }), 
       setUser: action((state, payload) => { // action
         // console.log(payload);
-        if (payload.user !== null ) {
-            state.singleUser = payload.user;
+        if (payload !== null ) {
+            state.singleUser = payload;
         }
         // console.log(debug(state));
 

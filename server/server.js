@@ -198,6 +198,26 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
     }
 });
 
+app.get("/api/v1/pettype", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM cares");
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                pettypes: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
 
 // Create a new FullTimer.
 /*
@@ -286,9 +306,9 @@ app.post("/api/v1/parttimer", async (req, res) => {
  */
 app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
-        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, petTypes = $3" +
-            " WHERE username = $4 RETURNING *",
-            [req.body.carername, req.body.age, req.body.pettypes, req.params.username]);
+        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2" +
+            " WHERE username = $3 RETURNING *",
+            [req.body.carername, req.body.age, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
