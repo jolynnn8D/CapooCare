@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ProfilePic from "./ProfilePic"
 import profileImg from "../../assets/userProfile/userProfile.png"
 import { Modal } from '@material-ui/core';
+import UserModal from './UserModal';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,25 +54,21 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
 
     const [open, setOpen] = useState(false);
     const [petOwnerDetails, setPetOwnerDetails] = useState({});
+    const [careTakerDetails, setCareTakerDetails] = useState({});
+
     const openModal = () => {
         setOpen(true);
+        setTimeout(function() {closeModal()}, 3000);
     }    
     const closeModal = () => {
         setOpen(false);
     }
-    const clickOnPetOwnerProfile = (username, ownername, age) => {
-        openModal();
-        setPetOwnerDetails({
-            username: username,
-            ownername: ownername,
-            age: age,
-        });
-    }
 
+    // console.log(petOwnerDetails);
 
     if (props.display === 'petowner') {
         return (
-            <Card onClick={() => clickOnPetOwnerProfile(petOwnerDetails.username, petOwnerDetails.ownername, petOwnerDetails.age)} className={classes.root}>
+            <Card onClick={() => openModal()} className={classes.root}>
                 <Grid container>
                     <Grid item xs={3}>
                         <ProfilePic img={profileImg}/>
@@ -80,6 +77,7 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
                         <h2 className={classes.profileText}> {displayedUser.username}</h2>
                         <h2 className={classes.profileText}> ({displayedUser.firstname})</h2>
                         <h4> Age: {displayedUser.age}</h4>
+                        <h6>Click on your profile to make any updates!</h6>
                         {/* <h4> Rating: 4.5 / 5 </h4> */}
                     </Grid>
                 </Grid>
@@ -87,24 +85,33 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
                     open={open}
                     onClose={closeModal}>
                     <Card className={classes.modal}>
-                        This is my modal!
+                        <UserModal closeModal={closeModal}/>
                     </Card>
                 </Modal>
             </Card>
         )
     } else {
         return (
-            <Card className={classes.root}>
+            <Card onClick={() => openModal()} className={classes.root}>
                 <Grid container>
                     <Grid item xs={3}>
-                        <ProfilePic img={profileImg} href="/users/:username/update"/>
+                        <ProfilePic img={profileImg}/>
                     </Grid>
                     <Grid item className={classes.profileTextArea}>
                         <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
                         <h4> Age: {displayedUser.age}</h4>
                         <h4> Rating: {displayedUser.rating} </h4>
+                        <h6>Click on your profile to make any updates!</h6>
+
                     </Grid>
                 </Grid>
+                <Modal
+                    open={open}
+                    onClose={closeModal}>
+                    <Card className={classes.modal}>
+                        <UserModal closeModal={closeModal}/>
+                    </Card>
+                </Modal>
             </Card>
         )
     }

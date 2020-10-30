@@ -17,7 +17,7 @@ const UserProfile = () => {
     const classes = useStyles();
     const params = useParams();
 
-    console.log(params);
+    // console.log(params);
     const username = params.username;
 
     return (
