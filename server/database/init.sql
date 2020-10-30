@@ -75,9 +75,9 @@ CREATE TABLE Bid (
     pouname VARCHAR(50),
     petname VARCHAR(20), 
     pettype VARCHAR(20),
-    ctuname VARCHAR(50),
-    s_time DATE,
-    e_time DATE,
+    ctuname VARCHAR(50) NOT NULL,
+    s_time DATE NOT NULL,
+    e_time DATE NOT NULL,
     cost INTEGER,
     is_win BOOLEAN DEFAULT NULL,
     rating INTEGER CHECK((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
@@ -86,7 +86,6 @@ CREATE TABLE Bid (
     pay_status BOOLEAN DEFAULT FALSE,
     pet_pickup VARCHAR(50) CHECK(pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
     FOREIGN KEY (pouname, petname, pettype) REFERENCES Owned_Pet_Belongs(pouname, petname, pettype),
-    FOREIGN KEY (ctuname, s_time, e_time) REFERENCES Has_Availability (ctuname, s_time, e_time),
     PRIMARY KEY (pouname, petname, pettype, ctuname, s_time, e_time),
     CHECK (pouname <> ctuname)
 );
@@ -287,7 +286,7 @@ CREATE OR REPLACE PROCEDURE add_bid(
             END IF;
             -- Ensures that ct has availability at this time period
             SELECT COUNT(*) INTO avail FROM Has_Availability
-            WHERE Has_Availability.ctuname = _ctuname AND (_s_time, _e_time) OVERLAPS (Has_Availability.s_time, Has_Availability.e_time);
+            WHERE Has_Availability.ctuname = _ctuname AND (Has_Availability.s_time <= _s_time) AND (Has_Availability.e_time >= _e_time);
             if avail = 0 THEN
                 RAISE EXCEPTION 'Caretaker is unavailable for this period.';
             END IF;
@@ -344,7 +343,7 @@ INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
-CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-01', '2020-03-04');
+CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-02', '2020-02-03');
 
 -- INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
 -- INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
