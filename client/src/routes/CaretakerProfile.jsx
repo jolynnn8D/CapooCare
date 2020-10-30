@@ -23,13 +23,13 @@ const CaretakerProfile = (props) => {
 
     // console.log(params);
     const username = params.username;
-    const getSingleUser = useStoreActions(actions => actions.user.getUser);
+    const getDisplayedUser = useStoreActions(actions => actions.user.getUser);
     const singleUser = useStoreState(state => state.user.singleUser);
     console.log(singleUser)
     // console.log(caretaker);
 
     useEffect(() => {
-        getSingleUser(username);
+        getDisplayedUser(username);
         return () => {};
     }, []);
     

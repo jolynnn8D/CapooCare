@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import AddPet from "../components/AddPet";
 import PetTypeInput from "../components/PetTypeInput"
+import Availability from '../components/Availability';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -69,7 +70,7 @@ const Signup = () => {
         setCaretakerType(event.target.value);
     }
 
-    const onSelectType = (event) => {
+    const onSelectType = (event) => {   
         setPetType(event.target.value);
     }
     
@@ -260,7 +261,7 @@ const Signup = () => {
                         </FormGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    { isPetCaretaker ? 
+                    { isPetCaretaker && caretakerType === 'fulltime' ? 
                     <>
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">Type of caretaker</FormLabel>
@@ -270,7 +271,18 @@ const Signup = () => {
                         </RadioGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> </> : null } 
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> 
+                    <Availability/> </>
+                    : isPetCaretaker ?
+                    <> <FormControl component="fieldset" className={classes.formControl}>
+                        <FormLabel component="legend">Type of caretaker</FormLabel>
+                        <RadioGroup value={caretakerType} onChange={onChangeCaretakerType}>
+                            <FormControlLabel value="parttime" control={<Radio />} label="Part-time" />
+                            <FormControlLabel value="fulltime" control={<Radio />} label="Full-time" />
+                        </RadioGroup>
+                        <FormHelperText>Choose at least one role!</FormHelperText>
+                    </FormControl>
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> </> : null}
                     {  isPetOwner ? <AddPet parentCallback = {callbackAddPet} /> : null }
                     <Button
                         // type="submit"

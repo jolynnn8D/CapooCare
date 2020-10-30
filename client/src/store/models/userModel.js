@@ -18,7 +18,7 @@ const userModel = {
           alert("Please choose a different username!");
         });
 
-        // console.log(data);
+        console.log(data);
         actions.setUser(data); 
       }), 
       setUser: action((state, payload) => { // action
@@ -41,9 +41,15 @@ const userModel = {
 
         actions.getUser(username);
         actions.getDisplayedUser(username);
-        // console.log(editedUser);
-        // actions.setUser(editedUser);
-        // actions.setDisplayedUser(editedUser);
+      } else {
+        url = serverUrl + '/api/v1/caretaker/' + username;
+        const {data} = await axios.put(url, {
+          username: username,
+          ownername: firstname,
+          age: age
+        });
+        actions.getUser(username);
+        actions.getDisplayedUser(username);
       }
 
     }),
@@ -60,8 +66,8 @@ const userModel = {
             state.displayedUser = payload.user;
         }
         // console.log(debug(state));
-
       }),
+
     allUsers: [],
     getAllUsers: thunk(async (actions, payload) => {
       const url = serverUrl + "/api/v1/users"

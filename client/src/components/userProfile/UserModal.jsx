@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
 
 const UserModal = (props) => {
   const {closeModal, ...other} = props;
-  console.log(closeModal);
   const classes = useStyles();
   const getSingleUser = useStoreActions(actions => actions.user.getSingleUser);
   const editUser = useStoreActions(actions => actions.user.editUser);
