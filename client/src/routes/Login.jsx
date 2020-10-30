@@ -44,7 +44,7 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const getUser = useStoreActions(actions => actions.user.getUser);
     const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
-    
+    const setRoutes = useStoreActions(actions => actions.routes.setRoutes);
     
     const checkAccountExists = () => {
         const curr_user = store.getState().user.singleUser;
@@ -67,9 +67,8 @@ const Login = () => {
           Routes[3].path = '/users/' + username;
           Routes[4].path = '/users/' + username + '/caretaker';
           Routes[5].path = '/users/' + username + '/caretaker-admin';
+          setRoutes(Routes);
           history.push('homepage');
-        } else {
-            event.preventDefault();
         }
     }
 

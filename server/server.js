@@ -306,9 +306,9 @@ app.post("/api/v1/parttimer", async (req, res) => {
  */
 app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
-        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, petTypes = $3" +
-            " WHERE username = $4 RETURNING *",
-            [req.body.carername, req.body.age, req.body.pettypes, req.params.username]);
+        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2" +
+            " WHERE username = $3 RETURNING *",
+            [req.body.carername, req.body.age, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -504,7 +504,7 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
 // Used for debugging.
 app.get("/api/v1/pet", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet");
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs");
         res.status(200).json({
             status: "success",
             results: results.rows.length,
@@ -533,7 +533,7 @@ app.get("/api/v1/pet", async (req, res) => {
 
 app.get("/api/v1/pet/:username", async(req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet WHERE username = $1",
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE pouname = $1",
             [req.params.username]);
         res.status(200).json({
             status: "success",
@@ -563,7 +563,7 @@ app.get("/api/v1/pet/:username", async(req, res) => {
  */
 app.get("/api/v1/pet/:username/:petName", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet WHERE username = $1 AND petName = $2",
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE pouname = $1 AND petName = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -599,7 +599,7 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
 app.post("/api/v1/pet", async (req, res) => {
     try {
         const results = await db.query(
-            "INSERT INTO Owned_Pet(username, petName, petType, petAge, requirements) VALUES " +
+            "INSERT INTO Owned_Pet_Belongs(pouname, petName, petType, petAge, requirements) VALUES " +
             "($1, $2, $3, $4, $5) RETURNING *",
             [req.body.username, req.body.petname, req.body.pettype, req.body.petage, req.body.requirements]);
         res.status(201).json({
@@ -637,7 +637,7 @@ app.post("/api/v1/pet", async (req, res) => {
  */
 app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("UPDATE Owned_Pet SET petType = $1, petAge = $2, requirements = $3" +
+        const results = await db.query("UPDATE Owned_Pet_Belongs SET petType = $1, petAge = $2, requirements = $3" +
             " WHERE username = $4 AND petName = $5 RETURNING *",
             [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
         res.status(200).json({
@@ -666,9 +666,9 @@ app.put("/api/v1/pet/:username/:petname", async (req, res) => {
 
     Expected status code: 200 OK, or 400 Bad Request
  */
-app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
+app.delete("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("DELETE FROM Owned_Pet WHERE username = $1 AND petName = $2",
+        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE pouname = $1 AND petname = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success"
@@ -737,6 +737,23 @@ app.post("/api/v1/categories/:username", async (req, res) => {
             data: {
                 pets: results.rows[0]
             }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+app.delete("/api/v1/categories/:username/:pettype", async (req, res) => {
+    try {
+        const results = await db.query("DELETE FROM Cares WHERE ctuname = $1 AND pettype = $2",
+            [req.params.username, req.params.pettype]);
+        res.status(200).json({
+            status: "success"
         });
     } catch (err) {
         res.status(400).json({

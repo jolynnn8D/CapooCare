@@ -65,6 +65,25 @@ const careTakersModel = {
     }),
     setPetTypeList: action((state, payload) => {
       state.petTypeList = [...payload];
+    }),
+
+    deletePetType: thunk(async(actions, payload) => {
+      const {username, pettype } = payload;
+      const url = serverUrl + "/api/v1/categories/" + username + "/" + pettype;
+      const {data} = await axios.delete(url);
+      actions.deleteUserPetType(payload.pettype);
+    }),
+    deleteUserPetType: action((state, payload) => {
+        var index = null;
+        state.petCareList.forEach(function(value, i) {
+          console.log(value.pettype)
+            if (value.pettype == payload) {
+
+                index = i;
+            }
+        })
+        state.petCareList.splice(index, 1);
+        
     })
 
   
