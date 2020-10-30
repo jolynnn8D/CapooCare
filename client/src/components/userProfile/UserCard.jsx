@@ -56,63 +56,63 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
     const [petOwnerDetails, setPetOwnerDetails] = useState({});
     const [careTakerDetails, setCareTakerDetails] = useState({});
 
-    const openModal = () => {
-        setOpen(true);
-        setTimeout(function() {closeModal()}, 3000);
-    }    
-    const closeModal = () => {
-        setOpen(false);
+    const toggleModal = () => {
+        setOpen(!open);
     }
 
     // console.log(petOwnerDetails);
 
     if (props.display === 'petowner') {
         return (
-            <Card onClick={() => openModal()} className={classes.root}>
-                <Grid container>
-                    <Grid item xs={3}>
-                        <ProfilePic img={profileImg}/>
+            <div>
+                <Card onClick={() => toggleModal()} className={classes.root}>
+                    <Grid container>
+                        <Grid item xs={3}>
+                            <ProfilePic img={profileImg}/>
+                        </Grid>
+                        <Grid item className={classes.profileTextArea}>
+                            <h2 className={classes.profileText}> {displayedUser.username}</h2>
+                            <h2 className={classes.profileText}> ({displayedUser.firstname})</h2>
+                            <h4> Age: {displayedUser.age}</h4>
+                            <h6>Click on your profile to make any updates!</h6>
+                            {/* <h4> Rating: 4.5 / 5 </h4> */}
+                        </Grid>
                     </Grid>
-                    <Grid item className={classes.profileTextArea}>
-                        <h2 className={classes.profileText}> {displayedUser.username}</h2>
-                        <h2 className={classes.profileText}> ({displayedUser.firstname})</h2>
-                        <h4> Age: {displayedUser.age}</h4>
-                        <h6>Click on your profile to make any updates!</h6>
-                        {/* <h4> Rating: 4.5 / 5 </h4> */}
-                    </Grid>
-                </Grid>
+                </Card>
                 <Modal
-                    open={open}
-                    onClose={closeModal}>
-                    <Card className={classes.modal}>
-                        <UserModal closeModal={closeModal}/>
-                    </Card>
+                        open={open}
+                        onClose={toggleModal}>
+                        <Card className={classes.modal}>
+                            <UserModal closeModal={toggleModal}/>
+                        </Card>
                 </Modal>
-            </Card>
+            </div>
         )
     } else {
         return (
-            <Card onClick={() => openModal()} className={classes.root}>
-                <Grid container>
-                    <Grid item xs={3}>
-                        <ProfilePic img={profileImg}/>
-                    </Grid>
-                    <Grid item className={classes.profileTextArea}>
-                        <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
-                        <h4> Age: {displayedUser.age}</h4>
-                        <h4> Rating: {displayedUser.rating} </h4>
-                        <h6>Click on your profile to make any updates!</h6>
+            <div>
+                <Card onClick={() => toggleModal()} className={classes.root}>
+                    <Grid container>
+                        <Grid item xs={3}>
+                            <ProfilePic img={profileImg}/>
+                        </Grid>
+                        <Grid item className={classes.profileTextArea}>
+                            <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
+                            <h4> Age: {displayedUser.age}</h4>
+                            <h4> Rating: {displayedUser.rating} </h4>
+                            <h6>Click on your profile to make any updates!</h6>
 
+                        </Grid>
                     </Grid>
-                </Grid>
+                </Card>
                 <Modal
-                    open={open}
-                    onClose={closeModal}>
-                    <Card className={classes.modal}>
-                        <UserModal closeModal={closeModal}/>
-                    </Card>
+                        open={open}
+                        onClose={toggleModal}>
+                        <Card className={classes.modal}>
+                            <UserModal closeModal={toggleModal}/>
+                        </Card>
                 </Modal>
-            </Card>
+            </div>
         )
     }
 
