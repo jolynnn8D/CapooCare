@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // import { Provider } from 'react-redux';
 import { StoreProvider, useStoreRehydrated } from 'easy-peasy';
 import ReactDOM from 'react-dom'
