@@ -206,17 +206,21 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
         {
             "username": String,
             "name": String,
-            "age": Integer (optional; put null otherwise),
-            "petType": String
-            "price" : Integer
+            "age": Integer,
+            "pettype": String,
+            "price" : Integer,
+            "rating" : Integer,
+            "salary" : Integer,
+            "period1" : null,
+            "period2" : null
         }
 
     Expected status code: 201 Created, or 400 Bad Request
  */
 app.post("/api/v1/fulltimer", async (req, res) => {
     try {
-        const results = await db.query("Call add_fulltimers($1, $2, $3, $4, $5)",
-            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
+        const results = await db.query("Call add_fulltimer($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+            [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price, req.body.rating, req.body.salary, req.body.period1, req.body.period2]);
         res.status(201).json({
             status: "success",
             data: {
@@ -241,7 +245,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
             "username": String,
             "name": String,
             "age": Integer (optional; put null otherwise),
-            "petTypes": String
+            "pettype": String
             "price" : Integer
         }
 
@@ -250,7 +254,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
 app.post("/api/v1/parttimer", async (req, res) => {
     try {
         console.log(req.body);
-        const results = await db.query("Call add_parttimers($1, $2, $3, $4, $5)",
+        const results = await db.query("Call add_parttimer($1, $2, $3, $4, $5)",
             [req.body.username, req.body.name, req.body.age, req.body.pettype, req.body.price]);
         console.log(res);
         res.status(200).json({
@@ -270,14 +274,14 @@ app.post("/api/v1/parttimer", async (req, res) => {
 });
 
 
-// Update an existing Care Taker's name, age, and pet types. Stores all fields in the input object to the database.
+// Update an existing Care Taker's name, age, and pet type. Stores all fields in the input object to the database.
 /*
     Expected inputs:
         JSON object of the form:
         {
             "name": String,
             "age": Integer (optional; put null otherwise),
-            "petTypes": String array
+            "pettypes": String
         }
 
         Path parameter: username, which represents the unique username of the Care Taker.
@@ -286,9 +290,9 @@ app.post("/api/v1/parttimer", async (req, res) => {
  */
 app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
-        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, petTypes = $3" +
+        const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2, pettype = $3" +
             " WHERE username = $4 RETURNING *",
-            [req.body.carername, req.body.age, req.body.pettypes, req.params.username]);
+            [req.body.carername, req.body.age, req.body.pettype, req.params.username]);
         res.status(204).json({
             status: "success",
             data: {
@@ -537,13 +541,13 @@ app.get("/api/v1/pet/:username", async(req, res) => {
     Expected inputs:
         Path parameters:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 200 OK, or 400 Bad Request
  */
-app.get("/api/v1/pet/:username/:petName", async (req, res) => {
+app.get("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1 AND petName = $2",
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1 AND petname = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -568,7 +572,7 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
         JSON object of the form:
         {
             "username": String,
-            "petName": String,
+            "petname": String,
             "petType": String,
             "petAge": String,
             "requirements": String (optional; put null otherwise)
@@ -579,7 +583,7 @@ app.get("/api/v1/pet/:username/:petName", async (req, res) => {
 app.post("/api/v1/pet", async (req, res) => {
     try {
         const results = await db.query(
-            "INSERT INTO Owned_Pet_Belongs(username, petName, petType, petAge, requirements) VALUES " +
+            "INSERT INTO Owned_Pet_Belongs(username, petname, petType, petAge, requirements) VALUES " +
             "($1, $2, $3, $4, $5) RETURNING *",
             [req.body.username, req.body.petname, req.body.pettype, req.body.petage, req.body.requirements]);
         res.status(201).json({
@@ -604,21 +608,21 @@ app.post("/api/v1/pet", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            "petType": String,
-            "petAge": String,
+            "pettype": String,
+            "petage": String,
             "requirements": String (optional; put null otherwise)
         }
 
         Path parameter:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 204 No Content, or 400 Bad Request
  */
 app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("UPDATE Owned_Pet_Belongs SET petType = $1, petAge = $2, requirements = $3" +
-            " WHERE username = $4 AND petName = $5 RETURNING *",
+        const results = await db.query("UPDATE Owned_Pet_Belongs SET pettype = $1, petage = $2, requirements = $3" +
+            " WHERE username = $4 AND petname = $5 RETURNING *",
             [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -642,13 +646,13 @@ app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     Expected inputs:
         Path parameter:
             username, which represents the unique username of the Pet's Owner.
-            petName, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
+            petname, which represents the name of the Pet. For a Pet Owner, all Pet names are expected to be unique.
 
     Expected status code: 200 OK, or 400 Bad Request
  */
-app.delete("/api/v1/pet/:username/:petName", async (req, res) => {
+app.delete("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE username = $1 AND petName = $2",
+        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE username = $1 AND petname = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success"

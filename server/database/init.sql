@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS Owned_Pet_Belongs CASCADE;
 DROP TABLE IF EXISTS Bid CASCADE;
 DROP VIEW IF EXISTS Users CASCADE;
 DROP VIEW IF EXISTS Accounts CASCADE;
+DROP PROCEDURE IF EXISTS add_bid(character varying,character varying,character varying,character varying,date,date);
 
 
 CREATE TABLE PCSAdmin (
@@ -43,49 +44,50 @@ CREATE TABLE PartTimer (
 );
 
 CREATE TABLE Category (
-    petType VARCHAR(20) PRIMARY KEY
+    pettype VARCHAR(20) PRIMARY KEY
 );
 
 CREATE TABLE Has_Availability (
     ctuname VARCHAR(50) REFERENCES CareTaker(username) ON DELETE CASCADE,
-    s_time TIMESTAMP,
-    e_time TIMESTAMP,
+    s_time DATE,
+    e_time DATE,
     PRIMARY KEY(ctuname, s_time, e_time)
 );
 
 CREATE TABLE Cares (
     ctuname VARCHAR(50) REFERENCES CareTaker(username),
-    petType VARCHAR(20) REFERENCES Category(petType),
+    pettype VARCHAR(20) REFERENCES Category(pettype),
     price INTEGER NOT NULL,
-    PRIMARY KEY (ctuname, petType)
+    PRIMARY KEY (ctuname, pettype)
 );
 
 CREATE TABLE Owned_Pet_Belongs (
     pouname VARCHAR(50) NOT NULL REFERENCES PetOwner(username) ON DELETE CASCADE,
-    petType VARCHAR(20) NOT NULL REFERENCES Category(petType),
-    petName VARCHAR(20) NOT NULL,
-    petAge INTEGER NOT NULL,
+    pettype VARCHAR(20) NOT NULL REFERENCES Category(pettype),
+    petname VARCHAR(20) NOT NULL,
+    petage INTEGER NOT NULL,
     requirements VARCHAR(50) DEFAULT NULL,
-    PRIMARY KEY (pouname, petName, petType)
+    PRIMARY KEY (pouname, petname, pettype)
 );
 
 /* TODO: reference has_availability */ 
 CREATE TABLE Bid (
     pouname VARCHAR(50),
-    petName VARCHAR(20), 
-    petType VARCHAR(20),
+    petname VARCHAR(20), 
+    pettype VARCHAR(20),
     ctuname VARCHAR(50),
-    s_time TIMESTAMP,
-    e_time TIMESTAMP,
+    s_time DATE,
+    e_time DATE,
+    cost INTEGER,
     is_win BOOLEAN DEFAULT NULL,
     rating INTEGER CHECK((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
     review VARCHAR(100),
     pay_type VARCHAR(50) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
     pay_status BOOLEAN DEFAULT FALSE,
     pet_pickup VARCHAR(50) CHECK(pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
-    FOREIGN KEY (pouname, petName, petType) REFERENCES Owned_Pet_Belongs(pouname, petName, petType),
+    FOREIGN KEY (pouname, petname, pettype) REFERENCES Owned_Pet_Belongs(pouname, petname, pettype),
     FOREIGN KEY (ctuname, s_time, e_time) REFERENCES Has_Availability (ctuname, s_time, e_time),
-    PRIMARY KEY (pouname, petName, petType, ctuname, s_time, e_time),
+    PRIMARY KEY (pouname, petname, pettype, ctuname, s_time, e_time),
     CHECK (pouname <> ctuname)
 );
 
@@ -107,11 +109,11 @@ CREATE OR REPLACE PROCEDURE
     LANGUAGE plpgsql;
 
 /* Insert into fulltimers, will add into caretakers table */
-CREATE OR REPLACE PROCEDURE add_fulltimers(
+CREATE OR REPLACE PROCEDURE add_fulltimer(
     ctuname VARCHAR(50),
     aname VARCHAR(50),
     age   INTEGER,
-    petType VARCHAR(20),
+    pettype VARCHAR(20),
     price INTEGER,
     rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL,
@@ -126,16 +128,16 @@ CREATE OR REPLACE PROCEDURE add_fulltimers(
                 INSERT INTO CareTaker VALUES (ctuname, aname, age, rating, salary);
                 INSERT INTO FullTimer VALUES (ctuname, period1, period2);
             END IF;
-            INSERT INTO Cares VALUES (ctuname, petType, price);
+            INSERT INTO Cares VALUES (ctuname, pettype, price);
     END;$$
 LANGUAGE plpgsql;
 
 /* add parttime */
-CREATE OR REPLACE PROCEDURE add_parttimers(
+CREATE OR REPLACE PROCEDURE add_parttimer(
     ctuname VARCHAR(50),
     aname VARCHAR(50),
     age   INTEGER,
-    petType VARCHAR(20),
+    pettype VARCHAR(20),
     price INTEGER,
     rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL
@@ -148,7 +150,7 @@ CREATE OR REPLACE PROCEDURE add_parttimers(
             INSERT INTO CareTaker VALUES (ctuname, aname, age, rating, salary);
             INSERT INTO PartTimer VALUES (ctuname);
         END IF;
-        INSERT INTO Cares VALUES (ctuname, petType, price);
+        INSERT INTO Cares VALUES (ctuname, pettype, price);
     END;$$
 LANGUAGE plpgsql;
 
@@ -167,7 +169,7 @@ $$ DECLARE Pctx NUMERIC;
         WHERE NEW.username = F.username;
 
         IF (Pctx > 0 OR Fctx > 0) THEN
-            RETURN NULL;
+            RAISE EXCEPTION 'This username belongs to an existing caretaker.';
         ELSE 
             RETURN NEW;
         END IF; END; $$
@@ -187,7 +189,7 @@ $$ DECLARE ctx NUMERIC;
         WHERE NEW.username = F.username;
 
         IF ctx > 0 THEN
-            RETURN NULL;
+            RAISE EXCEPTION 'This username belongs to an existing fulltimer.';
         ELSE 
             RETURN NEW;
         END IF; END; $$
@@ -207,7 +209,7 @@ $$ DECLARE ctx NUMERIC;
         WHERE NEW.username = P.username;
 
         IF ctx > 0 THEN
-            RETURN NULL;
+            RAISE EXCEPTION 'This username belongs to an existing parttimer.';
         ELSE 
             RETURN NEW;
         END IF; END; $$
@@ -264,31 +266,40 @@ BEFORE UPDATE ON Bid
 FOR EACH ROW EXECUTE PROCEDURE mark_bid();
 
 
---CREATE OR REPLACE PROCEDURE add_bid(
---    pouname VARCHAR(50),
---    petname VARCHAR(20),
---    pettype VARCHAR(20),
---    ctuname VARCHAR(50),
---    s_time DATE,
---    e_time DATE
---    ) AS
---        $$
---        DECLARE ctx NUMERIC;
---        BEGIN
---            SELECT COUNT(*) INTO ctx FROM Cares
---                WHERE Cares.ctuname = ctuname;
---              Must ensure that a Bid cannot be created for the same Petowner and Pet with overlapping time periods.
-----            RAISE EXCEPTION 'test';
---            IF ctx = 0 THEN
---                RAISE EXCEPTION 'Caretaker is unable to care for this pet type.';
---            END IF;
---            INSERT INTO Bid(pouname, petName, petType, ctuname, s_time, e_time)
---                VALUES (pouname, petname, pettype, ctuname, s_time, e_time)
---                RETURNING *;
---        END;
---        $$
---    LANGUAGE plpgsql;
-
+CREATE OR REPLACE PROCEDURE add_bid(
+   _pouname VARCHAR(50),
+   _petname VARCHAR(20),
+   _pettype VARCHAR(20),
+   _ctuname VARCHAR(50),
+   _s_time DATE,
+   _e_time DATE
+   ) AS
+       $$
+       DECLARE care NUMERIC;
+       DECLARE avail NUMERIC;
+       DECLARE cost NUMERIC;
+       BEGIN
+            -- Ensures that the ct can care for this pet type
+            SELECT COUNT(*) INTO care FROM Cares
+            WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
+            IF care = 0 THEN
+               RAISE EXCEPTION 'Caretaker is unable to care for this pet type.';
+            END IF;
+            -- Ensures that ct has availability at this time period
+            SELECT COUNT(*) INTO avail FROM Has_Availability
+            WHERE Has_Availability.ctuname = _ctuname AND (_s_time, _e_time) OVERLAPS (Has_Availability.s_time, Has_Availability.e_time);
+            if avail = 0 THEN
+                RAISE EXCEPTION 'Caretaker is unavailable for this period.';
+            END IF;
+            SELECT (Cares.price * (_e_time - _s_time)) INTO cost
+            FROM Cares
+            WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
+            -- Must ensure that a Bid cannot be created for the same Petowner and Pet with overlapping time periods.
+            INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time, cost)
+               VALUES (_pouname, _petname, _pettype, _ctuname, _s_time, _e_time, cost);
+       END;
+       $$
+   LANGUAGE plpgsql;
 
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
@@ -310,13 +321,11 @@ INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
 
 INSERT INTO Category VALUES ('dog'),('cat'),('rabbit'),('big dogs'),('lizard'),('bird');
 
-CALL add_fulltimers('yellowchicken', 'chick', 22, 'bird', 50);
-CALL add_fulltimers('purpledog', 'purple', 25, 'dog', 60);
-CALL add_fulltimers('redduck', 'ducklings', 20, 'rabbit', 35);
+CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 50);
+CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60);
+CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35);
 
-CALL add_parttimers('yellowbird', 'bird', 35, 'cat', 60);
-/*this seed is not meant to appear in the database*/
-CALL add_fulltimers('yellowbird', 'ducklings', 20, 'lizard', 70);
+CALL add_parttimer('yellowbird', 'bird', 35, 'cat', 60);
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
@@ -326,17 +335,20 @@ INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
 
 INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 40);
 INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
+INSERT INTO Cares VALUES ('yellowchicken', 'cat', 50);
 INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
 
-INSERT INTO Has_Availability VALUES ('yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
-INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
-INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
-INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
+INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-01-01', '2020-03-04');
+INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
+INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
+INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
-INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
-INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
-INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
-INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
-UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');
-UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
+CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-01', '2020-03-04');
+
+-- INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
+-- INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
+-- INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
+-- INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
+-- UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');
+-- UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
