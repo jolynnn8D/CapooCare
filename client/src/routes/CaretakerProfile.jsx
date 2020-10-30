@@ -25,7 +25,7 @@ const CaretakerProfile = (props) => {
     const username = params.username;
     const getDisplayedUser = useStoreActions(actions => actions.user.getUser);
     const singleUser = useStoreState(state => state.user.singleUser);
-    console.log(singleUser)
+    // console.log(singleUser)
     // console.log(caretaker);
 
     useEffect(() => {

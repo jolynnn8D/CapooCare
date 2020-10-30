@@ -30,6 +30,7 @@ const userModel = {
       }),
     editUser: thunk(async (actions, payload) => {
       const {username, firstname, age, usertype} = {...payload};
+      console.log({...payload});
       let url = "";
       if (usertype === 'petowner') {
         url = serverUrl + '/api/v1/petowner/' + username;
@@ -41,17 +42,32 @@ const userModel = {
 
         actions.getUser(username);
         actions.getDisplayedUser(username);
-      } else {
+      } else if (usertype === "caretaker") {
         url = serverUrl + '/api/v1/caretaker/' + username;
         const {data} = await axios.put(url, {
           username: username,
-          ownername: firstname,
+          carername: firstname,
           age: age
         });
         actions.getUser(username);
         actions.getDisplayedUser(username);
-      }
+      } else {
+        const url_po = serverUrl + '/api/v1/petowner/' + username;
+        const url_ct = serverUrl + '/api/v1/caretaker/' + username;
+        await axios.put(url_po, {
+          username: username,
+          ownername: firstname,
+          age: age
+        });
+        await axios.put(url_ct, {
+          username: username,
+          carername: firstname,
+          age: age
+        });
 
+        actions.getUser(username);
+        actions.getDisplayedUser(username);
+      }
     }),
 
     displayedUser: [],

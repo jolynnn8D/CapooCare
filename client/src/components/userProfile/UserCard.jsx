@@ -58,31 +58,17 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
 
     const openModal = () => {
         setOpen(true);
+        setTimeout(function() {closeModal()}, 3000);
     }    
     const closeModal = () => {
         setOpen(false);
     }
-    const clickOnPetOwnerProfile = (username, ownername, age) => {
-        openModal();
-        setPetOwnerDetails({
-            username: username,
-            ownername: ownername,
-            age: age,
-        });
-    }
 
-    const clickOnCareTakerProfile = (username, ownername, age) => {
-        openModal();
-        setCareTakerDetails({
-            username: username,
-            ownername: ownername,
-            age: age,
-        });
-    }
+    // console.log(petOwnerDetails);
 
     if (props.display === 'petowner') {
         return (
-            <Card onClick={() => clickOnPetOwnerProfile(petOwnerDetails.username, petOwnerDetails.ownername, petOwnerDetails.age)} className={classes.root}>
+            <Card onClick={() => openModal()} className={classes.root}>
                 <Grid container>
                     <Grid item xs={3}>
                         <ProfilePic img={profileImg}/>
@@ -106,7 +92,7 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
         )
     } else {
         return (
-            <Card onClick={() => clickOnPetOwnerProfile(petOwnerDetails.username, petOwnerDetails.ownername, petOwnerDetails.age)} className={classes.root}>
+            <Card onClick={() => openModal()} className={classes.root}>
                 <Grid container>
                     <Grid item xs={3}>
                         <ProfilePic img={profileImg}/>
@@ -115,6 +101,8 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
                         <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
                         <h4> Age: {displayedUser.age}</h4>
                         <h4> Rating: {displayedUser.rating} </h4>
+                        <h6>Click on your profile to make any updates!</h6>
+
                     </Grid>
                 </Grid>
                 <Modal

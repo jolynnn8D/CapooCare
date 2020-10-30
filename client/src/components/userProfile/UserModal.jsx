@@ -15,24 +15,49 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserModal = (props) => {
-  const {closeModal, ...other} = props;
+  const {closeModal} = props;
   const classes = useStyles();
-  const getSingleUser = useStoreActions(actions => actions.user.getSingleUser);
   const editUser = useStoreActions(actions => actions.user.editUser);
   const singleUser = useStoreState(state => state.user.singleUser);
-  const [userName, setUserName] = useState('');
   const [userFirstName, setUserFirstName] = useState(singleUser.firstname);
   const [userAge, setUserAge] = useState(singleUser.age);
 
+  const userType = singleUser.is_petowner && singleUser.is_carer ? "both" : singleUser.is_carer ? "caretaker" : "petowner";
+
+//   console.log(userType);
+
   const handleButtonClick = () => {
+    if (userType === 'petowner') {
+        editUser({
+            username: singleUser.username,
+            firstname: userFirstName,
+            age: userAge,
+            usertype: 'petowner'
+        });
+    } else if (userType === 'caretaker') {
+        editUser({
+            username: singleUser.username,
+            firstname: userFirstName,
+            age: userAge,
+            usertype: 'caretaker'
+        });
+    } else {
+        editUser({
+            username: singleUser.username,
+            firstname: userFirstName,
+            age: userAge,
+            usertype: 'caretaker'
+        });
+        editUser({
+            username: singleUser.username,
+            firstname: userFirstName,
+            age: userAge,
+            usertype: 'petowner'
+        });
+    }
+
     closeModal();
 
-    editUser({
-        username: singleUser.username,
-        firstname: userFirstName,
-        age: userAge,
-        usertype: 'petowner'
-    })
   }
 
   return (
@@ -49,7 +74,6 @@ const UserModal = (props) => {
             multiline
             autoFocus
             className={classes.textfield}
-            onChange={(event) => setUserName(event.target.value)}
         />
         <TextField
             variant="outlined"

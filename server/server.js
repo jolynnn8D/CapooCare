@@ -295,14 +295,13 @@ app.post("/api/v1/parttimer", async (req, res) => {
 });
 
 
-// Update an existing Care Taker's name, age, and pet type. Stores all fields in the input object to the database.
+// Update an existing Care Taker's name, age. Stores all fields in the input object to the database.
 /*
     Expected inputs:
         JSON object of the form:
         {
             "name": String,
-            "age": Integer (optional; put null otherwise),
-            "pettype": String
+            "age": Integer
         }
 
         Path parameter: username, which represents the unique username of the Care Taker.
@@ -312,9 +311,9 @@ app.post("/api/v1/parttimer", async (req, res) => {
 app.put("/api/v1/caretaker/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE CareTaker SET carerName = $1, age = $2" +
-            " WHERE username = $3",
+            " WHERE username = $3 RETURNING *",
             [req.body.carername, req.body.age, req.params.username]);
-        res.status(200).json({
+        res.status(204).json({
             status: "success",
             data: {
                 user: results.rows[0]
