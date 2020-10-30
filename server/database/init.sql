@@ -222,9 +222,24 @@ CREATE OR REPLACE FUNCTION mark_bid()
 RETURNS TRIGGER AS
 $$
 DECLARE ctx NUMERIC;
+DECLARE pet NUMERIC;
+DECLARE matchtype NUMERIC;
 DECLARE care NUMERIC;
 DECLARE rate NUMERIC;
     BEGIN
+        SELECT COUNT(*) INTO pet
+            FROM Bid
+            WHERE NEW.pouname = Bid.pouname AND NEW.petname = Bid.petname AND Bid.is_win = True AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
+        SELECT COUNT(*) INTO matchtype
+            FROM Cares
+            WHERE NEW.ctuname = Cares.ctuname AND NEW.pettype = Cares.pettype;
+
+        IF pet > 0 THEN -- If a winning bid has already been made for the same Pet which overlaps this new Bid
+            RAISE EXCEPTION 'This Pet will be taken care of by another caretaker during that period.';
+        ELSIF matchtype = 0 AND NEW.is_win = True THEN -- Else if the caretaker is incapable of taking care of this Pet type
+            RAISE EXCEPTION 'This caretaker is unable to take care of that Pet type.';
+        END IF;
+
         SELECT COUNT(*) INTO ctx
             FROM FullTimer F
             WHERE NEW.ctuname = F.username;
@@ -365,14 +380,17 @@ CALL add_fulltimers('yellowbird', 'ducklings', 20, 'lizard', 70);
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
+CALL add_petOwner('thomasthetank', 'Tom', 15, 'cat', 'Claw', 10, NULL);
 
-INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'dog', 'Champ', 10, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dogs', 'Champ', 10, NULL);
 INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
 
 INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 40);
 INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
 INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
+/* Remove the following line to encounter pet type error */
+INSERT INTO Cares VALUES ('yellowbird', 'big dogs', 90);
 
 INSERT INTO Has_Availability VALUES ('yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
 INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
@@ -385,9 +403,9 @@ INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowchicken', to_timest
     bid. The 1-4 bid by 'johnthebest' that is inserted afterwards immediately loses as well, since 'yellowbird' has
     reached their maximum capacity already.*/
 INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
-INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
+INSERT INTO Bid VALUES ('marythemess', 'Champ', 'big dogs', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
 INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
-INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
+INSERT INTO Bid VALUES ('marythemess', 'Meow', 'cat', 'yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
 UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Fido' AND pettype = 'dog' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');
-UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Fido' AND pettype = 'dog' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
 INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
