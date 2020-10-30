@@ -218,29 +218,76 @@ BEFORE INSERT OR UPDATE ON FullTimer
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 
 
-CREATE OR REPLACE PROCEDURE add_bid(
-    pouname VARCHAR(50),
-    petname VARCHAR(20),
-    pettype VARCHAR(20),
-    ctuname VARCHAR(50),
-    s_time DATE,
-    e_time DATE
-    ) AS
-        $$
-        DECLARE ctx NUMERIC;
-        BEGIN
-            SELECT COUNT(*) INTO ctx FROM Cares
-                WHERE Cares.ctuname = ctuname;
---            RAISE EXCEPTION 'test';
-            IF ctx = 0 THEN
-                RAISE EXCEPTION 'Caretaker is unable to care for this pet type.';
+CREATE OR REPLACE FUNCTION mark_bid()
+RETURNS TRIGGER AS
+$$
+DECLARE ctx NUMERIC;
+DECLARE care NUMERIC;
+DECLARE rate NUMERIC;
+    BEGIN
+        SELECT COUNT(*) INTO ctx
+            FROM FullTimer F
+            WHERE NEW.ctuname = F.username;
+        SELECT COUNT(*) INTO care
+            FROM Bid
+            WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
+
+        IF ctx > 0 THEN -- If CT is a fulltimer
+            IF care >= 5 THEN
+                RAISE EXCEPTION 'This caretaker has exceeded their capacity.';
+            ELSE
+                RETURN NEW;
             END IF;
-            INSERT INTO Bid(pouname, petName, petType, ctuname, s_time, e_time)
-                VALUES (pouname, petname, pettype, ctuname, s_time, e_time)
-                RETURNING *;
-        END;
-        $$
-    LANGUAGE plpgsql;
+        ELSE -- If CT is a parttimer
+            SELECT AVG(rating) INTO rate
+                FROM Caretaker AS C
+                WHERE NEW.ctuname = C.username;
+            IF rate IS NULL OR rate < 4 THEN
+                IF care >= 2 THEN
+                    RAISE EXCEPTION 'This caretaker has exceeded their capacity.';
+                ELSE
+                    RETURN NEW;
+                END IF;
+            ELSE
+                IF care >= 5 THEN
+                    RAISE EXCEPTION 'This caretaker has exceeded their capacity.';
+                ELSE
+                    RETURN NEW;
+                END IF;
+            END IF;
+        END IF;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER mark_other_bids
+BEFORE UPDATE ON Bid
+FOR EACH ROW EXECUTE PROCEDURE mark_bid();
+
+
+--CREATE OR REPLACE PROCEDURE add_bid(
+--    pouname VARCHAR(50),
+--    petname VARCHAR(20),
+--    pettype VARCHAR(20),
+--    ctuname VARCHAR(50),
+--    s_time DATE,
+--    e_time DATE
+--    ) AS
+--        $$
+--        DECLARE ctx NUMERIC;
+--        BEGIN
+--            SELECT COUNT(*) INTO ctx FROM Cares
+--                WHERE Cares.ctuname = ctuname;
+--              Must ensure that a Bid cannot be created for the same Petowner and Pet with overlapping time periods.
+----            RAISE EXCEPTION 'test';
+--            IF ctx = 0 THEN
+--                RAISE EXCEPTION 'Caretaker is unable to care for this pet type.';
+--            END IF;
+--            INSERT INTO Bid(pouname, petName, petType, ctuname, s_time, e_time)
+--                VALUES (pouname, petname, pettype, ctuname, s_time, e_time)
+--                RETURNING *;
+--        END;
+--        $$
+--    LANGUAGE plpgsql;
 
 
 /* Views */
@@ -283,3 +330,13 @@ INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
 
 INSERT INTO Has_Availability VALUES ('yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
+INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
+INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
+INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
+
+INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
+INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
+INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
+INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');

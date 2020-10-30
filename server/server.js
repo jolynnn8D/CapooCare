@@ -750,7 +750,8 @@ app.post("/api/v1/categories/:username", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/bid/", async (req, res) => {
-    db.query("CALL add_bid($1, $2, $3, $4, $5::date, $6::date)",
+    db.query("INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time)" +
+        "VALUES ($1, $2, $3, $4, to_timestamp($5), to_timestamp($6)) RETURNING *",
         [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -774,16 +775,359 @@ app.post("/api/v1/bid/", async (req, res) => {
 });
 
 
-// app.post("*", async (req, res) => {
-//     res.status(400).json({
-//         status: "failure",
-//         data: {
-//             error: "Invalid API address.",
-//             address: req.originalUrl,
-//             body: req.body
-//         }
-//     })
-// })
+// Gets all Bids for a Caretaker.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:ctuname", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1",
+        [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+// Gets all Bids between a Caretaker and a Petowner.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2",
+        [req.params.ctuname, req.params.pouname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Bids between a Caretaker and a Petowner, within a specified timeframe. This will return all Bids that
+// entirely intersect the specified s_time and e_time. Partial overlaps will not be returned.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "s_time": Integer (which will be converted into a Timestamp),
+            "e_time": Integer (which will be converted into a Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE ctuname = $1 AND pouname = $2 AND s_time >= to_timestamp($3) AND e_time <= to_timestamp($4)",
+        [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Deletes all Bids between a Caretaker and a Petowner, within a specified timeframe. This will delete all Bids that
+// entirely intersect the specified s_time and e_time. Partial overlaps will not be deleted.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "s_time": Integer (which will be converted into a Timestamp),
+            "e_time": Integer (which will be converted into a Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.delete("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
+    db.query("DELETE FROM Bid WHERE ctuname = $1 AND pouname = $2 AND s_time >= to_timestamp($3) AND e_time <= to_timestamp($4) RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Marks a Bid between a Caretaker and a Petowner, of a specified timeframe. This will only mark a Bid that is referred
+// to exactly via its s_time and e_time. The GET APIs should be used to verify the exact s_time and e_time.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "s_time": Integer (which will be converted into a Timestamp),
+            "e_time": Integer (which will be converted into a Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        409 Conflict, if caretaker has exceeded their allowed number of Pets at that time.
+ */
+app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
+    db.query("UPDATE Bid SET is_win = True WHERE ctuname = $1 AND pouname = $2 AND s_time = to_timestamp($3) AND e_time = to_timestamp($4) RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bid: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(409).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+
+/* API calls for Availability */
+
+// Adds an Availability.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Timestamp),
+            e_time: Integer (which will be converted by API to Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.post("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("INSERT INTO Has_Availability VALUES ($1, to_timestamp($2), to_timestamp($3)) RETURNING *",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availability: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Availabilities.
+// Used for debugging.
+app.get("/api/v1/availability/", async (req, res) => {
+    db.query(
+        "SELECT * FROM Has_Availability"
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Availabilities from a Caretaker within a timeframe. All availabilities indicated by the caretaker will be
+// returned in this query, within the s_time and e_time indicated in this API call.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Timestamp),
+            e_time: Integer (which will be converted by API to Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_timestamp($2) AND e_time <= to_timestamp($3)",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Deletes all Availabilities from a Caretaker within a timeframe. All availabilities indicated by the caretaker that
+// entirely intersect the s_time and e_time indicated will be deleted. This does not include partial overlaps.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            s_time: Integer (which will be converted by API to Timestamp),
+            e_time: Integer (which will be converted by API to Timestamp)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.delete("/api/v1/availability/:ctuname", async (req, res) => {
+    db.query("DELETE FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_timestamp($2) AND e_time <= to_timestamp($3) RETURNING *",
+        [req.params.ctuname, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
 
 
 app.listen(port, () => {
