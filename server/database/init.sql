@@ -230,12 +230,12 @@ DECLARE rate NUMERIC;
             WHERE NEW.ctuname = F.username;
         SELECT COUNT(*) INTO care
             FROM Bid
-            WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
+            WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win = True AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
 
         IF ctx > 0 THEN -- If CT is a fulltimer
-            IF care >= 5 THEN
+            IF care >= 5 AND NEW.is_win = True THEN -- If marking this Bid would exceed the capacity of the caretaker, abort
                 RAISE EXCEPTION 'This caretaker has exceeded their capacity.';
-            ELSE
+            ELSE -- Otherwise, continue as-per normal
                 RETURN NEW;
             END IF;
         ELSE -- If CT is a parttimer
@@ -243,13 +243,13 @@ DECLARE rate NUMERIC;
                 FROM Caretaker AS C
                 WHERE NEW.ctuname = C.username;
             IF rate IS NULL OR rate < 4 THEN
-                IF care >= 2 THEN
+                IF care >= 2 AND NEW.is_win = True THEN
                     RAISE EXCEPTION 'This caretaker has exceeded their capacity.';
                 ELSE
                     RETURN NEW;
                 END IF;
             ELSE
-                IF care >= 5 THEN
+                IF care >= 5 AND NEW.is_win = True THEN
                     RAISE EXCEPTION 'This caretaker has exceeded their capacity.';
                 ELSE
                     RETURN NEW;
@@ -259,9 +259,54 @@ DECLARE rate NUMERIC;
     END; $$
 LANGUAGE plpgsql;
 
-CREATE TRIGGER mark_other_bids
-BEFORE UPDATE ON Bid
-FOR EACH ROW EXECUTE PROCEDURE mark_bid();
+CREATE TRIGGER validate_bid_marking
+BEFORE INSERT OR UPDATE ON Bid
+FOR EACH ROW
+EXECUTE PROCEDURE mark_bid();
+
+
+CREATE OR REPLACE FUNCTION mark_other_bids()
+RETURNS TRIGGER AS
+$$
+DECLARE ctx NUMERIC;
+DECLARE care NUMERIC;
+DECLARE rate NUMERIC;
+    BEGIN
+        SELECT COUNT(*) INTO ctx
+            FROM FullTimer F
+            WHERE NEW.ctuname = F.username;
+        SELECT COUNT(*) INTO care
+            FROM Bid
+            WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win = True AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
+
+        IF ctx > 0 THEN -- If CT is a fulltimer
+            IF care >= 5 THEN -- If marking this Bid would exceed the capacity of the caretaker, automatically cancel all remaining Bids for this Availability
+                UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND NEW.s_time = Bid.s_time AND NEW.e_time = Bid.e_time;
+            END IF;
+            RETURN NULL;
+        ELSE -- If CT is a parttimer
+            SELECT AVG(rating) INTO rate
+                FROM Caretaker AS C
+                WHERE NEW.ctuname = C.username;
+            IF rate IS NULL OR rate < 4 THEN
+                IF care >= 2 THEN
+                    UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND NEW.s_time = Bid.s_time AND NEW.e_time = Bid.e_time;
+                END IF;
+                RETURN NULL;
+            ELSE
+                IF care >= 5 THEN
+                    UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND NEW.s_time = Bid.s_time AND NEW.e_time = Bid.e_time;
+                END IF;
+                RETURN NULL;
+            END IF;
+        END IF;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER mark_other_bids_false
+AFTER INSERT OR UPDATE ON Bid
+FOR EACH ROW
+EXECUTE PROCEDURE mark_other_bids();
 
 
 --CREATE OR REPLACE PROCEDURE add_bid(
@@ -277,7 +322,7 @@ FOR EACH ROW EXECUTE PROCEDURE mark_bid();
 --        BEGIN
 --            SELECT COUNT(*) INTO ctx FROM Cares
 --                WHERE Cares.ctuname = ctuname;
---              Must ensure that a Bid cannot be created for the same Petowner and Pet with overlapping time periods.
+--              TODO: Must ensure that a Bid cannot be created for the same Petowner and Pet with overlapping time periods.
 ----            RAISE EXCEPTION 'test';
 --            IF ctx = 0 THEN
 --                RAISE EXCEPTION 'Caretaker is unable to care for this pet type.';
@@ -335,8 +380,14 @@ INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('2000000'), to_t
 INSERT INTO Has_Availability VALUES ('yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
 
 INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowchicken', to_timestamp('1000000'), to_timestamp('2000000'));
+
+/* Expected outcome: 'marythemess' wins both bids at timestamp 1-4 and 2-4. This causes 'johnthebest' to lose the 2-4
+    bid. The 1-4 bid by 'johnthebest' that is inserted afterwards immediately loses as well, since 'yellowbird' has
+    reached their maximum capacity already.*/
 INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
 INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
+INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));
 INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
-UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');
-UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Fido' AND pettype = 'dog' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Fido' AND pettype = 'dog' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
+INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
