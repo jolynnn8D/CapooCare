@@ -253,6 +253,34 @@ CREATE TRIGGER check_fulltimer
 BEFORE INSERT ON FullTimer
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 
+/* check if the periods are 150 consecutive days within a year*/
+
+CREATE OR REPLACE FUNCTION check_period()
+RETURNS TRIGGER AS
+    $$ 
+    DECLARE period1 NUMERIC;
+    DECLARE period2 NUMERIC;
+    BEGIN
+        -- check if both periods overlap
+        IF (NEW.period1_s, NEW.period1_e) OVERLAPS (NEW.period2_s, NEW.period2_e) THEN
+            RAISE EXCEPTION 'Invalid periods: Periods are overlapping.';
+        ELSE
+            SELECT (NEW.period1_e - NEW.period1_s) AS DAYS INTO period1;
+            SELECT (NEW.period2_e - NEW.period2_s) AS DAYS INTO period2;
+            IF (period1 < 150 OR period2 < 150) THEN
+                RAISE EXCEPTION 'Invalid periods: Less than 150 days.';
+            ELSE
+                RETURN NEW;
+            END IF;
+        END IF;
+    END; $$
+LANGUAGE plpgsql;
+
+
+CREATE TRIGGER check_ft_period
+BEFORE INSERT ON FullTimer
+FOR EACH ROW EXECUTE PROCEDURE check_period();
+
 ------------------------------------------------------------ Bid ------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION validate_mark()
@@ -391,6 +419,7 @@ CREATE OR REPLACE PROCEDURE add_bid(
             if avail = 0 THEN
                 RAISE EXCEPTION 'Caretaker is unavailable for this period.';
             END IF;
+            -- Calculate the cost
             SELECT (Cares.price * (_e_time - _s_time)) INTO cost
             FROM Cares
             WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
@@ -422,9 +451,9 @@ INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
 
 INSERT INTO Category VALUES ('dog'),('cat'),('rabbit'),('big dogs'),('lizard'),('bird');
 
-CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 50, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 50, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
 
 CALL add_parttimer('yellowbird', 'bird', 35, 'cat', 60);
 
