@@ -1008,9 +1008,10 @@ app.put("/api/v1/bid/", async (req, res) => {
     ).then(
         (result) => {
             if (result.rows.length === 0) {
-                res.status(200).json({
+                res.status(400).json({
                     status: "unsuccessful update",
-                    message: "This is most likely because is_win = False or NULL. Also consider that the params might wrong."
+                    message: "Check that: 1) is_win is not NULL or false, 2) s_time and e_time are entered in YYYYMMDD, " +
+                        "3) you have correctly identified the start and end dates, 4) pouname and ctuname are in the right order."
                 });
             } else {
                 res.status(200).json({
@@ -1105,8 +1106,10 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
     ).then(
         (result) => {
             if (result.rows.length === 0) {
-                res.status(200).json({
-                    status: "unsuccessful update (check parameters)",
+                res.status(400).json({
+                    status: "unsuccessful update",
+                    message: "Check that: 2) s_time and e_time are entered in YYYYMMDD, 2) you have correctly identified" +
+                        " the start and end dates, 3) pouname and ctuname are in the right order, 4) the CT is not overloaded."
                 });
             } else {
                 res.status(200).json({
