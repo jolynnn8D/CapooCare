@@ -78,8 +78,6 @@ const petsModel = {
   getAllCategories: action((state, payload) => {
     state.petCategories = [...payload];
   }),
-
-
 }
 
 export default petsModel;

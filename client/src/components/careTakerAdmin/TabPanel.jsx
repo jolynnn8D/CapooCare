@@ -11,6 +11,7 @@ import Box from '@material-ui/core/Box';
 import CalendarView from "./CalendarView"
 import BidPanel from "./BidPanel"
 import PetCareList from "./PetCareList"
+import CaretakerAvailability from './CaretakerAvailability';
 
 function TabPanel(props) {
   const { children, value, index, username, ...other } = props;
@@ -93,7 +94,7 @@ export default function FullWidthTabs(props) {
           <BidPanel username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          Salary details
+          <CaretakerAvailability username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
           <PetCareList owner={true} username={props.username}/>

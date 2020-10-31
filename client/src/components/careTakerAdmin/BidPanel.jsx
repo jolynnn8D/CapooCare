@@ -146,7 +146,7 @@ const BidPanel = (props) => {
                             Price: ${bidInfo.cost.toFixed(2)}
                         </Typography>
                         <Typography variant="h6">
-                            Payment Made: {bidInfo.pay_type}
+                            Pickup Method: {bidInfo.pet_pickup}
                         </Typography>
                         <br />
 
