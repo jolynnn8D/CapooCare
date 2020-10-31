@@ -61,7 +61,6 @@ CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
     carerName VARCHAR(50) NOT NULL,
     age   INTEGER DEFAULT NULL,
-    rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL
 );
 
@@ -85,6 +84,7 @@ CREATE TABLE Has_Availability (
     ctuname VARCHAR(50) REFERENCES CareTaker(username) ON DELETE CASCADE,
     s_time DATE,
     e_time DATE,
+    CHECK (e_time > s_time),
     PRIMARY KEY(ctuname, s_time, e_time)
 );
 
@@ -159,8 +159,10 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
             SELECT COUNT(*) INTO ctx FROM FullTimer
                 WHERE FullTimer.username = ctuname;
             IF ctx = 0 THEN
-                INSERT INTO CareTaker VALUES (ctuname, aname, age, null, null);
+                INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
                 INSERT INTO FullTimer VALUES (ctuname, period1_s, period1_e, period2_s, period2_e);
+                INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
+                INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
             END IF;
             INSERT INTO Cares VALUES (ctuname, pettype, price);
     END;$$
@@ -173,7 +175,6 @@ CREATE OR REPLACE PROCEDURE add_parttimer(
     age   INTEGER,
     pettype VARCHAR(20),
     price INTEGER,
-    rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL
     )  AS $$
     DECLARE ctx NUMERIC;
@@ -181,7 +182,7 @@ CREATE OR REPLACE PROCEDURE add_parttimer(
         SELECT COUNT(*) INTO ctx FROM PartTimer
                 WHERE PartTimer.username = ctuname;
         IF ctx = 0 THEN
-            INSERT INTO CareTaker VALUES (ctuname, aname, age, rating, salary);
+            INSERT INTO CareTaker VALUES (ctuname, aname, age, salary);
             INSERT INTO PartTimer VALUES (ctuname);
         END IF;
         INSERT INTO Cares VALUES (ctuname, pettype, price);
@@ -393,6 +394,32 @@ AFTER INSERT OR UPDATE ON Bid
 FOR EACH ROW
 EXECUTE PROCEDURE mark_other_bids();
 
+CREATE OR REPLACE FUNCTION check_rating_update()
+RETURNS TRIGGER AS
+$$
+DECLARE avg_rating NUMERIC;
+    BEGIN
+        -- If updating rating
+        IF (NEW.rating IS NOT NULL) THEN
+            IF ((SELECT CURRENT_DATE) > NEW.e_time) THEN
+                IF (NEW.pay_status = TRUE AND NEW.is_win = TRUE) THEN
+                    RETURN NEW;
+                ELSE
+                    RAISE EXCEPTION 'Bids and payment must be successful before ratings or reviews can be updated.';
+                END IF;
+            ELSE
+                RAISE EXCEPTION 'Ratings and reviews cannot be updated before the end of the job.';
+            END IF;
+        END IF;
+        RETURN NEW;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_rating_update
+AFTER UPDATE ON Bid
+FOR EACH ROW
+EXECUTE PROCEDURE check_rating_update();
+
 
 CREATE OR REPLACE PROCEDURE add_bid(
    _pouname VARCHAR(50),
@@ -431,19 +458,20 @@ CREATE OR REPLACE PROCEDURE add_bid(
        $$
    LANGUAGE plpgsql;
 
+
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT username, carerName, age, rating, salary, true AS is_carer FROM CareTaker
+   SELECT username, carerName, age, salary, true AS is_carer FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS rating, NULL AS salary, false AS is_carer FROM PetOwner
+   SELECT username, ownerName, age, NULL AS salary, false AS is_carer FROM PetOwner
 );
 
 CREATE OR REPLACE VIEW Accounts AS (
-   SELECT username, adminName, age, NULL AS rating, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
+   SELECT username, adminName, age, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
    UNION ALL
-   SELECT username, carerName, age, rating, salary, true AS is_carer, false AS is_admin FROM CareTaker
+   SELECT username, carerName, age, salary, true AS is_carer, false AS is_admin FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS rating, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
+   SELECT username, ownerName, age, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
 );
 
 /* SEED */
@@ -480,6 +508,8 @@ INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
 CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-02', '2020-02-03');
 CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-05', '2020-02-20');
+
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Meow' AND pettype = 'cat' AND s_time = '2020-01-02' AND e_time = '2020-02-03';
 
 
  /* Expected outcome: 'marythemess' wins both bids at timestamp 1-4 and 2-4. This causes 'johnthebest' to lose the 2-4		
