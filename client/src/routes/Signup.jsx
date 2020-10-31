@@ -54,9 +54,13 @@ const Signup = () => {
     const [isPetCaretaker, setPetCaretaker] = useState(false);
     const [caretakerType, setCaretakerType] = useState("parttime");
     const [petInformation, setPetInformation] = useState({});
+    const [p1startDate, setP1StartDate] = useState(0);
+    const [p1endDate, setP1EndDate] = useState(0);
+    const [p2startDate, setP2StartDate] = useState(0);
+    const [p2endDate, setP2EndDate] = useState(0);
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('An error occurred.');
-    const [finalStatus, setFinalStatus] = useState(true);
+
 
     const onPetOwnerSwitchChange = () => {
         setPetOwner(isPetOwner => !isPetOwner);
@@ -177,7 +181,11 @@ const Signup = () => {
                     name: firstName,
                     age: parseInt(age),
                     pettype: petType,
-                    price: parseInt(petPrice)
+                    price: parseInt(petPrice), 
+                    period1_s: p1startDate,
+                    period1_e: p1endDate,
+                    period2_s: p2startDate,
+                    period2_e: p2endDate
                 })
             }
         }
@@ -272,7 +280,7 @@ const Signup = () => {
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
                     <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> 
-                    <Availability/> </>
+                    <Availability setP1StartDate={setP1StartDate} setP1EndDate={setP1EndDate} setP2StartDate={setP2StartDate} setP2EndDate={setP2EndDate}/> </>
                     : isPetCaretaker ?
                     <> <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">Type of caretaker</FormLabel>
