@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
-import { addDays } from 'date-fns';
+import { addDays, addYears, eachDay } from 'date-fns';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import {convertDate} from '../../../utils';
 
@@ -59,20 +59,46 @@ const BidModal = (props) => {
             key: 'selection'
         }
     ]);
+    const minDate = new Date();
+    const maxDate = addYears(minDate, 2);
     const [petChoice, setPetChoice] = useState("")
     const [paymentType, setPaymentType] = useState("")
     const [pickupType, setPickupType] = useState("")
+    const [disabledDates, setDisabledDates] = useState([]);
     const singleUser = useStoreState(state => state.user.singleUser);
     const getOwnerPetsOfType = useStoreActions(actions => actions.pets.getOwnerPetsOfType);
     const biddablePets = useStoreState(state => state.pets.biddablePets);
+    const getAvailabilityList = useStoreActions(actions => actions.careTakers.getAvailabilityList);
+    const availabilityList = useStoreState(state => state.careTakers.availabilityList);
     const addBid = useStoreActions(actions => actions.bids.addBid);
-    console.log(props.petType)
-    console.log(props.ctuname);
+    // console.log(props.petType)
+    // console.log(props.ctuname);
+
+    const findDisabledDates = (enabledRanges) => {
+        tempDisabledDates = eachDay(minDate, maxDate);
+        allEnabledDates = []
+        for (enabledRange of enabledRanges) {
+            allEnabledDates.concat(eachDay(new Date(enabledRange.s_time), new Date(enabledRanges.e_time)));
+        }
+        tempDisabledDates = tempDisabledDates.filter(x => !allEnabledDates.includes(x))
+        setDisabledDates(tempDisabledDates);
+    }
+
     useEffect(() => {
         getOwnerPetsOfType({
             username: singleUser.username,
             pettype: props.petType
         })
+        console.log(username);
+        console.log(convertDate(minDate).toString());
+        console.log(convertDate(maxDate).toString())
+        getAvailabilityList({
+            username: username,
+            s_time: convertDate(minDate).toString(),
+            e_time: convertDate(maxDate).toString()
+        })
+            .then(findDisabledDates())
+        // console.log(availabilityList);
         return () => {};
     }, [])
 
@@ -102,7 +128,9 @@ const BidModal = (props) => {
                 moveRangeOnFirstSelection={false}
                 ranges={dateRange}
                 direction="horizontal"
-                minDate = {new Date()}
+                minDate = {minDate}
+                maxDate={maxDate}
+                disabledDates={disabledDates}
             />
 
             <FormControl className={classes.formControl}>
@@ -152,6 +180,10 @@ const BidModal = (props) => {
                         })}
                 </Select>
             </FormControl>
+
+            <Typography>
+                {availabilityList || "hello" }
+            </Typography>
 
             <div className={classes.buttonRow}>
                 <Button className={classes.button}
