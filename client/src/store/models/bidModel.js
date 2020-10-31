@@ -21,6 +21,38 @@ const bidModel = {
       });
     }),
 
+    addReviewToBid: thunk(async(actions, payload) => {
+      const { bid, rating, review } = {... payload};
+      const url = serverUrl + "/api/v1/bid";
+      const { data } = await axios.put(url, {
+        pouname: bid.pouname,
+        petname: bid.petname,
+        pettype: bid.pettype,
+        ctuname: bid.ctuname,
+        s_time: convertDate(sqlToJsDate(bid.s_time)),
+        e_time: convertDate(sqlToJsDate(bid.e_time)),
+        pay_type: bid.pay_type,
+        pet_pickup: bid.pet_pickup,
+        rating: rating,
+        review: review,
+        pay_status: bid.pay_status
+      });
+      actions.modifyBidReview(payload);
+    }),
+    modifyBidReview: action((state, payload) => {
+      state.petOwnerBids.map((bid) => {
+        if (bid.pouname == payload.bid.pouname &&
+            bid.petname == payload.bid.petname &&
+            bid.pettype == payload.bid.pettype &&
+            bid.ctuname == payload.bid.ctuname &&
+            bid.s_time == payload.bid.s_time &&
+            bid.e_time == payload.bid.e_time) {
+              bid.rating = payload.rating;
+              bid.review = payload.review;
+            }
+      })
+    }), 
+
     // Get bids for a caretaker
     getUserBids: thunk(async(actions, payload) => {
         const ctuname = payload;
