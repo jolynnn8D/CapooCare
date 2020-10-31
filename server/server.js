@@ -459,7 +459,7 @@ app.put("/api/v1/petowner/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE PetOwner SET ownerName = $1, age = $2 WHERE username = $3 RETURNING *",
             [req.body.ownername, req.body.age, req.params.username]);
-        res.status(204).json({
+        res.status(200).json({
             status: "success",
             data: {
                 user: results.rows
