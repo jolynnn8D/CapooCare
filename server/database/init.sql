@@ -414,7 +414,15 @@ CREATE OR REPLACE VIEW Users AS (
         CASE WHEN P.username IS NULL THEN false  
             ELSE true END AS is_petowner, 
         CASE WHEN C.username IS NULL THEN false 
-            ELSE true END AS is_carer 
+            ELSE true END AS is_carer,
+        CASE WHEN C.username IN (
+            SELECT username
+            FROM fulltimer
+        ) THEN true ELSE false END AS is_fulltimer,
+        CASE WHEN C.username IN (
+            SELECT username
+            FROM parttimer
+        ) THEN true ELSE false END AS is_parttimer
     FROM petowner P FULL OUTER JOIN caretaker C ON P.username = C.username
 );
 

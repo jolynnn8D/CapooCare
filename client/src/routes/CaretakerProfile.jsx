@@ -23,6 +23,7 @@ const CaretakerProfile = (props) => {
 
     // console.log(params);
     const username = params.username;
+    
     const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
     const displayedUser = useStoreState(state => state.user.displayedUser);
     // console.log(caretaker);

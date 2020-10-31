@@ -53,8 +53,6 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
     }, [])
 
     const [open, setOpen] = useState(false);
-    const [petOwnerDetails, setPetOwnerDetails] = useState({});
-    const [careTakerDetails, setCareTakerDetails] = useState({});
 
     const toggleModal = () => {
         setOpen(!open);
