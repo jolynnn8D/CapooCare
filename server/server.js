@@ -1332,15 +1332,16 @@ app.get("/api/v1/availability/", async (req, res) => {
         200 OK, if successful
         400 Bad Request, if general failure
  */
-app.get("/api/v1/availability/:ctuname", async (req, res) => {
+app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
+    console.log(req);
     db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD')",
-        [req.params.ctuname, req.body.s_time, req.body.e_time]
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
     ).then(
         (result) => {
             res.status(200).json({
                 status: "success",
                 data: {
-                    availabilities: result.rows
+                    availabilities: result.rows,
                 }
             })
         }
