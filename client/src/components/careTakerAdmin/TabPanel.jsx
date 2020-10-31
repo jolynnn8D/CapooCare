@@ -79,7 +79,7 @@ export default function FullWidthTabs(props) {
           centered
         >
           <Tab label="Bids" {...a11yProps(0)} />
-          <Tab label="Salary" {...a11yProps(1)} />
+          <Tab label="Availability/Salary" {...a11yProps(1)} />
           <Tab label="Pet Price" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
