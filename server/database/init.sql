@@ -12,6 +12,8 @@ DROP VIEW IF EXISTS Users CASCADE;
 DROP VIEW IF EXISTS Accounts CASCADE;
 
 /*                                      **IMPORTANT**
+
+
     The code block below drops all functions, aggregates, and procedures from the database.
     This is required because PostgreSQL can't handle overloaded functions and procedures. */
 DO
@@ -115,9 +117,9 @@ CREATE TABLE Bid (
     is_win BOOLEAN DEFAULT NULL,
     rating INTEGER CHECK((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
     review VARCHAR(200),
-    pay_type VARCHAR(50) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
+    pay_type VARCHAR(20) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
     pay_status BOOLEAN DEFAULT FALSE,
-    pet_pickup VARCHAR(50) CHECK((pet_pickup IS NULL) OR pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
+    pet_pickup VARCHAR(20) CHECK((pet_pickup IS NULL) OR pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
     FOREIGN KEY (pouname, petname, pettype) REFERENCES Owned_Pet_Belongs(pouname, petname, pettype),
     PRIMARY KEY (pouname, petname, pettype, ctuname, s_time, e_time),
     CHECK (pouname <> ctuname)
@@ -372,7 +374,9 @@ CREATE OR REPLACE PROCEDURE add_bid(
    _pettype VARCHAR(20),
    _ctuname VARCHAR(50),
    _s_time DATE,
-   _e_time DATE
+   _e_time DATE,
+   _pay_type VARCHAR(20),
+   _pet_pickup VARCHAR(20)
    ) AS
        $$
        DECLARE care NUMERIC;
@@ -395,8 +399,8 @@ CREATE OR REPLACE PROCEDURE add_bid(
             FROM Cares
             WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
             -- Must ensure that a Bid cannot be created for the same Petowner and Pet with overlapping time periods.
-            INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time, cost)
-               VALUES (_pouname, _petname, _pettype, _ctuname, _s_time, _e_time, cost);
+            INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time, cost, pay_type, pet_pickup)
+               VALUES (_pouname, _petname, _pettype, _ctuname, _s_time, _e_time, cost, _pay_type, _pet_pickup);
             -- TODO: Must automatically mark bid if it's a fulltimer
        END;
        $$
@@ -445,13 +449,21 @@ INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
 INSERT INTO Cares VALUES ('yellowbird', 'big dogs', 90);
 
 INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-01-01', '2020-03-04');
+INSERT INTO Has_Availability VALUES ('yellowchicken', '2021-01-01', '2021-03-04');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
-CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-02', '2020-02-03');
-CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-05', '2020-02-20');
+CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-02', '2020-02-03', NULL, NULL);
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2021-02-05', '2021-02-20', 'cash', 'poDeliver');
 
+-- The following test case sets up a completed Bid
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-05', '2020-02-20', 'credit card', 'ctPickup');
+UPDATE Bid SET is_win = true WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ'
+    AND pettype = 'big dogs' AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD');
+UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review = 'sample review', pay_status = true
+    WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs'
+    AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD') AND is_win = true;
 
  /* Expected outcome: 'marythemess' wins both bids at timestamp 1-4 and 2-4. This causes 'johnthebest' to lose the 2-4		
      bid. The 1-4 bid by 'johnthebest' that is inserted afterwards immediately loses as well, since 'yellowbird' has		

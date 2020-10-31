@@ -746,7 +746,9 @@ app.post("/api/v1/categories/:username", async (req, res) => {
             petname: String,
             pettype: String,
             s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
-            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            pay_type: String (which is either NULL, 'credit card', or 'cash'),
+            pet_pickup: String (which is either NULL, 'poDeliver', 'ctPickup', or 'transfer')
         }
 
     Expected status code:
@@ -754,8 +756,8 @@ app.post("/api/v1/categories/:username", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/bid/", async (req, res) => {
-    db.query("CALL add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'))",
-        [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
+    db.query("CALL add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'), $7, $8)",
+        [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time, req.body.pay_type, req.body.pet_pickup]
     ).then(
         (result) => {
             res.status(200).json({
