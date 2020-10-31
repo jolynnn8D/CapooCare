@@ -746,7 +746,9 @@ app.post("/api/v1/categories/:username", async (req, res) => {
             petname: String,
             pettype: String,
             s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
-            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            pay_type: String (which is either NULL, 'credit card', or 'cash'),
+            pet_pickup: String (which is either NULL, 'poDeliver', 'ctPickup', or 'transfer')
         }
 
     Expected status code:
@@ -754,8 +756,8 @@ app.post("/api/v1/categories/:username", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/bid/", async (req, res) => {
-    db.query("CALL add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'))",
-        [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
+    db.query("CALL add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'), $7, $8)",
+        [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time, req.body.pay_type, req.body.pet_pickup]
     ).then(
         (result) => {
             res.status(200).json({
@@ -788,9 +790,44 @@ app.post("/api/v1/bid/", async (req, res) => {
         200 OK, if successful
         400 Bad Request, if general failure
  */
-app.get("/api/v1/bid/:ctuname", async (req, res) => {
+app.get("/api/v1/bid/:ctuname/ct", async (req, res) => {
     db.query("SELECT * FROM Bid WHERE ctuname = $1",
         [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Bids for a Petowner.
+/*
+    Expected inputs:
+        Path parameters:
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:pouname/po", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE pouname = $1",
+        [req.params.pouname]
     ).then(
         (result) => {
             res.status(200).json({
@@ -937,10 +974,10 @@ app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
 });
 
 
-// IMPORTANT: If no rows are returned, then the updating has failed (most likely because it was not marked beforehand).
 // Updates a specific Bid. This can only be done if the Bid has been won already. Otherwise, the details cannot be
 // updated. If the key characteristics are to be changed (i.e. CT, Pet, and time details), then the Bid should be
 // deleted and re-added.
+// IMPORTANT: If no rows are returned, then the updating has failed (most likely because it was not marked beforehand).
 /*
     Expected inputs:
         JSON object of the form:
@@ -971,9 +1008,10 @@ app.put("/api/v1/bid/", async (req, res) => {
     ).then(
         (result) => {
             if (result.rows.length === 0) {
-                res.status(200).json({
+                res.status(400).json({
                     status: "unsuccessful update",
-                    message: "This is most likely because is_win = False or NULL. Also consider that the params might wrong."
+                    message: "Check that: 1) is_win is not NULL or false, 2) s_time and e_time are entered in YYYYMMDD, " +
+                        "3) you have correctly identified the start and end dates, 4) pouname and ctuname are in the right order."
                 });
             } else {
                 res.status(200).json({
@@ -1068,8 +1106,10 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
     ).then(
         (result) => {
             if (result.rows.length === 0) {
-                res.status(200).json({
-                    status: "unsuccessful update (check parameters)",
+                res.status(400).json({
+                    status: "unsuccessful update",
+                    message: "Check that: 2) s_time and e_time are entered in YYYYMMDD, 2) you have correctly identified" +
+                        " the start and end dates, 3) pouname and ctuname are in the right order, 4) the CT is not overloaded."
                 });
             } else {
                 res.status(200).json({
@@ -1232,6 +1272,79 @@ app.delete("/api/v1/availability/:ctuname", async (req, res) => {
                 status: "success",
                 data: {
                     availabilities: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+/* API calls for Ratings and Reviews */
+
+// Get the average rating of a Caretaker. The rating is the average of all given ratings, or NULL if no ratings have
+// been given.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/rating/:ctuname", async (req, res) => {
+    db.query("SELECT AVG(rating) FROM Bid WHERE ctuname = $1",
+        [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    rating: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Get all reviews about a Caretaker.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/review/:ctuname", async (req, res) => {
+    db.query("SELECT review FROM Bid WHERE ctuname = $1 AND review IS NOT NULL",
+        [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    reviews: result.rows
                 }
             })
         }

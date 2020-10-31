@@ -12,6 +12,8 @@ DROP VIEW IF EXISTS Users CASCADE;
 DROP VIEW IF EXISTS Accounts CASCADE;
 
 /*                                      **IMPORTANT**
+
+
     The code block below drops all functions, aggregates, and procedures from the database.
     This is required because PostgreSQL can't handle overloaded functions and procedures. */
 DO
@@ -115,9 +117,9 @@ CREATE TABLE Bid (
     is_win BOOLEAN DEFAULT NULL,
     rating INTEGER CHECK((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
     review VARCHAR(200),
-    pay_type VARCHAR(50) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
+    pay_type VARCHAR(20) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
     pay_status BOOLEAN DEFAULT FALSE,
-    pet_pickup VARCHAR(50) CHECK((pet_pickup IS NULL) OR pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
+    pet_pickup VARCHAR(20) CHECK((pet_pickup IS NULL) OR pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
     FOREIGN KEY (pouname, petname, pettype) REFERENCES Owned_Pet_Belongs(pouname, petname, pettype),
     PRIMARY KEY (pouname, petname, pettype, ctuname, s_time, e_time),
     CHECK (pouname <> ctuname)
@@ -255,6 +257,33 @@ FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 
 ------------------------------------------------------------ Bid ------------------------------------------------------------
 
+CREATE OR REPLACE FUNCTION mark_bid_automatically_for_fulltimer()
+RETURNS TRIGGER AS
+$$
+DECLARE ft NUMERIC;
+DECLARE bidcount NUMERIC;
+    BEGIN
+        -- Automatically attempt to mark bid if caretaker is a fulltimer and can do so
+        SELECT COUNT(*) INTO ft
+            FROM FullTimer F
+            WHERE NEW.ctuname = F.username;
+        SELECT COUNT(*) INTO bidcount
+            FROM Bid
+            WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win = True AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
+        IF ft > 0 AND bidcount < 5 THEN
+            UPDATE Bid SET is_win = True WHERE ctuname = NEW.ctuname AND pouname = NEW.pouname AND petname = NEW.petname
+                 AND pettype = NEW.pettype AND s_time = NEW.s_time AND e_time = NEW.e_time;
+        END IF;
+        RETURN NEW;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER fulltimer_automatic_mark_upon_insert
+AFTER INSERT ON Bid
+FOR EACH ROW
+EXECUTE PROCEDURE mark_bid_automatically_for_fulltimer();
+
+
 CREATE OR REPLACE FUNCTION validate_mark()
 RETURNS TRIGGER AS
 $$
@@ -264,14 +293,18 @@ DECLARE matchtype NUMERIC;
 DECLARE care NUMERIC;
 DECLARE rate NUMERIC;
     BEGIN
-        IF OLD.is_win = True THEN -- Since this is a mark-validating trigger, if the Bid has already been marked, then return
+        -- Since this is a mark-validating trigger, if the Bid has already been marked, then return
+        IF OLD.is_win = True THEN
             RETURN NEW;
         END IF;
 
+        -- Check if the Pet will already be cared for by a Caretaker during this period
         SELECT COUNT(*) INTO pet
             FROM Bid
             WHERE NEW.pouname = Bid.pouname AND NEW.petname = Bid.petname AND Bid.is_win = True
               AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
+
+        -- Check if the Caretaker is able to care for the Pet type
         SELECT COUNT(*) INTO matchtype
             FROM Cares
             WHERE NEW.ctuname = Cares.ctuname AND NEW.pettype = Cares.pettype;
@@ -282,6 +315,7 @@ DECLARE rate NUMERIC;
             RAISE EXCEPTION 'This caretaker is unable to take care of that Pet type.';
         END IF;
 
+        -- Find out if this is a fulltimer, and how many Bids they have won for that period
         SELECT COUNT(*) INTO ctx
             FROM FullTimer F
             WHERE NEW.ctuname = F.username;
@@ -367,40 +401,45 @@ EXECUTE PROCEDURE mark_other_bids();
 
 
 CREATE OR REPLACE PROCEDURE add_bid(
-   _pouname VARCHAR(50),
-   _petname VARCHAR(20),
-   _pettype VARCHAR(20),
-   _ctuname VARCHAR(50),
-   _s_time DATE,
-   _e_time DATE
-   ) AS
-       $$
-       DECLARE care NUMERIC;
-       DECLARE avail NUMERIC;
-       DECLARE cost NUMERIC;
-       BEGIN
+    _pouname VARCHAR(50),
+    _petname VARCHAR(20),
+    _pettype VARCHAR(20),
+    _ctuname VARCHAR(50),
+    _s_time DATE,
+    _e_time DATE,
+    _pay_type VARCHAR(20),
+    _pet_pickup VARCHAR(20)
+    ) AS
+        $$
+        DECLARE care NUMERIC;
+        DECLARE avail NUMERIC;
+        DECLARE cost NUMERIC;
+        BEGIN
             -- Ensures that the ct can care for this pet type
-            SELECT COUNT(*) INTO care FROM Cares
-            WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
+            SELECT COUNT(*) INTO care
+                FROM Cares
+                WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
             IF care = 0 THEN
                RAISE EXCEPTION 'Caretaker is unable to care for this pet type.';
             END IF;
+
             -- Ensures that ct has availability at this time period
-            SELECT COUNT(*) INTO avail FROM Has_Availability
-            WHERE Has_Availability.ctuname = _ctuname AND (Has_Availability.s_time <= _s_time) AND (Has_Availability.e_time >= _e_time);
-            if avail = 0 THEN
+            SELECT COUNT(*) INTO avail
+                FROM Has_Availability
+                WHERE Has_Availability.ctuname = _ctuname AND (Has_Availability.s_time <= _s_time) AND (Has_Availability.e_time >= _e_time);
+            IF avail = 0 THEN
                 RAISE EXCEPTION 'Caretaker is unavailable for this period.';
             END IF;
+
+            -- Calculate cost
             SELECT (Cares.price * (_e_time - _s_time)) INTO cost
-            FROM Cares
-            WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
-            -- Must ensure that a Bid cannot be created for the same Petowner and Pet with overlapping time periods.
-            INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time, cost)
-               VALUES (_pouname, _petname, _pettype, _ctuname, _s_time, _e_time, cost);
-            -- TODO: Must automatically mark bid if it's a fulltimer
-       END;
-       $$
-   LANGUAGE plpgsql;
+                FROM Cares
+                WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
+            INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time, cost, pay_type, pet_pickup)
+               VALUES (_pouname, _petname, _pettype, _ctuname, _s_time, _e_time, cost, _pay_type, _pet_pickup);
+        END;
+        $$
+    LANGUAGE plpgsql;
 
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
@@ -433,7 +472,11 @@ CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('thomasthetank', 'Tom', 15, 'cat', 'Claw', 10, NULL);
 
 INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dogs', 'Champ', 10, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dogs', 'Ruff', 12, 'Hates cats');
+INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dogs', 'Bark', 14, 'Can be very loud');
 INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Purr', 15, 'Hates dogs');
+INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Sneak', 20, 'Needs to go outside a lot');
 
 INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 40);
 INSERT INTO Cares VALUES ('yellowchicken', 'dog', 40);
@@ -445,13 +488,29 @@ INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
 INSERT INTO Cares VALUES ('yellowbird', 'big dogs', 90);
 
 INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-01-01', '2020-03-04');
+INSERT INTO Has_Availability VALUES ('yellowchicken', '2021-01-01', '2021-03-04');
+INSERT INTO Has_Availability VALUES ('yellowbird', '2021-01-01', '2021-03-04');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
-CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-02', '2020-02-03');
-CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-05', '2020-02-20');
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-02-05', '2021-02-20', 'cash', 'poDeliver');
 
+-- The following test case overloads 'marythemess' with more bids than she can accept
+CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-02', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Bark', 'big dogs', 'yellowchicken', '2021-01-02', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2021-02-24', '2021-02-28', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowchicken', '2021-02-25', '2021-02-28', 'cash', 'ctPickup');
+CALL add_bid('marythemess', 'Purr', 'cat', 'yellowchicken', '2021-02-26', '2021-02-28', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Sneak', 'cat', 'yellowchicken', '2021-02-27', '2021-02-28', 'cash', 'poDeliver');
+
+-- The following test case sets up a completed Bid
+--CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-05', '2020-02-20', 'credit card', 'ctPickup');
+--UPDATE Bid SET is_win = true WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ'
+--    AND pettype = 'big dogs' AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD');
+--UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review = 'sample review', pay_status = true
+--    WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs'
+--    AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD') AND is_win = true;
 
  /* Expected outcome: 'marythemess' wins both bids at timestamp 1-4 and 2-4. This causes 'johnthebest' to lose the 2-4		
      bid. The 1-4 bid by 'johnthebest' that is inserted afterwards immediately loses as well, since 'yellowbird' has		
