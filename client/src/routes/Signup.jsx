@@ -90,7 +90,6 @@ const Signup = () => {
     
     useEffect(() => {
         getAllUsers();
-        console.log(history)
         return () => {};
     }, []);
     

@@ -18,10 +18,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 const Availability = (props) => {
-    // const [p1startDate, setP1StartDate] = useState(0);
-    // const [p1endDate, setP1EndDate] = useState(0);
-    // const [p2startDate, setP2StartDate] = useState(0);
-    // const [p2endDate, setP2EndDate] = useState(0);
     const {setP1StartDate, setP1EndDate, setP2StartDate, setP2EndDate} = props;
 
     const classes = useStyles();
