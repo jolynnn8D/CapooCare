@@ -23,9 +23,8 @@ const CaretakerProfile = (props) => {
 
     // console.log(params);
     const username = params.username;
-    const getDisplayedUser = useStoreActions(actions => actions.user.getUser);
-    const singleUser = useStoreState(state => state.user.singleUser);
-    // console.log(singleUser)
+    const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
+    const displayedUser = useStoreState(state => state.user.displayedUser);
     // console.log(caretaker);
 
     useEffect(() => {
@@ -34,7 +33,7 @@ const CaretakerProfile = (props) => {
     }, []);
     
 
-    if (singleUser.is_carer == true) {
+    if (displayedUser.is_carer == true) {
         return (
             <div>
                 <Grid container>
