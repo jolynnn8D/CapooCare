@@ -1285,6 +1285,79 @@ app.delete("/api/v1/availability/:ctuname", async (req, res) => {
 });
 
 
+/* API calls for Ratings and Reviews */
+
+// Get the average rating of a Caretaker. The rating is the average of all given ratings, or NULL if no ratings have
+// been given.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/rating/:ctuname", async (req, res) => {
+    db.query("SELECT AVG(rating) FROM Bid WHERE ctuname = $1",
+        [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    rating: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Get all reviews about a Caretaker.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/review/:ctuname", async (req, res) => {
+    db.query("SELECT review FROM Bid WHERE ctuname = $1 AND review IS NOT NULL",
+        [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    reviews: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
 
 app.listen(port, () => {
     console.log(`server has started on port ${port}`);
