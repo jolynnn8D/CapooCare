@@ -41,13 +41,16 @@ const PetCareList = (props) => {
     const [addCareOpen, setCareOpen] = useState(false);
     const [petType, setPetType] = useState("");
     const [petPrice, setPetPrice] = useState("");
+    const [bidPetType, setBidPetType] = useState("");
     const getPetCareList = useStoreActions(actions => actions.careTakers.getPetCareList);
     const addPetCareItem = useStoreActions(actions => actions.careTakers.addPetCareItem);
     const deletePetCareItem = useStoreActions(actions => actions.careTakers.deletePetType);
     const petCareList = useStoreState(state => state.careTakers.petCareList);
 
-    const openModal = () => {
+    const openModal = (bidPet) => {
+        setBidPetType(bidPet);
         setOpen(true);
+     
     }
     
     const closeModal = () => {
@@ -113,7 +116,7 @@ const PetCareList = (props) => {
                 </ListItemSecondaryAction> : null } 
                 {!props.owner ? 
                 <ListItemSecondaryAction>
-                    <IconButton onClick={openModal}>
+                    <IconButton onClick={() => openModal(careItem.pettype)}>
                         <ListItemText  
                             primary="Bid"/>
                     </IconButton>
@@ -136,7 +139,7 @@ const PetCareList = (props) => {
             <Modal
                 open={open}
                 onClose={closeModal}>
-                <BidModal modalHandler={closeModal}/>
+                <BidModal ctuname={props.username} petType={bidPetType} closeModal={closeModal}/>
             </Modal>
             <Modal
                 open={addCareOpen}

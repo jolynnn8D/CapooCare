@@ -295,14 +295,13 @@ app.post("/api/v1/parttimer", async (req, res) => {
 });
 
 
-// Update an existing Care Taker's name, age, and pet type. Stores all fields in the input object to the database.
+// Update an existing Care Taker's name, age. Stores all fields in the input object to the database.
 /*
     Expected inputs:
         JSON object of the form:
         {
             "name": String,
-            "age": Integer (optional; put null otherwise),
-            "pettype": String
+            "age": Integer
         }
 
         Path parameter: username, which represents the unique username of the Care Taker.
@@ -460,7 +459,7 @@ app.put("/api/v1/petowner/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE PetOwner SET ownerName = $1, age = $2 WHERE username = $3 RETURNING *",
             [req.body.ownername, req.body.age, req.params.username]);
-        res.status(204).json({
+        res.status(200).json({
             status: "success",
             data: {
                 user: results.rows
@@ -556,6 +555,34 @@ app.get("/api/v1/pet/:username", async(req, res) => {
     }
 });
 
+// Get all existing pets belonging to a username of a certain pet type
+/*
+    Expected inputs:
+        Path parameters:
+            username, which represents the unique username of the Pet's Owner.
+            pettype, which represents the pet type that to retrieve.
+    
+    Expected status code 200 OK, or 400 Bad Request
+*/
+app.get("/api/v1/pet/:username/:pettype", async(req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE pouname = $1 AND pettype = $2",
+            [req.params.username, req.params.pettype]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
 
 // Get an existing Pet.
 /*
@@ -783,8 +810,8 @@ app.delete("/api/v1/categories/:username/:pettype", async (req, res) => {
             pouname: String,
             petname: String,
             pettype: String,
-            s_time: Integer (which will be converted by API to Date),
-            e_time: Integer (which will be converted by API to Date)
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
         }
 
     Expected status code:
@@ -792,7 +819,7 @@ app.delete("/api/v1/categories/:username/:pettype", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/bid/", async (req, res) => {
-    db.query("Call add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'))",
+    db.query("CALL add_bid($1, $2, $3, $4, to_date($5,'YYYYMMDD'), to_date($6,'YYYYMMDD'))",
         [req.body.pouname, req.body.petname, req.body.pettype, req.body.ctuname, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
@@ -826,9 +853,44 @@ app.post("/api/v1/bid/", async (req, res) => {
         200 OK, if successful
         400 Bad Request, if general failure
  */
-app.get("/api/v1/bid/:ctuname", async (req, res) => {
+app.get("/api/v1/bid/:ctuname/ct", async (req, res) => {
     db.query("SELECT * FROM Bid WHERE ctuname = $1",
         [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Bids for a Petowner.
+/*
+    Expected inputs:
+        Path parameters:
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:pouname/po", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE pouname = $1",
+        [req.params.pouname]
     ).then(
         (result) => {
             res.status(200).json({
@@ -893,8 +955,8 @@ app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            "s_time": Integer (which will be converted into a Date),
-            "e_time": Integer (which will be converted into a Date)
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
         }
 
         Path parameters:
@@ -938,8 +1000,8 @@ app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Date),
-            "e_time": Integer (which will be converted into a Date)
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
         }
 
         Path parameters:
@@ -975,6 +1037,66 @@ app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
 });
 
 
+// IMPORTANT: If no rows are returned, then the updating has failed (most likely because it was not marked beforehand).
+// Updates a specific Bid. This can only be done if the Bid has been won already. Otherwise, the details cannot be
+// updated. If the key characteristics are to be changed (i.e. CT, Pet, and time details), then the Bid should be
+// deleted and re-added.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            ctuname: String,
+            pouname: String,
+            petname: String,
+            pettype: String,
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            pay_type: String (which is either NULL, 'credit card', or 'cash'),
+            pet_pickup: String (which is either NULL, 'poDeliver', 'ctPickup', or 'transfer'),
+            rating: Integer (which is either NULL, or between 0 and 5 inclusive),
+            review: String (which is either NULL, or a string limited to 200 characters),
+            pay_status: Boolean (cannot be NULL; default False)
+        }
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.put("/api/v1/bid/", async (req, res) => {
+    db.query("UPDATE Bid SET pay_type = $1, pet_pickup = $2, rating = $3, review = $4, pay_status = $5" +
+        " WHERE ctuname = $6 AND pouname = $7 AND petname = $8 AND pettype = $9 AND s_time = to_date($10,'YYYYMMDD') AND " +
+        " e_time = to_date($11,'YYYYMMDD') AND is_win = True RETURNING *",
+        [req.body.pay_type, req.body.pet_pickup, req.body.rating, req.body.review, req.body.pay_status,
+            req.body.ctuname, req.body.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            if (result.rows.length === 0) {
+                res.status(200).json({
+                    status: "unsuccessful update",
+                    message: "This is most likely because is_win = False or NULL. Also consider that the params might wrong."
+                });
+            } else {
+                res.status(200).json({
+                    status: "success",
+                    data: {
+                        bids: result.rows
+                    }
+                });
+            }
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
 // Deletes all Bids between a Caretaker and a specific Pet, within a specified timeframe. This will delete all Bids that
 // entirely intersect the specified s_time and e_time. Partial overlaps will not be deleted.
 /*
@@ -983,8 +1105,8 @@ app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Date),
-            "e_time": Integer (which will be converted into a Date)
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
         }
 
         Path parameters:
@@ -1028,8 +1150,8 @@ app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
         {
             "petname": String,
             "pettype": String,
-            "s_time": Integer (which will be converted into a Date),
-            "e_time": Integer (which will be converted into a Date)
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
         }
 
         Path parameters:
@@ -1045,12 +1167,18 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
         [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
     ).then(
         (result) => {
-            res.status(200).json({
-                status: "success",
-                data: {
-                    bid: result.rows
-                }
-            })
+            if (result.rows.length === 0) {
+                res.status(200).json({
+                    status: "unsuccessful update (check parameters)",
+                });
+            } else {
+                res.status(200).json({
+                    status: "success",
+                    data: {
+                        bids: result.rows
+                    }
+                });
+            }
         }
     ).catch(
         (error) => {
@@ -1073,8 +1201,8 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Date),
-            e_time: Integer (which will be converted by API to Date)
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
         }
 
         Path parameters:
@@ -1142,8 +1270,8 @@ app.get("/api/v1/availability/", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Date),
-            e_time: Integer (which will be converted by API to Date)
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
         }
 
         Path parameters:
@@ -1219,8 +1347,8 @@ app.get("/api/v1/availability/:ctuname", async (req, res) => {
     Expected inputs:
         JSON object of the form:
         {
-            s_time: Integer (which will be converted by API to Date),
-            e_time: Integer (which will be converted by API to Date)
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
         }
 
         Path parameters:

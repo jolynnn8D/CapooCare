@@ -18,7 +18,7 @@ const userModel = {
           alert("Please choose a different username!");
         });
 
-        // console.log(data);
+        console.log(data);
         actions.setUser(data); 
       }), 
       setUser: action((state, payload) => { // action
@@ -27,8 +27,48 @@ const userModel = {
             state.singleUser = payload;
         }
         // console.log(debug(state));
-
       }),
+    editUser: thunk(async (actions, payload) => {
+      const {username, firstname, age, usertype} = {...payload};
+      console.log({...payload});
+      let url = "";
+      if (usertype === 'petowner') {
+        url = serverUrl + '/api/v1/petowner/' + username;
+        const {data} = await axios.put(url, {
+          username: username,
+          ownername: firstname,
+          age: age
+        });
+
+        actions.getUser(username);
+        actions.getDisplayedUser(username);
+      } else if (usertype === "caretaker") {
+        url = serverUrl + '/api/v1/caretaker/' + username;
+        const {data} = await axios.put(url, {
+          username: username,
+          carername: firstname,
+          age: age
+        });
+        actions.getUser(username);
+        actions.getDisplayedUser(username);
+      } else {
+        const url_po = serverUrl + '/api/v1/petowner/' + username;
+        const url_ct = serverUrl + '/api/v1/caretaker/' + username;
+        await axios.put(url_po, {
+          username: username,
+          ownername: firstname,
+          age: age
+        });
+        await axios.put(url_ct, {
+          username: username,
+          carername: firstname,
+          age: age
+        });
+
+        actions.getUser(username);
+        actions.getDisplayedUser(username);
+      }
+    }),
 
     displayedUser: [],
     getDisplayedUser: thunk(async (actions, payload) => {
@@ -42,8 +82,8 @@ const userModel = {
             state.displayedUser = payload.user;
         }
         // console.log(debug(state));
-
       }),
+
     allUsers: [],
     getAllUsers: thunk(async (actions, payload) => {
       const url = serverUrl + "/api/v1/users"

@@ -28,8 +28,6 @@ const CalendarView = () => {
                 />
             </Grid>
             <Grid item xs={4}>
-                <BidList subheader={months}/>
-                {/* <Typography variant="h2">{date.toString()}</Typography> */}
             </Grid>
 
         </Grid>

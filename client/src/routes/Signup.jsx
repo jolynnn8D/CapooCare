@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import AddPet from "../components/AddPet";
 import PetTypeInput from "../components/PetTypeInput"
+import Availability from '../components/Availability';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -53,9 +54,13 @@ const Signup = () => {
     const [isPetCaretaker, setPetCaretaker] = useState(false);
     const [caretakerType, setCaretakerType] = useState("parttime");
     const [petInformation, setPetInformation] = useState({});
+    const [p1startDate, setP1StartDate] = useState(0);
+    const [p1endDate, setP1EndDate] = useState(0);
+    const [p2startDate, setP2StartDate] = useState(0);
+    const [p2endDate, setP2EndDate] = useState(0);
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('An error occurred.');
-    const [finalStatus, setFinalStatus] = useState(true);
+
 
     const onPetOwnerSwitchChange = () => {
         setPetOwner(isPetOwner => !isPetOwner);
@@ -69,7 +74,7 @@ const Signup = () => {
         setCaretakerType(event.target.value);
     }
 
-    const onSelectType = (event) => {
+    const onSelectType = (event) => {   
         setPetType(event.target.value);
     }
     
@@ -85,7 +90,6 @@ const Signup = () => {
     
     useEffect(() => {
         getAllUsers();
-        console.log(history)
         return () => {};
     }, []);
     
@@ -176,7 +180,11 @@ const Signup = () => {
                     name: firstName,
                     age: parseInt(age),
                     pettype: petType,
-                    price: parseInt(petPrice)
+                    price: parseInt(petPrice), 
+                    period1_s: p1startDate,
+                    period1_e: p1endDate,
+                    period2_s: p2startDate,
+                    period2_e: p2endDate
                 })
             }
         }
@@ -195,7 +203,7 @@ const Signup = () => {
             <Container component="main" maxWidth="xs" className={classes.container}>
                 <Typography component="h1" variant="h3" color="textPrimary" align="center">
                     Signup
-            </Typography>
+                </Typography>
                 <form className={classes.form} noValidate>
                     <TextField
                         variant="outlined"
@@ -260,7 +268,7 @@ const Signup = () => {
                         </FormGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    { isPetCaretaker ? 
+                    { isPetCaretaker && caretakerType === 'fulltime' ? 
                     <>
                     <FormControl component="fieldset" className={classes.formControl}>
                         <FormLabel component="legend">Type of caretaker</FormLabel>
@@ -270,7 +278,18 @@ const Signup = () => {
                         </RadioGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> </> : null } 
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> 
+                    <Availability setP1StartDate={setP1StartDate} setP1EndDate={setP1EndDate} setP2StartDate={setP2StartDate} setP2EndDate={setP2EndDate}/> </>
+                    : isPetCaretaker ?
+                    <> <FormControl component="fieldset" className={classes.formControl}>
+                        <FormLabel component="legend">Type of caretaker</FormLabel>
+                        <RadioGroup value={caretakerType} onChange={onChangeCaretakerType}>
+                            <FormControlLabel value="parttime" control={<Radio />} label="Part-time" />
+                            <FormControlLabel value="fulltime" control={<Radio />} label="Full-time" />
+                        </RadioGroup>
+                        <FormHelperText>Choose at least one role!</FormHelperText>
+                    </FormControl>
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> </> : null}
                     {  isPetOwner ? <AddPet parentCallback = {callbackAddPet} /> : null }
                     <Button
                         // type="submit"

@@ -29,14 +29,18 @@ const careTakersModel = {
       
     }),
     addFullTimeCareTaker: thunk(async (actions, payload) => {
-      const {username, name, age, pettype, price} = {...payload};
+      const {username, name, age, pettype, price, period1_s, period1_e, period2_s, period2_e} = {...payload};
       const url = serverUrl + "/api/v1/fulltimer";
       const {data} = await axios.post(url, {
           username: username,
           name: name,
           age: age,
           pettype: pettype,
-          price: price
+          price: price,
+          period1_s: period1_s,
+          period1_e: period1_e,
+          period2_s: period2_s,
+          period2_e: period2_e
       });
       
       return data.status;
