@@ -1,8 +1,9 @@
-import { Chip, FormControl, Input, InputLabel, NativeSelect, Select, FormHelperText, TextField} from '@material-ui/core'
+import { Chip, FormControl, Input, InputLabel, NativeSelect, Select, FormHelperText, TextField, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types';
 import { useStoreActions, useStoreState } from 'easy-peasy';
+import { convertDate } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -17,15 +18,15 @@ const useStyles = makeStyles((theme) => ({
 
 
 const Availability = (props) => {
-    const [startDate, setStartDate] = useState(0);
-    const [endDate, setEndDate] = useState(0);
+    const {setP1StartDate, setP1EndDate, setP2StartDate, setP2EndDate} = props;
 
     const classes = useStyles();
     return (
         <div>
+            <Typography align="center" >Please enter two periods of 150 days each.</Typography> 
             <TextField
                 variant="outlined"
-                label="Enter your start date in YYYYMMDD"
+                label="Enter your period 1 start date in YYYYMMDD"
                 required
                 fullWidth
                 id="startDate"
@@ -33,11 +34,11 @@ const Availability = (props) => {
                 autoFocus
                 type="number"
                 className={classes.textfield}
-                onChange={(event) => setStartDate(event.target.value)}
+                onChange={(event) => setP1StartDate(event.target.value)}
             />
             <TextField
                 variant="outlined"
-                label="Enter your end date YYYYMMDD"
+                label="Enter your period 1 end date YYYYMMDD"
                 required
                 fullWidth
                 id="endDate"
@@ -45,7 +46,31 @@ const Availability = (props) => {
                 autoFocus
                 type="number"
                 className={classes.textfield}
-                onChange={(event) => setEndDate(event.target.value)}
+                onChange={(event) => setP1EndDate(event.target.value)}
+            />
+            <TextField
+                variant="outlined"
+                label="Enter your period 2 start date in YYYYMMDD"
+                required
+                fullWidth
+                id="startDate"
+                autoComplete="startdate"
+                autoFocus
+                type="number"
+                className={classes.textfield}
+                onChange={(event) => setP2StartDate(event.target.value)}
+            />
+            <TextField
+                variant="outlined"
+                label="Enter your period 2 end date YYYYMMDD"
+                required
+                fullWidth
+                id="endDate"
+                autoComplete="enddate"
+                autoFocus
+                type="number"
+                className={classes.textfield}
+                onChange={(event) => setP2EndDate(event.target.value)}
             />
                     
         </div>
