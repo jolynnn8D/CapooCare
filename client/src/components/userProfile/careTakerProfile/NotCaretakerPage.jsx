@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 
 import PetTypeInput from "../../PetTypeInput"
+import Availability from '../../Availability';
 
 const useStyles = makeStyles((theme) => ({
     verticalSections: {
@@ -29,11 +30,16 @@ const NotCaretakerPage = () => {
     const [caretakerType, setCaretakerType] = useState("parttime");
     const [petType, setPetType] = useState('');
     const [petPrice, setPetPrice] = useState(0);
+    const [p1startDate, setP1StartDate] = useState(0);
+    const [p1endDate, setP1EndDate] = useState(0);
+    const [p2startDate, setP2StartDate] = useState(0);
+    const [p2endDate, setP2EndDate] = useState(0);
 
     const addPartTimeCareTaker = useStoreActions(actions => actions.careTakers.addPartTimeCareTaker);
     const addFullTimeCareTaker = useStoreActions(actions => actions.careTakers.addFullTimeCareTaker);
     const singleUser = useStoreState(state => state.user.singleUser);
-
+    const getUser = useStoreActions(actions => actions.user.getUser);
+    const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
 
     const onChangeCaretakerType = (event) => {
         setCaretakerType(event.target.value);
@@ -51,7 +57,7 @@ const NotCaretakerPage = () => {
         setSignUpModal(!signUpModal);
     }
 
-    const signUpCaretaker = () => {
+    const signUpCaretaker = async () => {
         console.log({
             username: singleUser.username,
             name: singleUser.firstname,
@@ -60,22 +66,30 @@ const NotCaretakerPage = () => {
             price: parseInt(petPrice)
         })
         if (caretakerType == 'parttime') {
-            addPartTimeCareTaker({
+            await addPartTimeCareTaker({
                 username: singleUser.username,
                 name: singleUser.firstname,
                 age: singleUser.age,
                 pettype: petType,
                 price: parseInt(petPrice)
             })
+            getUser(singleUser.username);
+            getDisplayedUser(singleUser.username);
         }
         else if (caretakerType == 'fulltime') { 
-            addFullTimeCareTaker({
-                username: singleUser.username,
-                name: singleUser.firstname,
-                age: singleUser.age,
-                pettype: petType,
-                price: parseInt(petPrice)
-            })
+            await addFullTimeCareTaker({
+                    username: singleUser.username,
+                    name: singleUser.firstname,
+                    age: singleUser.age,
+                    pettype: petType,
+                    price: parseInt(petPrice), 
+                    period1_s: p1startDate,
+                    period1_e: p1endDate,
+                    period2_s: p2startDate,
+                    period2_e: p2endDate
+                })
+            getUser(singleUser.username);
+            getDisplayedUser(singleUser.username);
         }
         toggleSignUpModal()
     }
@@ -106,7 +120,14 @@ const NotCaretakerPage = () => {
                         </RadioGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
+                    { caretakerType === 'fulltime' ?
+                    <>
                     <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/>
+                    <Availability setP1StartDate={setP1StartDate} setP1EndDate={setP1EndDate} setP2StartDate={setP2StartDate} setP2EndDate={setP2EndDate}/>
+                    </> :
+                    <>
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/>
+                    </>}
                     <Button color="primary" onClick={signUpCaretaker}> Confirm sign up </Button>
                 </Card>
             </Modal>

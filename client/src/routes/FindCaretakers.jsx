@@ -114,7 +114,7 @@ const FindCaretakers = () => {
                 <TextField
                     onChange={(event) => setSearch(event.target.value)}
                     className={classes.margin}
-                    label="Search"
+                    label="Search pet type"
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
