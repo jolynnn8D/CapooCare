@@ -90,7 +90,6 @@ const Signup = () => {
     
     useEffect(() => {
         getAllUsers();
-        console.log(history)
         return () => {};
     }, []);
     
@@ -204,7 +203,7 @@ const Signup = () => {
             <Container component="main" maxWidth="xs" className={classes.container}>
                 <Typography component="h1" variant="h3" color="textPrimary" align="center">
                     Signup
-            </Typography>
+                </Typography>
                 <form className={classes.form} noValidate>
                     <TextField
                         variant="outlined"

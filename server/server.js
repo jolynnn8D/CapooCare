@@ -853,9 +853,44 @@ app.post("/api/v1/bid/", async (req, res) => {
         200 OK, if successful
         400 Bad Request, if general failure
  */
-app.get("/api/v1/bid/:ctuname", async (req, res) => {
+app.get("/api/v1/bid/:ctuname/ct", async (req, res) => {
     db.query("SELECT * FROM Bid WHERE ctuname = $1",
         [req.params.ctuname]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    bids: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+// Gets all Bids for a Petowner.
+/*
+    Expected inputs:
+        Path parameters:
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/bid/:pouname/po", async (req, res) => {
+    db.query("SELECT * FROM Bid WHERE pouname = $1",
+        [req.params.pouname]
     ).then(
         (result) => {
             res.status(200).json({
