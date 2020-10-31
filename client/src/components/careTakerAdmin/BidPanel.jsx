@@ -6,7 +6,7 @@ import BidList from "./BidList"
 import { isEmpty } from "lodash"
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import BidModal from '../userProfile/careTakerProfile/BidModal';
-import { sqlToJsDate } from '../../utils';
+import { sqlToJsDate, convertDate } from '../../utils';
 
 const useStyles = makeStyles({
     root: {
