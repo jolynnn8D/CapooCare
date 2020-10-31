@@ -10,11 +10,40 @@ DROP TABLE IF EXISTS Owned_Pet_Belongs CASCADE;
 DROP TABLE IF EXISTS Bid CASCADE;
 DROP VIEW IF EXISTS Users CASCADE;
 DROP VIEW IF EXISTS Accounts CASCADE;
-DROP PROCEDURE IF EXISTS add_bid(character varying,character varying,character varying,character varying,date,date);
-DROP PROCEDURE IF EXISTS add_bid;
-DROP PROCEDURE IF EXISTS add_fulltimer;
-DROP PROCEDURE IF EXISTS add_parttimer;
-DROP PROCEDURE IF EXISTS add_petOwner;
+
+/*                                      **IMPORTANT**
+    The code block below drops all functions, aggregates, and procedures from the database.
+    This is required because PostgreSQL can't handle overloaded functions and procedures. */
+DO
+$do$
+DECLARE
+   _sql text;
+BEGIN
+   SELECT INTO _sql
+          string_agg(format('DROP %s %s;'
+                          , CASE prokind
+                              WHEN 'f' THEN 'FUNCTION'
+                              WHEN 'a' THEN 'AGGREGATE'
+                              WHEN 'p' THEN 'PROCEDURE'
+                              WHEN 'w' THEN 'FUNCTION'  -- window function (rarely applicable)
+                              -- ELSE NULL              -- not possible in pg 11
+                            END
+                          , oid::regprocedure)
+                   , E'\n')
+   FROM   pg_proc
+   WHERE  pronamespace = 'public'::regnamespace  -- schema name here!
+   -- AND    prokind = ANY ('{f,a,p,w}')         -- optionally filter kinds
+   ;
+
+   IF _sql IS NOT NULL THEN
+       RAISE NOTICE '%', _sql;  -- debug / check first
+       EXECUTE _sql;         -- uncomment payload once you are sure
+   ELSE
+       RAISE NOTICE 'No fuctions found in schema %', quote_ident(_schema);
+   END IF;
+END
+$do$;
+
 
 CREATE TABLE PCSAdmin (
     username VARCHAR(50) PRIMARY KEY,
@@ -75,7 +104,6 @@ CREATE TABLE Owned_Pet_Belongs (
     PRIMARY KEY (pouname, petname, pettype)
 );
 
-/* TODO: reference has_availability */ 
 CREATE TABLE Bid (
     pouname VARCHAR(50),
     petname VARCHAR(20), 
@@ -86,16 +114,17 @@ CREATE TABLE Bid (
     cost INTEGER,
     is_win BOOLEAN DEFAULT NULL,
     rating INTEGER CHECK((rating IS NULL) OR (rating >= 0 AND rating <= 5)),
-    review VARCHAR(100),
+    review VARCHAR(200),
     pay_type VARCHAR(50) CHECK((pay_type IS NULL) OR (pay_type = 'credit card') OR (pay_type = 'cash')),
     pay_status BOOLEAN DEFAULT FALSE,
-    pet_pickup VARCHAR(50) CHECK(pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
+    pet_pickup VARCHAR(50) CHECK((pet_pickup IS NULL) OR pet_pickup = 'poDeliver' OR pet_pickup = 'ctPickup' OR pet_pickup = 'transfer'),
     FOREIGN KEY (pouname, petname, pettype) REFERENCES Owned_Pet_Belongs(pouname, petname, pettype),
     PRIMARY KEY (pouname, petname, pettype, ctuname, s_time, e_time),
     CHECK (pouname <> ctuname)
 );
 
 /*TRIGGERS AND PROCEDURE*/
+------------------------------------------------ Pet Owner ------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE
     add_petOwner(uName VARCHAR(50), oName VARCHAR(50), oAge INTEGER, pType VARCHAR(20), pName VARCHAR(20),
         pAge INTEGER, req VARCHAR(50)) AS
@@ -112,6 +141,7 @@ CREATE OR REPLACE PROCEDURE
         $$
     LANGUAGE plpgsql;
 
+------------------------------------------------ CareTaker ------------------------------------------------------------
 /* Insert into fulltimers, will add into caretakers table */
 CREATE OR REPLACE PROCEDURE add_fulltimer(
     ctuname VARCHAR(50),
@@ -180,7 +210,7 @@ $$ DECLARE Pctx NUMERIC;
 LANGUAGE plpgsql;
 
 CREATE TRIGGER check_fulltimer
-BEFORE INSERT OR UPDATE ON CareTaker
+BEFORE INSERT ON CareTaker
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer_or_fulltimer();
 
 /* check if parttimer that is being added is not a fulltimer. To fulfill the no-overlap constraint */
@@ -200,7 +230,7 @@ $$ DECLARE ctx NUMERIC;
 LANGUAGE plpgsql;
 
 CREATE TRIGGER check_parttimer
-BEFORE INSERT OR UPDATE ON PartTimer
+BEFORE INSERT ON PartTimer
 FOR EACH ROW EXECUTE PROCEDURE not_fulltimer();
 
 /* check if fulltimer that is being added is not a parttimer. To fulfill the no-overlap constraint */
@@ -220,11 +250,12 @@ $$ DECLARE ctx NUMERIC;
 LANGUAGE plpgsql;
 
 CREATE TRIGGER check_fulltimer
-BEFORE INSERT OR UPDATE ON FullTimer
+BEFORE INSERT ON FullTimer
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 
+------------------------------------------------------------ Bid ------------------------------------------------------------
 
-CREATE OR REPLACE FUNCTION mark_bid()
+CREATE OR REPLACE FUNCTION validate_mark()
 RETURNS TRIGGER AS
 $$
 DECLARE ctx NUMERIC;
@@ -233,9 +264,14 @@ DECLARE matchtype NUMERIC;
 DECLARE care NUMERIC;
 DECLARE rate NUMERIC;
     BEGIN
+        IF OLD.is_win = True THEN -- Since this is a mark-validating trigger, if the Bid has already been marked, then return
+            RETURN NEW;
+        END IF;
+
         SELECT COUNT(*) INTO pet
             FROM Bid
-            WHERE NEW.pouname = Bid.pouname AND NEW.petname = Bid.petname AND Bid.is_win = True AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
+            WHERE NEW.pouname = Bid.pouname AND NEW.petname = Bid.petname AND Bid.is_win = True
+              AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
         SELECT COUNT(*) INTO matchtype
             FROM Cares
             WHERE NEW.ctuname = Cares.ctuname AND NEW.pettype = Cares.pettype;
@@ -283,7 +319,7 @@ LANGUAGE plpgsql;
 CREATE TRIGGER validate_bid_marking
 BEFORE INSERT OR UPDATE ON Bid
 FOR EACH ROW
-EXECUTE PROCEDURE mark_bid();
+EXECUTE PROCEDURE validate_mark();
 
 
 CREATE OR REPLACE FUNCTION mark_other_bids()
@@ -361,6 +397,7 @@ CREATE OR REPLACE PROCEDURE add_bid(
             -- Must ensure that a Bid cannot be created for the same Petowner and Pet with overlapping time periods.
             INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time, cost)
                VALUES (_pouname, _petname, _pettype, _ctuname, _s_time, _e_time, cost);
+            -- TODO: Must automatically mark bid if it's a fulltimer
        END;
        $$
    LANGUAGE plpgsql;
@@ -422,7 +459,7 @@ INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
 CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2020-01-02', '2020-02-03');
-CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-01', '2020-02-20');
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-05', '2020-02-20');
 
 
  /* Expected outcome: 'marythemess' wins both bids at timestamp 1-4 and 2-4. This causes 'johnthebest' to lose the 2-4		
