@@ -16,12 +16,24 @@ const OrderList = (props) => {
     const {username} = props;
     const classes = useStyles();
     const getPetOwnerBids = useStoreActions(actions => actions.bids.getPetOwnerBids);
+    const makePayment = useStoreActions(actions => actions.bids.makePayment);
     const petOwnerBids = useStoreState(state => state.bids.petOwnerBids);
 
     useEffect(() => {
         getPetOwnerBids(username);
         return () => {};
     }, []);
+
+    const handleMakePayment = (bidInfo) => {
+        makePayment({
+            pouname: bidInfo.pouname,
+            petname: bidInfo.petname,
+            pettype: bidInfo.pettype,
+            ctuname: bidInfo.ctuname,
+            s_time: bidInfo.s_time,
+            e_time: bidInfo.e_time
+        })
+    }
 
     return (
         <Card style={{width: "100%"}} className={classes.root}>
@@ -51,7 +63,7 @@ const OrderList = (props) => {
                                         {bid.pay_status ?  
                                             sqlToJsDate(bid.e_time) < new Date() 
                                                 ? <Button color='default' variant='contained'>Leave Review </Button> : null 
-                                                : <Button color='default' variant='contained'> Make Payment </Button>}
+                                                : <Button color='default' variant='contained' onClick={() => handleMakePayment(bid)}> Make Payment </Button>}
                                         </>
                                         : null
                                     }

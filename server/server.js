@@ -1192,6 +1192,57 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
     )
 });
 
+// Completes a payment status between a Caretaker's Availability and a specific Pet. This will only change the 
+// payment status of a Bid that is referred to exactly via its s_time and e_time. The GET APIs should be used to
+// verify the exact s_time and e_time.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "petname": String,
+            "pettype": String,
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        409 Conflict, if caretaker has exceeded their allowed number of Pets at that time.
+ */
+app.put("/api/v1/bid/:ctuname/:pouname/pay", async (req, res) => {
+    db.query("UPDATE Bid SET pay_status = True WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time = to_date($5,'YYYYMMDD') AND e_time = to_date($6,'YYYYMMDD') RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            if (result.rows.length === 0) {
+                res.status(200).json({
+                    status: "unsuccessful update (check parameters)",
+                });
+            } else {
+                res.status(200).json({
+                    status: "success",
+                    data: {
+                        bids: result.rows
+                    }
+                });
+            }
+        }
+    ).catch(
+        (error) => {
+            res.status(409).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
 
 
 /* API calls for Availability */

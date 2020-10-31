@@ -75,7 +75,39 @@ const bidModel = {
               bid.is_win = true;
             }
       })
-    })
+    }), 
+    makePayment: thunk(async(actions, payload) => {
+      const {pouname, petname, pettype, ctuname, s_time, e_time, pay_type, pet_pickup} = {...payload};
+      const url = serverUrl + "/api/v1/bid/" + ctuname + "/" + pouname + "/pay";
+      console.log(url);
+      console.log({
+        petname: petname,
+        pettype: pettype,
+        s_time: convertDate(sqlToJsDate(s_time)),
+        e_time: convertDate(sqlToJsDate(e_time))
+    });
+      const { data } = await axios.put(url, {
+          petname: petname,
+          pettype: pettype,
+          s_time: convertDate(sqlToJsDate(s_time)),
+          e_time: convertDate(sqlToJsDate(e_time))
+      });
+      actions.modifyPayStatus(payload);
+    }),
+    modifyPayStatus: action((state, payload) => {
+      console.log(payload);
+      state.petOwnerBids.map((bid) => {
+        if (bid.pouname == payload.pouname &&
+            bid.petname == payload.petname &&
+            bid.pettype == payload.pettype &&
+            bid.ctuname == payload.ctuname &&
+            bid.s_time == payload.s_time &&
+            bid.e_time == payload.e_time) {
+              bid.pay_status = true;
+            }
+      })
+    }), 
+    
 }
 
 export default bidModel;
