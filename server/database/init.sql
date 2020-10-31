@@ -360,8 +360,8 @@ DECLARE rate NUMERIC;
             END IF;
         ELSE -- If CT is a parttimer
             SELECT AVG(rating) INTO rate
-                FROM Caretaker AS C
-                WHERE NEW.ctuname = C.username;
+                FROM Bid AS B
+                WHERE NEW.ctuname = B.ctuname;
             IF rate IS NULL OR rate < 4 THEN
                 IF care >= 2 AND NEW.is_win = True THEN
                     RAISE EXCEPTION 'This caretaker has exceeded their capacity.';
@@ -406,8 +406,8 @@ DECLARE rate NUMERIC;
             RETURN NULL;
         ELSE -- If CT is a parttimer
             SELECT AVG(rating) INTO rate
-                FROM Caretaker AS C
-                WHERE NEW.ctuname = C.username;
+                FROM Bid AS B
+                WHERE NEW.ctuname = B.ctuname;
             IF rate IS NULL OR rate < 4 THEN
                 IF care >= 2 THEN
                     UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND NEW.s_time = Bid.s_time AND NEW.e_time = Bid.e_time;
@@ -505,7 +505,7 @@ CREATE OR REPLACE VIEW Users AS (
             ELSE C.carername END AS firstname, 
         CASE WHEN C.age IS NULL THEN P.age 
             ELSE C.age END AS age, 
-        rating, salary, 
+        salary, 
         CASE WHEN P.username IS NULL THEN false  
             ELSE true END AS is_petowner, 
         CASE WHEN C.username IS NULL THEN false 
