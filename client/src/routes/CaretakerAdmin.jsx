@@ -27,6 +27,13 @@ const useStyles = makeStyles({
     pos: {
         marginBottom: 12,
     },
+    header: {
+        marginBottom: 10,
+        marginLeft: "auto",
+        marginRight: "auto",
+        width: "100%",
+        textAlign: "center",
+    }
 })
 
 const CaretakerAdmin = () => {
@@ -46,17 +53,17 @@ const CaretakerAdmin = () => {
         return (
             <div>
                 <Grid container className={classes.root}>
-                    <Grid item xs={12}>
-                        <TabPanel username = {username}/>
-                    </Grid>
-                </Grid>
-                <Card>
+                <Card className={classes.header}>
                     <CardContent>
                         <Typography variant="h5" component="h2">
                             Caretaker type: {singleUser.is_fulltimer ? "Full-time Caretaker" : "Part-time Caretaker"}
                         </Typography>
                     </CardContent>
                 </Card>
+                    <Grid item xs={12}>
+                        <TabPanel username = {username}/>
+                    </Grid>
+                </Grid>
             </div>
         )
     } else {
