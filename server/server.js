@@ -1362,6 +1362,41 @@ app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
     )
 });
 
+// Gets all Availabilities from a Caretaker. All availabilities indicated by the caretaker will be
+// returned in this query.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+// app.get("/api/v1/availability/:ctuname", async (req, res) => {
+//     db.query("SELECT * FROM Has_Availability WHERE ctuname = $1",
+//         [req.params.ctuname]
+//     ).then(
+//         (result) => {
+//             res.status(200).json({
+//                 status: "success",
+//                 data: {
+//                     availabilities: result.rows
+//                 }
+//             })
+//         }
+//     ).catch(
+//         (error) => {
+//             res.status(400).json({
+//                 status: "failed",
+//                 data: {
+//                     "error": error
+//                 }
+//             })
+//         }
+//     )
+// });
+
 
 // Deletes all Availabilities from a Caretaker within a timeframe. All availabilities indicated by the caretaker that
 // entirely intersect the s_time and e_time indicated will be deleted. This does not include partial overlaps.

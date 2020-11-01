@@ -5,7 +5,8 @@ function appendLeadingZeroes(n){
     return n
   }
 
-function convertDate(date) {
+function convertDate(passedDate) {
+    const date = new Date(passedDate)
     let formatted_date = '' + date.getFullYear() + appendLeadingZeroes((date.getMonth() + 1)) + appendLeadingZeroes(date.getDate())
     return formatted_date
 }
