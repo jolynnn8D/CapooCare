@@ -17,7 +17,9 @@ const bidModel = {
         pettype: pettype,
         ctuname: ctuname,
         s_time: s_time,
-        e_time: e_time
+        e_time: e_time,
+        pay_type: pay_type,
+        pet_pickup: pet_pickup
       });
     }),
 
