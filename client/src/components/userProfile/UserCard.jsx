@@ -45,10 +45,13 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
     const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
     const displayedUser = useStoreState(state => state.user.displayedUser);
     const singleUser = useStoreState(state => state.user.singleUser);
+    const getUserRating = useStoreActions(actions => actions.careTakers.getRating);
+    const userRating = useStoreState(state => state.careTakers.userRating);
 
 
     useEffect(() => {
         getDisplayedUser(username);
+        getUserRating(username);
         return () => {};
     }, [])
 
@@ -98,7 +101,7 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
                             <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
                             <h4> Age: {displayedUser.age}</h4>
                             <h4> Caretaker Type: {displayedUser.is_fulltimer ? "full-timer" : "part-timer"}</h4>
-                            <h4> Rating: {displayedUser.rating} </h4>
+                            <h4> Rating: {parseFloat(userRating.avg).toFixed(2)} </h4>
                             <h6>Click on your profile to make any updates!</h6>
 
                         </Grid>

@@ -576,6 +576,7 @@ CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2021-02-24', 
 CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowchicken', '2021-02-25', '2021-02-28', 'cash', 'ctPickup');
 CALL add_bid('marythemess', 'Purr', 'cat', 'yellowchicken', '2021-02-26', '2021-02-28', 'cash', 'poDeliver');
 CALL add_bid('marythemess', 'Sneak', 'cat', 'yellowchicken', '2021-02-27', '2021-02-28', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Sneak', 'cat', 'yellowbird', '2020-08-08', '2020-08-09', 'cash', 'poDeliver');
 
 -- The following test case sets up a completed Bid
 --CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-05', '2020-02-20', 'credit card', 'ctPickup');
