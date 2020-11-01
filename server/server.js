@@ -16,7 +16,7 @@ app.use(express.json());
 // If True, then the database will be wiped and re-initialized. By default, use False.
 const forceInitializeDatabase = keys.forceInitializeDatabase || false
 
-if (forceInitializeDatabase == "true") {
+if (forceInitializeDatabase === "true") {
     console.log("Re-initializing database...");
     db.initDatabase();
 }
