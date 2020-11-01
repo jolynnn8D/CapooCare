@@ -14,9 +14,10 @@ const app = express();
 app.use(cors())
 app.use(express.json());
 
-if (process.env.NODE_ENV == "production") {
+if (process.env.NODE_ENV === "production") {
     //server static content
-    npm.use(express.static(path.join(_dirname, "client/build"))) ;
+    //npm run build
+    app.use(express.static(path.join(__dirname, "client/build")));
 }
 
 // If True, then the database will be wiped and re-initialized. By default, use False.

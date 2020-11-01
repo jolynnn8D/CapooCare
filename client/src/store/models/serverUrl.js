@@ -1,2 +1,2 @@
-const serverUrl = "http://localhost:5000"
+const serverUrl = ""
 export {serverUrl}
