@@ -16,7 +16,7 @@ app.use(express.json());
 // If True, then the database will be wiped and re-initialized. By default, use False.
 const forceInitializeDatabase = keys.forceInitializeDatabase || false
 
-if (forceInitializeDatabase) {
+if (forceInitializeDatabase == "true") {
     console.log("Re-initializing database...");
     db.initDatabase();
 }
@@ -1482,7 +1482,7 @@ app.get("/api/v1/rating/:ctuname", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get("/api/v1/review/:ctuname", async (req, res) => {
-    db.query("SELECT review FROM Bid WHERE ctuname = $1 AND review IS NOT NULL",
+    db.query("SELECT pouname, rating, review FROM Bid WHERE ctuname = $1 AND review IS NOT NULL",
         [req.params.ctuname]
     ).then(
         (result) => {
