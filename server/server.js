@@ -891,7 +891,7 @@ app.get("/api/v1/bid/:ctuname/ct", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get("/api/v1/bid/:pouname/po", async (req, res) => {
-    db.query("SELECT * FROM Bid WHERE pouname = $1",
+    db.query("SELECT * FROM Bid WHERE pouname = $1 ORDER BY s_time DESC",
         [req.params.pouname]
     ).then(
         (result) => {
@@ -1269,6 +1269,7 @@ app.put("/api/v1/bid/:ctuname/:pouname/pay", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/availability/:ctuname", async (req, res) => {
+    console.log(req)
     db.query("INSERT INTO Has_Availability VALUES ($1, to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD')) RETURNING *",
         [req.params.ctuname, req.body.s_time, req.body.e_time]
     ).then(
@@ -1324,21 +1325,16 @@ app.get("/api/v1/availability/", async (req, res) => {
 // returned in this query, within the s_time and e_time indicated in this API call.
 /*
     Expected inputs:
-        JSON object of the form:
-        {
-            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
-            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
-        }
-
         Path parameters:
             ctuname, which is the username of the Caretaker.
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
 
     Expected status code:
         200 OK, if successful
         400 Bad Request, if general failure
  */
 app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
-    console.log(req);
     db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD')",
         [req.params.ctuname, req.params.s_time, req.params.e_time]
     ).then(
@@ -1402,22 +1398,19 @@ app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
 // entirely intersect the s_time and e_time indicated will be deleted. This does not include partial overlaps.
 /*
     Expected inputs:
-        JSON object of the form:
-        {
-            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
-            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
-        }
-
         Path parameters:
             ctuname, which is the username of the Caretaker.
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
 
     Expected status code:
         200 OK, if successful
         400 Bad Request, if general failure
  */
-app.delete("/api/v1/availability/:ctuname", async (req, res) => {
+app.delete("/api/v1/availability/:ctuname/:s_time/:e_time", async (req, res) => {
+    console.log(req)
     db.query("DELETE FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD') RETURNING *",
-        [req.params.ctuname, req.body.s_time, req.body.e_time]
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
     ).then(
         (result) => {
             res.status(200).json({
