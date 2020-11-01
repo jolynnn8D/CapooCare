@@ -7,12 +7,8 @@ const careTakersModel = {
     caretakers: [],
     petCareList: [],
     petTypeList: [],
-<<<<<<< HEAD
-    availabilityList: [],
-=======
     availability: [],
 
->>>>>>> main-ui-branch
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get("http://localhost:5000/api/v1/caretaker");
       actions.setUsers(data.data.users); 
@@ -104,30 +100,30 @@ const careTakersModel = {
     }),
 
     getUserAvailability: thunk(async(actions, payload) => {
-      const {ctuname, s_time, e_time } = {...payload}
+      const { ctuname, s_time, e_time } = payload;
       const url = serverUrl + "/api/v1/availability/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time);
       console.log(url);
 
       const { data } = await axios.get(url);
-      console.log(data)
+      // console.log(data)
       actions.setUserAvailability(data.data.availabilities)
     }),
     setUserAvailability: action((state, payload) => {
       state.availability = [...payload];
     }),
 
-    getAvailabilityList: thunk(async(actions, payload) => {
-      const {username, s_time, e_time} = payload;
-      const url = serverUrl + "/api/v1/availability/" + username;
-      const {data} = await axios.get(url, {
-        s_time: s_time,
-        e_time: e_time
-      });
-      actions.setAvailabilityList(data.data.availabilities);
-    }), 
-    setAvailabilityList: action((state, payload) => {
-      state.availabilityList = [...payload];
-    }),
+    // getAvailabilityList: thunk(async(actions, payload) => {
+    //   const {username, s_time, e_time} = payload;
+    //   const url = serverUrl + "/api/v1/availability/" + username;
+    //   const {data} = await axios.get(url, {
+    //     s_time: s_time,
+    //     e_time: e_time
+    //   });
+    //   actions.setAvailabilityList(data.data.availabilities);
+    // }), 
+    // setAvailabilityList: action((state, payload) => {
+    //   state.availabilityList = [...payload];
+    // }),
   }
 
 export default careTakersModel;

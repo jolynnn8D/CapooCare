@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import 'react-date-range/dist/styles.css'; // main style file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRangePicker } from 'react-date-range';
-import { addDays, addYears, eachDay } from 'date-fns';
+import { addDays, addYears, eachDayOfInterval, toDate } from 'date-fns';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import {convertDate} from '../../../utils';
 
@@ -50,8 +50,7 @@ const pickupTypes = {
 
 const BidModal = (props) => {
     const classes = useStyles();
-    const { closeModal, submitData, ...other } = props
-    const username = "yellowchicken"
+    const { closeModal, submitData, petType, ctuname, ...other } = props
     const [dateRange, setDateRange] = useState([
         {
             startDate: new Date(),
@@ -68,19 +67,23 @@ const BidModal = (props) => {
     const singleUser = useStoreState(state => state.user.singleUser);
     const getOwnerPetsOfType = useStoreActions(actions => actions.pets.getOwnerPetsOfType);
     const biddablePets = useStoreState(state => state.pets.biddablePets);
-    const getAvailabilityList = useStoreActions(actions => actions.careTakers.getAvailabilityList);
-    const availabilityList = useStoreState(state => state.careTakers.availabilityList);
+    const getUserAvailability = useStoreActions(actions => actions.careTakers.getUserAvailability);
+    const userAvailability = useStoreState(state => state.careTakers.availability);
     const addBid = useStoreActions(actions => actions.bids.addBid);
     // console.log(props.petType)
     // console.log(props.ctuname);
 
     const findDisabledDates = (enabledRanges) => {
-        tempDisabledDates = eachDay(minDate, maxDate);
-        allEnabledDates = []
-        for (enabledRange of enabledRanges) {
-            allEnabledDates.concat(eachDay(new Date(enabledRange.s_time), new Date(enabledRanges.e_time)));
+        var tempDisabledDates = eachDayOfInterval({ start: minDate, end: maxDate });
+        var allEnabledDates = []
+        for (var enabledRange of enabledRanges) {
+            // console.log(enabledRange.s_time);
+            // console.log(enabledRange.e_time);
+            var daysOfInterval = eachDayOfInterval({ start: new Date(enabledRange.s_time), end: new Date(enabledRange.e_time)})
+            allEnabledDates = allEnabledDates.concat(daysOfInterval);
         }
-        tempDisabledDates = tempDisabledDates.filter(x => !allEnabledDates.includes(x))
+        // console.log(allEnabledDates)
+        tempDisabledDates = tempDisabledDates.filter(function(x) {return !allEnabledDates.find(y => y.getTime() === x.getTime())})
         setDisabledDates(tempDisabledDates);
     }
 
@@ -89,22 +92,21 @@ const BidModal = (props) => {
             username: singleUser.username,
             pettype: props.petType
         })
-        console.log(username);
-        console.log(convertDate(minDate).toString());
-        console.log(convertDate(maxDate).toString())
-        getAvailabilityList({
-            username: username,
-            s_time: convertDate(minDate).toString(),
-            e_time: convertDate(maxDate).toString()
+        getUserAvailability({
+            ctuname: props.ctuname,
+            s_time: minDate,
+            e_time: maxDate
         })
-            .then(findDisabledDates())
-        // console.log(availabilityList);
+            .then((result) => {
+                // console.log(userAvailability)
+                findDisabledDates(userAvailability)
+            })
         return () => {};
     }, [])
 
     const handleSubmit = () => {
         const startDateInt = convertDate(dateRange[0].startDate);
-        const endDateInt = convertDate(dateRange[0].endDate)
+        const endDateInt = convertDate(dateRange[0].endDate);
         addBid({
             pouname: singleUser.username,
             petname: petChoice,
@@ -146,7 +148,6 @@ const BidModal = (props) => {
                         return <MenuItem value={choiceOfPet.petname}>{choiceOfPet.petname}</MenuItem>
                     })}
                 </Select>
-                <Typography>{petChoice}</Typography>
             </FormControl>
 
             <FormControl className={classes.formControl}>
@@ -181,9 +182,9 @@ const BidModal = (props) => {
                 </Select>
             </FormControl>
 
-            <Typography>
-                {availabilityList || "hello" }
-            </Typography>
+            {/* <Typography>
+                {userAvailability || "hello" }
+            </Typography> */}
 
             <div className={classes.buttonRow}>
                 <Button className={classes.button}
