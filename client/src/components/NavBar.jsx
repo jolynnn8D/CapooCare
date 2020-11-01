@@ -13,7 +13,7 @@ import {
     ListItemText,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import Routes from '../routes/allRoutes';
+import { useStoreState } from 'easy-peasy';
 
 const useStyles = makeStyles((theme) => 
     createStyles({
@@ -36,6 +36,8 @@ const useStyles = makeStyles((theme) =>
 ); 
 
 const NavBar = (props) => {
+    // console.log(props);
+    const Routes = useStoreState(state => state.routes.routes);
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
     const toggleDrawer = (open) => (

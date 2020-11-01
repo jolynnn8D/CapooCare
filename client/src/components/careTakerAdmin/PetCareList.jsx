@@ -17,20 +17,40 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import BidModal from '../userProfile/careTakerProfile/BidModal';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import PetTypeInput from '../PetTypeInput';
+import { v4 } from 'uuid';
 
+
+const useStyles = makeStyles((theme) => ({
+    modal: {
+        width: "40%",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        position: 'absolute',
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
+}))
 
 const PetCareList = (props) => {
-    const { owner, ...other} = props;
+    const { owner, username, ...other} = props;
+    const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [addCareOpen, setCareOpen] = useState(false);
     const [petType, setPetType] = useState("");
     const [petPrice, setPetPrice] = useState("");
+    const [bidPetType, setBidPetType] = useState("");
     const getPetCareList = useStoreActions(actions => actions.careTakers.getPetCareList);
     const addPetCareItem = useStoreActions(actions => actions.careTakers.addPetCareItem);
+    const deletePetCareItem = useStoreActions(actions => actions.careTakers.deletePetType);
     const petCareList = useStoreState(state => state.careTakers.petCareList);
 
-    const openModal = () => {
+    const openModal = (bidPet) => {
+        setBidPetType(bidPet);
         setOpen(true);
+     
     }
     
     const closeModal = () => {
@@ -59,14 +79,14 @@ const PetCareList = (props) => {
             price: parseInt(petPrice)
         })
         addPetCareItem({
-            username:"yellowbird",
+            username: username,
             pettype: petType,
             price: parseInt(petPrice)
         })
     }
 
     useEffect(() => {
-        getPetCareList("yellowbird")
+        getPetCareList(username)
         return () => {};
     }, [])
 
@@ -76,7 +96,7 @@ const PetCareList = (props) => {
             <List>
                 {petCareList.map((careItem) => (
                 <>
-                <ListItem>
+                <ListItem key={v4()}>
                 <ListItemAvatar>
                     <Avatar>
                       <PetsIcon />
@@ -90,13 +110,13 @@ const PetCareList = (props) => {
                 />
                 {props.owner ? 
                 <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="delete">
+                    <IconButton edge="end" aria-label="delete" onClick={() => deletePetCareItem({username: username, pettype: careItem.pettype})}>
                       <DeleteIcon />
                     </IconButton>
                 </ListItemSecondaryAction> : null } 
                 {!props.owner ? 
                 <ListItemSecondaryAction>
-                    <IconButton onClick={openModal}>
+                    <IconButton onClick={() => openModal(careItem.pettype)}>
                         <ListItemText  
                             primary="Bid"/>
                     </IconButton>
@@ -119,12 +139,12 @@ const PetCareList = (props) => {
             <Modal
                 open={open}
                 onClose={closeModal}>
-                <BidModal modalHandler={closeModal}/>
+                <BidModal ctuname={props.username} petType={bidPetType} closeModal={closeModal}/>
             </Modal>
             <Modal
                 open={addCareOpen}
                 onClose={closeCareModal}>
-                <Card>
+                <Card className={classes.modal}>
                     <PetTypeInput parentType={onPetTypeSet} parentPrice={onPetPriceSet}/>
                     <Button onClick={handleAddNewPet} color="primary"> Add new pet type </Button>
                 </Card>

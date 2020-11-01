@@ -75,7 +75,7 @@ app.get("/api/v1/users/:username", async (req, res) => {
         res.status(200).json({
             status: "success",
             data: {
-                user: results.rows
+                user: results.rows[0]
             }
         });
     } catch (err) {
@@ -186,6 +186,26 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
             status: "success",
             data: {
                 user: results.rows[0]
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+app.get("/api/v1/pettype", async (req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM cares");
+        res.status(200).json({
+            status: "success",
+            results: results.rows.length,
+            data: {
+                pettypes: results.rows
             }
         });
     } catch (err) {
@@ -439,7 +459,7 @@ app.put("/api/v1/petowner/:username", async (req, res) => {
     try {
         const results = await db.query("UPDATE PetOwner SET ownerName = $1, age = $2 WHERE username = $3 RETURNING *",
             [req.body.ownername, req.body.age, req.params.username]);
-        res.status(204).json({
+        res.status(200).json({
             status: "success",
             data: {
                 user: results.rows
@@ -517,7 +537,7 @@ app.get("/api/v1/pet", async (req, res) => {
 
 app.get("/api/v1/pet/:username", async(req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1",
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE pouname = $1",
             [req.params.username]);
         res.status(200).json({
             status: "success",
@@ -535,6 +555,34 @@ app.get("/api/v1/pet/:username", async(req, res) => {
     }
 });
 
+// Get all existing pets belonging to a username of a certain pet type
+/*
+    Expected inputs:
+        Path parameters:
+            username, which represents the unique username of the Pet's Owner.
+            pettype, which represents the pet type that to retrieve.
+    
+    Expected status code 200 OK, or 400 Bad Request
+*/
+app.get("/api/v1/pet/:username/:pettype", async(req, res) => {
+    try {
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE pouname = $1 AND pettype = $2",
+            [req.params.username, req.params.pettype]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                pets: results.rows
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
 
 // Get an existing Pet.
 /*
@@ -547,7 +595,7 @@ app.get("/api/v1/pet/:username", async(req, res) => {
  */
 app.get("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE username = $1 AND petname = $2",
+        const results = await db.query("SELECT * FROM Owned_Pet_Belongs WHERE pouname = $1 AND petName = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -583,7 +631,7 @@ app.get("/api/v1/pet/:username/:petname", async (req, res) => {
 app.post("/api/v1/pet", async (req, res) => {
     try {
         const results = await db.query(
-            "INSERT INTO Owned_Pet_Belongs(username, petname, petType, petAge, requirements) VALUES " +
+            "INSERT INTO Owned_Pet_Belongs(pouname, petName, petType, petAge, requirements) VALUES " +
             "($1, $2, $3, $4, $5) RETURNING *",
             [req.body.username, req.body.petname, req.body.pettype, req.body.petage, req.body.requirements]);
         res.status(201).json({
@@ -622,7 +670,7 @@ app.post("/api/v1/pet", async (req, res) => {
 app.put("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
         const results = await db.query("UPDATE Owned_Pet_Belongs SET pettype = $1, petage = $2, requirements = $3" +
-            " WHERE username = $4 AND petname = $5 RETURNING *",
+            " WHERE pouname = $4 AND petname = $5 RETURNING *",
             [req.body.pettype, req.body.petage, req.body.requirements, req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success",
@@ -652,7 +700,7 @@ app.put("/api/v1/pet/:username/:petname", async (req, res) => {
  */
 app.delete("/api/v1/pet/:username/:petname", async (req, res) => {
     try {
-        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE username = $1 AND petname = $2",
+        const results = await db.query("DELETE FROM Owned_Pet_Belongs WHERE pouname = $1 AND petname = $2",
             [req.params.username, req.params.petname]);
         res.status(200).json({
             status: "success"
@@ -721,6 +769,23 @@ app.post("/api/v1/categories/:username", async (req, res) => {
             data: {
                 pets: results.rows[0]
             }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                "error": err
+            }
+        });
+    }
+});
+
+app.delete("/api/v1/categories/:username/:pettype", async (req, res) => {
+    try {
+        const results = await db.query("DELETE FROM Cares WHERE ctuname = $1 AND pettype = $2",
+            [req.params.username, req.params.pettype]);
+        res.status(200).json({
+            status: "success"
         });
     } catch (err) {
         res.status(400).json({
@@ -1132,6 +1197,57 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
     )
 });
 
+// Completes a payment status between a Caretaker's Availability and a specific Pet. This will only change the 
+// payment status of a Bid that is referred to exactly via its s_time and e_time. The GET APIs should be used to
+// verify the exact s_time and e_time.
+/*
+    Expected inputs:
+        JSON object of the form:
+        {
+            "petname": String,
+            "pettype": String,
+            "s_time": String (in the format YYYYMMDD, which will be converted into a Date),
+            "e_time": String (in the format YYYYMMDD, which will be converted into a Date)
+        }
+
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            pouname, which is the username of the Petowner.
+
+    Expected status code:
+        200 OK, if successful
+        409 Conflict, if caretaker has exceeded their allowed number of Pets at that time.
+ */
+app.put("/api/v1/bid/:ctuname/:pouname/pay", async (req, res) => {
+    db.query("UPDATE Bid SET pay_status = True WHERE ctuname = $1 AND pouname = $2 AND petname = $3 AND pettype = $4 AND s_time = to_date($5,'YYYYMMDD') AND e_time = to_date($6,'YYYYMMDD') RETURNING *",
+        [req.params.ctuname, req.params.pouname, req.body.petname, req.body.pettype, req.body.s_time, req.body.e_time]
+    ).then(
+        (result) => {
+            if (result.rows.length === 0) {
+                res.status(200).json({
+                    status: "unsuccessful update (check parameters)",
+                });
+            } else {
+                res.status(200).json({
+                    status: "success",
+                    data: {
+                        bids: result.rows
+                    }
+                });
+            }
+        }
+    ).catch(
+        (error) => {
+            res.status(409).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
 
 
 /* API calls for Availability */
@@ -1221,15 +1337,16 @@ app.get("/api/v1/availability/", async (req, res) => {
         200 OK, if successful
         400 Bad Request, if general failure
  */
-app.get("/api/v1/availability/:ctuname", async (req, res) => {
+app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
+    console.log(req);
     db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD')",
-        [req.params.ctuname, req.body.s_time, req.body.e_time]
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
     ).then(
         (result) => {
             res.status(200).json({
                 status: "success",
                 data: {
-                    availabilities: result.rows
+                    availabilities: result.rows,
                 }
             })
         }
@@ -1244,6 +1361,41 @@ app.get("/api/v1/availability/:ctuname", async (req, res) => {
         }
     )
 });
+
+// Gets all Availabilities from a Caretaker. All availabilities indicated by the caretaker will be
+// returned in this query.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+// app.get("/api/v1/availability/:ctuname", async (req, res) => {
+//     db.query("SELECT * FROM Has_Availability WHERE ctuname = $1",
+//         [req.params.ctuname]
+//     ).then(
+//         (result) => {
+//             res.status(200).json({
+//                 status: "success",
+//                 data: {
+//                     availabilities: result.rows
+//                 }
+//             })
+//         }
+//     ).catch(
+//         (error) => {
+//             res.status(400).json({
+//                 status: "failed",
+//                 data: {
+//                     "error": error
+//                 }
+//             })
+//         }
+//     )
+// });
 
 
 // Deletes all Availabilities from a Caretaker within a timeframe. All availabilities indicated by the caretaker that
