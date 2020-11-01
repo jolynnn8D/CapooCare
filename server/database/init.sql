@@ -67,11 +67,7 @@ CREATE TABLE CareTaker (
 );
 
 CREATE TABLE FullTimer (
-    username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username),
-    period1_s  DATE NOT NULL,
-    period1_e  DATE NOT NULL,
-    period2_s  DATE NOT NULL,
-    period2_e  DATE NOT NULL
+    username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username)
 );
 
 CREATE TABLE PartTimer (
@@ -162,11 +158,11 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
                 WHERE FullTimer.username = ctuname;
             IF ctx = 0 THEN
                 INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
-                INSERT INTO FullTimer VALUES (ctuname, period1_s, period1_e, period2_s, period2_e);
-                INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
-                INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
+                INSERT INTO FullTimer VALUES (ctuname);
             END IF;
             INSERT INTO Cares VALUES (ctuname, pettype, price);
+            INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
+            INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
     END;$$
 LANGUAGE plpgsql;
 
