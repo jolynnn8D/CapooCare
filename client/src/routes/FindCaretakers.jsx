@@ -7,6 +7,9 @@ import { Link } from 'react-router-dom';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { v4 } from 'uuid';
 import Filter from '../components/Filter';
+import { DateRangePicker } from 'react-date-range';
+import { addDays, addYears, eachDayOfInterval, toDate } from 'date-fns';
+
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -81,10 +84,21 @@ const FindCaretakers = () => {
     const [search, setSearch] = useState("");
     const [filteredCaretakers, setFilteredCaretakers] = useState([]);
     const [sortValue, setSortValue] = useState("highest");
+    const [dateRange, setDateRange] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: 'selection'
+        }
+    ]);
+    const minDate = new Date();
+    const maxDate = addYears(minDate, 2);
+
 
     const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers);
     const getPetTypeList = useStoreActions(actions => actions.careTakers.getPetTypeList);
     const getCareTakerRatings = useStoreActions(actions => actions.careTakers.getCareTakerRatings);
+    const getAvailableCaretakers = useStoreActions(actions => actions.careTakers.getAvailableCaretakers);
 
     useEffect(() => {
         getCareTakers();
@@ -93,9 +107,11 @@ const FindCaretakers = () => {
         return () => {};
     }, [])
 
+
     const careTakers = useStoreState(state => state.careTakers.caretakers);
     const petTypes = useStoreState(state => state.careTakers.petTypeList);
     const careTakerRatings = useStoreState(state => state.careTakers.careTakerRatings);
+    const availableCaretakers = useStoreState(state => state.careTakers.availableCaretakers);
 
     careTakers.map(caretaker => caretaker.pettypes = [...petTypes].filter(pettype => pettype.ctuname === caretaker.username));
     careTakers.map(caretaker => caretaker.pettypes = caretaker.pettypes.map(pettype => pettype.pettype).join(", "))
@@ -109,7 +125,7 @@ const FindCaretakers = () => {
     })
 
     // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
-    console.log(careTakers);
+    // console.log(careTakers);
 
     useEffect(() => {
         setFilteredCaretakers(
@@ -118,6 +134,8 @@ const FindCaretakers = () => {
             })
         )
     }, [search, careTakers])
+
+    
 
     const sortCareTakers = (event) => {
         setSortValue(event.target.value);
@@ -130,7 +148,7 @@ const FindCaretakers = () => {
                 a.age > b.age ? 1: -1
             ))
         )
-        console.log(event.target.value);
+        // console.log(event.target.value);
     }
 
     return (
@@ -156,6 +174,42 @@ const FindCaretakers = () => {
                 <Filter count={filteredCaretakers.length}
                         sortValue={sortValue}
                         sortCareTakers={sortCareTakers} />
+                <DateRangePicker
+                    id="form-datepicker"
+                    onChange={item => {
+                        setDateRange([{
+                            startDate: item.selection.startDate,
+                            endDate: item.selection.endDate,
+                            key: 'selection'
+                        }]);
+                        console.log(dateRange);
+                        console.log(item.selection);
+                        // console.log(dateRange);
+                        getAvailableCaretakers({
+                            s_time: item.selection.startDate, 
+                            e_time: item.selection.endDate
+                        });
+                        const isAvailableCaretaker = (ct) => {
+                            let isFound = false;
+                            availableCaretakers.forEach(function(caretaker) {
+                                if (caretaker.ctuname == ct.username) {
+                                    isFound = true;
+                                }
+                            })
+                            return isFound
+                        }
+                        setFilteredCaretakers(
+                            filteredCaretakers.filter((ct) => isAvailableCaretaker(ct))
+                        )
+                        console.log(filteredCaretakers);
+                    }}
+                    showSelectionPreview={true}
+                    moveRangeOnFirstSelection={false}
+                    ranges={dateRange}
+                    direction="horizontal"
+                    minDate = {minDate}
+                    maxDate={maxDate}
+                />
                 {filteredCaretakers.map((caretaker) => (
                     <Card key={v4()} className={classes.card} variant="outlined" width={1}>
                         <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}>
