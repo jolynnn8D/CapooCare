@@ -169,6 +169,16 @@ const careTakersModel = {
     setUserRating: action((state, payload) => {
       state.userRating = payload;
     }),
+
+    careTakerRatings: [],
+    getCareTakerRatings: thunk(async(actions, payload) => {
+      const url = serverUrl + "/api/v1/rating";
+      const {data} = await axios.get(url);
+      actions.setCareTakerRatings(data.data.rating);
+    }),
+    setCareTakerRatings: action((state, payload) => {
+      state.careTakerRatings = payload;
+    })
   }
 
 export default careTakersModel;

@@ -16,7 +16,7 @@ app.use(express.json());
 // If True, then the database will be wiped and re-initialized. By default, use False.
 const forceInitializeDatabase = keys.forceInitializeDatabase || false
 
-if (forceInitializeDatabase == "true") {
+if (forceInitializeDatabase === "true") {
     console.log("Re-initializing database...");
     db.initDatabase();
 }
@@ -1455,6 +1455,39 @@ app.get("/api/v1/rating/:ctuname", async (req, res) => {
                 status: "success",
                 data: {
                     rating: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+// Get the average rating of each Caretaker. The rating is the average of all given ratings, or NULL if no ratings have
+// been given.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/rating", async (req, res) => {
+    db.query("SELECT ctuname, AVG(rating) AS avg_rating FROM Bid GROUP BY ctuname").then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    rating: result.rows
                 }
             })
         }
