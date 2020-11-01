@@ -5,5 +5,6 @@ module.exports = {
     pgDatabase: process.env.PGDATABASE,
     pgPassword: process.env.PGPASSWORD,
     pgPort: process.env.PGPORT,
-    forceInitializeDatabase: process.env.FORCEINITIALIZEDATABASE
+    forceInitializeDatabase: process.env.FORCEINITIALIZEDATABASE,
+    nodeEnv: process.env.NODE_ENV
 }

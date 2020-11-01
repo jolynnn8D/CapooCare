@@ -1,16 +1,28 @@
 // connect express to postgres
+require('dotenv').config();
 const { Pool } = require('pg');
 const fs = require('fs');
 const keys = require('../keys')
 
-const pool = new Pool({
+const devConfig = {
     user: keys.pgUser,
     host: keys.pgHost,
     database: keys.pgDatabase,
     password: keys.pgPassword,
     port: keys.pgPort,
-});
+};
 
+const proConfig = {
+    connectionString: process.env.DATABASE_URL //heroku addons
+};
+
+// const pool = new Pool(
+//     process.env.NODE_ENV === "production" ? proConfig : devConfig
+// );
+
+const pool = new Pool(
+    devConfig
+);
 
 // Initialize database
 const initDatabase = () => {
