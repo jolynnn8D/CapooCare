@@ -63,7 +63,6 @@ CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
     carerName VARCHAR(50) NOT NULL,
     age   INTEGER DEFAULT NULL,
-    rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL
 );
 
@@ -87,6 +86,7 @@ CREATE TABLE Has_Availability (
     ctuname VARCHAR(50) REFERENCES CareTaker(username) ON DELETE CASCADE,
     s_time DATE,
     e_time DATE,
+    CHECK (e_time > s_time),
     PRIMARY KEY(ctuname, s_time, e_time)
 );
 
@@ -161,8 +161,10 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
             SELECT COUNT(*) INTO ctx FROM FullTimer
                 WHERE FullTimer.username = ctuname;
             IF ctx = 0 THEN
-                INSERT INTO CareTaker VALUES (ctuname, aname, age, null, null);
+                INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
                 INSERT INTO FullTimer VALUES (ctuname, period1_s, period1_e, period2_s, period2_e);
+                INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
+                INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
             END IF;
             INSERT INTO Cares VALUES (ctuname, pettype, price);
     END;$$
@@ -175,7 +177,6 @@ CREATE OR REPLACE PROCEDURE add_parttimer(
     age   INTEGER,
     pettype VARCHAR(20),
     price INTEGER,
-    rating INTEGER DEFAULT NULL,
     salary INTEGER DEFAULT NULL
     )  AS $$
     DECLARE ctx NUMERIC;
@@ -183,7 +184,7 @@ CREATE OR REPLACE PROCEDURE add_parttimer(
         SELECT COUNT(*) INTO ctx FROM PartTimer
                 WHERE PartTimer.username = ctuname;
         IF ctx = 0 THEN
-            INSERT INTO CareTaker VALUES (ctuname, aname, age, rating, salary);
+            INSERT INTO CareTaker VALUES (ctuname, aname, age, salary);
             INSERT INTO PartTimer VALUES (ctuname);
         END IF;
         INSERT INTO Cares VALUES (ctuname, pettype, price);
@@ -254,6 +255,34 @@ LANGUAGE plpgsql;
 CREATE TRIGGER check_fulltimer
 BEFORE INSERT ON FullTimer
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
+
+/* check if the periods are 150 consecutive days within a year*/
+
+CREATE OR REPLACE FUNCTION check_period()
+RETURNS TRIGGER AS
+    $$ 
+    DECLARE period1 NUMERIC;
+    DECLARE period2 NUMERIC;
+    BEGIN
+        -- check if both periods overlap
+        IF (NEW.period1_s, NEW.period1_e) OVERLAPS (NEW.period2_s, NEW.period2_e) THEN
+            RAISE EXCEPTION 'Invalid periods: Periods are overlapping.';
+        ELSE
+            SELECT (NEW.period1_e - NEW.period1_s) AS DAYS INTO period1;
+            SELECT (NEW.period2_e - NEW.period2_s) AS DAYS INTO period2;
+            IF (period1 < 150 OR period2 < 150) THEN
+                RAISE EXCEPTION 'Invalid periods: Less than 150 days.';
+            ELSE
+                RETURN NEW;
+            END IF;
+        END IF;
+    END; $$
+LANGUAGE plpgsql;
+
+
+CREATE TRIGGER check_ft_period
+BEFORE INSERT ON FullTimer
+FOR EACH ROW EXECUTE PROCEDURE check_period();
 
 ------------------------------------------------------------ Bid ------------------------------------------------------------
 
@@ -399,6 +428,32 @@ AFTER INSERT OR UPDATE ON Bid
 FOR EACH ROW
 EXECUTE PROCEDURE mark_other_bids();
 
+CREATE OR REPLACE FUNCTION check_rating_update()
+RETURNS TRIGGER AS
+$$
+DECLARE avg_rating NUMERIC;
+    BEGIN
+        -- If updating rating
+        IF (NEW.rating IS NOT NULL) THEN
+            IF ((SELECT CURRENT_DATE) > NEW.e_time) THEN
+                IF (NEW.pay_status = TRUE AND NEW.is_win = TRUE) THEN
+                    RETURN NEW;
+                ELSE
+                    RAISE EXCEPTION 'Bids and payment must be successful before ratings or reviews can be updated.';
+                END IF;
+            ELSE
+                RAISE EXCEPTION 'Ratings and reviews cannot be updated before the end of the job.';
+            END IF;
+        END IF;
+        RETURN NEW;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_rating_update
+AFTER UPDATE ON Bid
+FOR EACH ROW
+EXECUTE PROCEDURE check_rating_update();
+
 
 CREATE OR REPLACE PROCEDURE add_bid(
     _pouname VARCHAR(50),
@@ -441,19 +496,20 @@ CREATE OR REPLACE PROCEDURE add_bid(
         $$
     LANGUAGE plpgsql;
 
+
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT username, carerName, age, rating, salary, true AS is_carer FROM CareTaker
+   SELECT username, carerName, age, salary, true AS is_carer FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS rating, NULL AS salary, false AS is_carer FROM PetOwner
+   SELECT username, ownerName, age, NULL AS salary, false AS is_carer FROM PetOwner
 );
 
 CREATE OR REPLACE VIEW Accounts AS (
-   SELECT username, adminName, age, NULL AS rating, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
+   SELECT username, adminName, age, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
    UNION ALL
-   SELECT username, carerName, age, rating, salary, true AS is_carer, false AS is_admin FROM CareTaker
+   SELECT username, carerName, age, salary, true AS is_carer, false AS is_admin FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS rating, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
+   SELECT username, ownerName, age, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
 );
 
 /* SEED */
@@ -461,9 +517,9 @@ INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
 
 INSERT INTO Category VALUES ('dog'),('cat'),('rabbit'),('big dogs'),('lizard'),('bird');
 
-CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 50, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35, '2020-01-01', '2020-05-29', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 50, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
 
 CALL add_parttimer('yellowbird', 'bird', 35, 'cat', 60);
 
