@@ -570,8 +570,8 @@ INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-02-05', '2021-02-20', 'cash', 'poDeliver');
 
 -- The following test case overloads 'marythemess' with more bids than she can accept
-CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-02', '2021-02-28', NULL, NULL);
-CALL add_bid('marythemess', 'Bark', 'big dogs', 'yellowchicken', '2021-01-02', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Bark', 'big dogs', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
 CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2021-02-24', '2021-02-28', 'cash', 'poDeliver');
 CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowchicken', '2021-02-25', '2021-02-28', 'cash', 'ctPickup');
 CALL add_bid('marythemess', 'Purr', 'cat', 'yellowchicken', '2021-02-26', '2021-02-28', 'cash', 'poDeliver');
