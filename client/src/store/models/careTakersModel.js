@@ -1,16 +1,23 @@
 import { action, thunk } from 'easy-peasy';
 import axios from 'axios';
 import { serverUrl } from './serverUrl';
+import { convertDate } from '../../utils';
 
 const careTakersModel = {
     caretakers: [],
     petCareList: [],
     petTypeList: [],
+<<<<<<< HEAD
     availabilityList: [],
+=======
+    availability: [],
+
+>>>>>>> main-ui-branch
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get("http://localhost:5000/api/v1/caretaker");
       actions.setUsers(data.data.users); 
     }),
+
     setUsers: action((state, payload) => {
       state.caretakers = [...payload];
     }),
@@ -94,6 +101,19 @@ const careTakersModel = {
         })
         state.petCareList.splice(index, 1);
         
+    }),
+
+    getUserAvailability: thunk(async(actions, payload) => {
+      const {ctuname, s_time, e_time } = {...payload}
+      const url = serverUrl + "/api/v1/availability/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time);
+      console.log(url);
+
+      const { data } = await axios.get(url);
+      console.log(data)
+      actions.setUserAvailability(data.data.availabilities)
+    }),
+    setUserAvailability: action((state, payload) => {
+      state.availability = [...payload];
     }),
 
     getAvailabilityList: thunk(async(actions, payload) => {

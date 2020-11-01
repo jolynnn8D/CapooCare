@@ -40,8 +40,6 @@ const AddPet = (props) => {
         closeModal();
     }
     
-
-
     useEffect(() => {
         getPetCategories();
         setPetName(props.parentData.petName);
