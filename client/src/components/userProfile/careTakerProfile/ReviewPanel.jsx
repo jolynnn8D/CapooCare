@@ -28,7 +28,7 @@ const ReviewPanel = (props) => {
                                     </ListItemSecondaryAction>
                                 </ListItem>);
                             })}
-                        </List>
+            </List>
         </Card>
     )
 }

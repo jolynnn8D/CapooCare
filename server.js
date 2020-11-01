@@ -5,6 +5,7 @@ const cors = require("cors");
 const db = require("./database/init");
 const morgan = require('morgan');
 const { Pool } = require('pg');
+const path = require("path");
 const keys = require("./keys");
 const port = keys.port || 5000;
 
@@ -12,6 +13,11 @@ const app = express();
 
 app.use(cors())
 app.use(express.json());
+
+if (process.env.NODE_ENV == "production") {
+    //server static content
+    npm.use(express.static(path.join(_dirname, "client/build"))) ;
+}
 
 // If True, then the database will be wiped and re-initialized. By default, use False.
 const forceInitializeDatabase = keys.forceInitializeDatabase || false
