@@ -12,7 +12,7 @@ const careTakersModel = {
     userRating: [],
 
     getCareTakers: thunk(async (actions, payload) => {
-      const {data} = await axios.get("http://localhost:5000/api/v1/caretaker");
+      const {data} = await axios.get(serverUrl + "/api/v1/caretaker");
       actions.setUsers(data.data.users); 
     }),
 

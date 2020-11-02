@@ -3,7 +3,7 @@ import { useStoreActions, useStoreState } from 'easy-peasy';
 import { makeStyles } from '@material-ui/core/styles';
 import { v4 } from 'uuid';
 import { Avatar, Button, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, TextField, Typography } from '@material-ui/core';
-import { sqlToJsDate } from '../../utils';
+import { sqlToJsDate, differenceInTwoDates, stringToJsDate, isValidStringDate } from '../../utils';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -20,6 +20,7 @@ const CaretakerAvailability = (props) => {
     const classes = useStyles();
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const singleUser = useStoreState(state => state.user.singleUser);
     const userAvailability = useStoreState(state => state.careTakers.availability);
     const getUserAvailability = useStoreActions(actions => actions.careTakers.getUserAvailability);
     const addUserAvailability = useStoreActions(actions => actions.careTakers.addUserAvailability);
@@ -29,19 +30,49 @@ const CaretakerAvailability = (props) => {
         getUserAvailability({
             ctuname: props.username,
             s_time: new Date(),
-            e_time: new Date(new Date().setDate(new Date().getDate() + 365)), //one year from now
+            e_time: new Date(new Date().setDate(new Date().getDate() + 730)), //two years from now
         });
         return () => {};
     }, []);
 
+    const validateDates = () => {
+        if (startDate.length != 8 || endDate.length != 8) {
+            alert("Please enter date in the format YYYYMMDD")
+            return false;
+        }
+        if (stringToJsDate(startDate) > stringToJsDate(endDate)) {
+            alert("Please enter a start date that is before the end date")
+            return false;
+        }
+        if (!(isValidStringDate(startDate) && isValidStringDate(endDate))) {
+            alert("Invalid date entered. Please enter in the format YYYYMMDD")
+            return false;
+        }
+        if (stringToJsDate(startDate) < new Date()) {
+            alert("Please enter a start date in the future.")
+            return false;
+        }
+        if (singleUser.is_fulltimer) {
+            const dayDifference = differenceInTwoDates(startDate, endDate)
+            if (dayDifference < 150) {
+                alert("You need to add an availability period of at least 150 days")
+                return false;
+            }
+        }
+        return true;
+    }  
     const handleAddAvailability = () => {
+        const result = validateDates();
+        if (!result) {
+            return;
+        }
+        setStartDate("");
+        setEndDate("");
         addUserAvailability({
             ctuname: props.username,
             s_time: startDate,
             e_time: endDate
         })
-        setStartDate("");
-        setEndDate("");
     }
     const handleDeleteAvailability = (avail) => {
         console.log(avail)
@@ -73,7 +104,7 @@ const CaretakerAvailability = (props) => {
                 )
             })}
             </List>
-            <Typography> Add new availability here (if you're a full-timer, you can only add periods of 150 days): </Typography>
+            <Typography> Add new availability here (if you're a full-timer, you can only add periods of at least 150 days): </Typography>
             <TextField
                 variant="outlined"
                 label="Enter start date in YYYYMMDD"
