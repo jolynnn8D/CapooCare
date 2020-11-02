@@ -88,7 +88,7 @@ const FindCaretakers = () => {
         {
             startDate: new Date(),
             endDate: new Date(),
-            key: 'selection'
+            key: "selection"
         }
     ]);
     const minDate = new Date();
@@ -151,6 +151,20 @@ const FindCaretakers = () => {
         // console.log(event.target.value);
     }
 
+    const handleSubmit = () => {
+        const availableCTUsernames = availableCaretakers.map(caretaker => caretaker.ctuname);
+        // console.log(availableCTUsernames);
+        console.log(dateRange);
+        getAvailableCaretakers({
+            s_time: dateRange[0].startDate, 
+            e_time: dateRange[0].endDate
+        });
+        setFilteredCaretakers(careTakers);
+        setFilteredCaretakers(
+            careTakers.filter(caretaker => availableCTUsernames.includes(caretaker.username))
+        );
+    }
+
     return (
         <div>
             <Container component="main" maxWidth="md" className={classes.container}>
@@ -177,31 +191,15 @@ const FindCaretakers = () => {
                 <DateRangePicker
                     id="form-datepicker"
                     onChange={item => {
+                        console.log(item);
                         setDateRange([{
                             startDate: item.selection.startDate,
                             endDate: item.selection.endDate,
-                            key: 'selection'
+                            key: item.selection.key
                         }]);
-                        console.log(dateRange);
-                        console.log(item.selection);
+                        // console.log(item.selection);
                         // console.log(dateRange);
-                        getAvailableCaretakers({
-                            s_time: item.selection.startDate, 
-                            e_time: item.selection.endDate
-                        });
-                        const isAvailableCaretaker = (ct) => {
-                            let isFound = false;
-                            availableCaretakers.forEach(function(caretaker) {
-                                if (caretaker.ctuname == ct.username) {
-                                    isFound = true;
-                                }
-                            })
-                            return isFound
-                        }
-                        setFilteredCaretakers(
-                            filteredCaretakers.filter((ct) => isAvailableCaretaker(ct))
-                        )
-                        console.log(filteredCaretakers);
+                        // console.log(filteredCaretakers);
                     }}
                     showSelectionPreview={true}
                     moveRangeOnFirstSelection={false}
@@ -210,12 +208,18 @@ const FindCaretakers = () => {
                     minDate = {minDate}
                     maxDate={maxDate}
                 />
+                <Button className={classes.button}
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleSubmit()}>
+                    Look for Caretakers in this timeframe!
+                </Button>
                 {filteredCaretakers.map((caretaker) => (
                     <Card key={v4()} className={classes.card} variant="outlined" width={1}>
                         <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}>
                             <CardContent>
                                 <Typography gutterBottom variant="h5" component="h2">
-                                    {caretaker.carername}
+                                    {caretaker.username + ` (${caretaker.carername})`}
                                 </Typography>
                                 <Typography variant="body2" component="p">
                                     Caretaken description such as age: {caretaker.age} and salary: {caretaker.salary} about the pets that they take care of, how much they charge and all.
