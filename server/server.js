@@ -351,6 +351,118 @@ app.delete("/api/v1/caretaker/:username", async (req, res) => {
     }
 });
 
+/*
+    Gets the number of pet-days for a Caretaker during a specific timeframe. Group this by the type of pet cared for.
+
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the pets cared for during that 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+
+app.get("/api/v1/caretaker/summary/:ctuname/:s_time/:e_time/pettype", async (req, res) => {
+    db.query(
+        "SELECT petType AS pet_type, COUNT(day) AS count" +
+        "    FROM (" +
+        "        SELECT" +
+        "            generate_series(" +
+        "                GREATEST(to_date($2, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                LEAST(to_date($3, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                '1 day'::interval" +
+        "            ) AS day, petType, pouname, petName" +
+        "            FROM Bid NATURAL JOIN Cares" +
+        "            WHERE ctuname = $1 AND is_win = true" +
+        "                AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))" +
+        "            GROUP BY day, petType, pouname, petName" +
+        "    ) AS pet_days" +
+        "    GROUP BY petType" +
+        "    ORDER BY count DESC",
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    petdays: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
+
+
+/*
+    Gets the number of pet-days for a Caretaker during a specific timeframe. Group this by the petowner who owned the
+        pet.
+
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the pets cared for during that 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+
+app.get("/api/v1/caretaker/summary/:ctuname/:s_time/:e_time/petowner", async (req, res) => {
+    db.query(
+        "SELECT pouname AS username, COUNT(day) AS count" +
+        "    FROM (" +
+        "        SELECT" +
+        "            generate_series(" +
+        "                GREATEST(to_date($2, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                LEAST(to_date($3, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                '1 day'::interval" +
+        "            ) AS day, petType, pouname, petName" +
+        "            FROM Bid NATURAL JOIN Cares" +
+        "            WHERE ctuname = $1 AND is_win = true" +
+        "                AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))" +
+        "            GROUP BY day, petType, pouname, petName" +
+        "    ) AS pet_days" +
+        "    GROUP BY pouname" +
+        "    ORDER BY count DESC",
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    petdays: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
+
 
 
 /* API calls for Pet Owners */
