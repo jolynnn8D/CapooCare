@@ -1629,6 +1629,83 @@ app.get("/api/v1/admin/salary/fulltimers/:s_time/:e_time", async (req, res) => {
 
 
 /*
+    Gets the expected salary of all parttime Caretakers, for a specified timeframe.
+
+    The details of this computation are similar to the single-Caretaker API written below.
+
+    Expected inputs:
+        Path parameters:
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the salary for 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+app.get("/api/v1/admin/salary/parttimers/:s_time/:e_time", async (req, res) => {
+    db.query(
+        "SELECT ctuname," +
+        "    SUM(cost) * 0.75 * (" +
+        "        SELECT" +
+        "            CASE" +
+        "                WHEN AVG(rating) BETWEEN 4 AND 5" +
+        "                    THEN 1.1" +
+        "                WHEN AVG(rating) BETWEEN 3 AND 4" +
+        "                    THEN 1.05" +
+        "                ELSE 1" +
+        "            END" +
+        "            FROM Bid RIGHT JOIN Parttimer ON (Bid.ctuname = Parttimer.username)" +
+        "            WHERE ctuname = username" +
+        "    ) AS salary" +
+        "    FROM (" +
+        "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
+        "            FROM (" +
+        "                SELECT ctuname, day, price, pouname, petName" +
+        "                    FROM (" +
+        "                        SELECT" +
+        "                            generate_series(" +
+        "                                GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                                LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                                '1 day'::interval" +
+        "                            ) AS day, price, ctuname, pouname, petName" +
+        "                            FROM Bid NATURAL JOIN Cares RIGHT JOIN Parttimer ON (Bid.ctuname = Parttimer.username)" +
+        "                            WHERE ctuname = username AND is_win = true" +
+        "                                AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
+        "                            ORDER BY ctuname, day, price, pouname, petName" +
+        "                    ) AS pet_day_prices" +
+        "                    GROUP BY ctuname, day, price, pouname, petName" +
+        "            ) AS totalprice RIGHT JOIN Parttimer ON (totalprice.ctuname = Parttimer.username)" +
+        "            GROUP BY username, day, price, pouname, petName" +
+        "    ) AS salaries" +
+        "    GROUP BY ctuname",
+        [req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    salaries: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
+
+
+
+
+/*
     Gets the expected salary of a Caretaker, for a specified timeframe.
 
     The calculation values (e.g. $3000 as base salary for Fulltimers) are hardcoded, and they assume that a span of 1

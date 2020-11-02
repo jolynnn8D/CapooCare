@@ -566,7 +566,10 @@ INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
-CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-02-05', '2021-02-20', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowbird', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-01-05', '2021-01-20', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Ruff' AND pettype = 'big dogs' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210220','YYYYMMDD');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210120','YYYYMMDD');
 
 -- The following test case overloads 'marythemess' with more bids than she can accept
 CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
