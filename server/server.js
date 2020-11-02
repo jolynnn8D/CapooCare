@@ -1641,13 +1641,11 @@ app.get("/api/v1/review/:ctuname", async (req, res) => {
             The important columns returned are ctuname and price; day is used to differentiate them.
             The other columns (petName and pouname) are used to maintain uniqueness of rows through the GROUP BY clause.
 
-        Within alias filter:
+        Within alias bonuses:
             rank() and PARTITION BY are used to order the output days by username. This needs to be done rather than
                 ORDER BY because 60 pet-days must be taken off of each Fulltimer.
             WHERE RANK > 60 selects for this, within each partition.
-
-        Within alias bonuses:
-            No rows will be returned for Fulltimers who fail to reach the 60 pet-day barrier. They must be artificially 
+            No rows will be returned for Fulltimers who fail to reach the 60 pet-day barrier. They must be artificially
                 added back in to ensure that they will appear in the final list.
             The RIGHT JOIN operator adds these Fulltimers back in.
             The COALESCE operator assigns them a 'price' of 0, i.e. they get no bonuses.
@@ -1691,29 +1689,26 @@ app.get("/api/v1/admin/salary/fulltimers/:s_time/:e_time", async (req, res) => {
         "    FROM (" +
         "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
         "            FROM (" +
-        "                SELECT ctuname, day, price, pouname, petName" +
+        "                SELECT ctuname, day, price, pouname, petName," +
+        "                    rank() OVER (" +
+        "                        PARTITION BY ctuname" +
+        "                        ORDER BY day, price" +
+        "                    )" +
         "                    FROM (" +
-        "                        SELECT ctuname, day, price, pouname, petName," +
-        "                            rank() OVER (" +
-        "                                PARTITION BY ctuname" +
-        "                                ORDER BY day, price" +
-        "                            )" +
-        "                            FROM (" +
-        "                                SELECT" +
-        "                                    generate_series(" +
-        "                                        GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
-        "                                        LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
-        "                                        '1 day'::interval" +
-        "                                    ) AS day, price, ctuname, pouname, petName" +
-        "                                    FROM Bid NATURAL JOIN Cares RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
-        "                                    WHERE ctuname = username AND is_win = true" +
-        "                                        AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
-        "                                    ORDER BY ctuname, day, price, pouname, petName" +
-        "                            ) AS pet_day_prices" +
-        "                            GROUP BY ctuname, day, price, pouname, petName" +
-        "                    ) AS filter" +
-        "                    WHERE rank > 60" +
+        "                        SELECT" +
+        "                            generate_series(" +
+        "                                GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                                LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                                '1 day'::interval" +
+        "                            ) AS day, price, ctuname, pouname, petName" +
+        "                            FROM Bid NATURAL JOIN Cares RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
+        "                            WHERE ctuname = username AND is_win = true" +
+        "                                AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
+        "                            ORDER BY ctuname, day, price, pouname, petName" +
+        "                    ) AS pet_day_prices" +
+        "                    GROUP BY ctuname, day, price, pouname, petName" +
         "            ) AS bonuses RIGHT JOIN Fulltimer ON (bonuses.ctuname = Fulltimer.username)" +
+"                    WHERE rank > 60" +
         "            GROUP BY username, day, price, pouname, petName" +
         "    ) AS salaries" +
         "    GROUP BY ctuname",
@@ -1774,20 +1769,16 @@ app.get("/api/v1/admin/salary/parttimers/:s_time/:e_time", async (req, res) => {
         "    FROM (" +
         "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
         "            FROM (" +
-        "                SELECT ctuname, day, price, pouname, petName" +
-        "                    FROM (" +
-        "                        SELECT" +
-        "                            generate_series(" +
-        "                                GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
-        "                                LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
-        "                                '1 day'::interval" +
-        "                            ) AS day, price, ctuname, pouname, petName" +
-        "                            FROM Bid NATURAL JOIN Cares RIGHT JOIN Parttimer ON (Bid.ctuname = Parttimer.username)" +
-        "                            WHERE ctuname = username AND is_win = true" +
-        "                                AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
-        "                            ORDER BY ctuname, day, price, pouname, petName" +
-        "                    ) AS pet_day_prices" +
-        "                    GROUP BY ctuname, day, price, pouname, petName" +
+        "                SELECT" +
+        "                    generate_series(" +
+        "                        GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                        LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                        '1 day'::interval" +
+        "                    ) AS day, price, ctuname, pouname, petName" +
+        "                    FROM Bid NATURAL JOIN Cares RIGHT JOIN Parttimer ON (Bid.ctuname = Parttimer.username)" +
+        "                    WHERE ctuname = username AND is_win = true" +
+        "                        AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
+        "                    ORDER BY ctuname, day, price, pouname, petName" +
         "            ) AS totalprice RIGHT JOIN Parttimer ON (totalprice.ctuname = Parttimer.username)" +
         "            GROUP BY username, day, price, pouname, petName" +
         "    ) AS salaries" +
