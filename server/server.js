@@ -52,7 +52,7 @@ app.get("/api/v1/users", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -80,7 +80,7 @@ app.get("/api/v1/users/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -106,7 +106,7 @@ app.get("/api/v1/accounts", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -136,7 +136,7 @@ app.get("/api/v1/accounts/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -163,7 +163,7 @@ app.get("/api/v1/caretaker", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -190,7 +190,7 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -210,7 +210,7 @@ app.get("/api/v1/pettype", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -250,7 +250,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -286,7 +286,7 @@ app.post("/api/v1/parttimer", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -321,7 +321,7 @@ app.put("/api/v1/caretaker/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -345,7 +345,7 @@ app.delete("/api/v1/caretaker/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -372,7 +372,7 @@ app.get("/api/v1/petowner", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -399,7 +399,7 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -433,7 +433,7 @@ app.post("/api/v1/petowner", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -467,7 +467,7 @@ app.put("/api/v1/petowner/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -491,7 +491,7 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -518,7 +518,7 @@ app.get("/api/v1/pet", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -547,7 +547,7 @@ app.get("/api/v1/pet/:username", async(req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -576,7 +576,7 @@ app.get("/api/v1/pet/:username/:pettype", async(req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -605,7 +605,7 @@ app.get("/api/v1/pet/:username/:petname", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -642,7 +642,7 @@ app.post("/api/v1/pet", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -680,7 +680,7 @@ app.put("/api/v1/pet/:username/:petname", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -707,7 +707,7 @@ app.delete("/api/v1/pet/:username/:petname", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -730,7 +730,7 @@ app.get("/api/v1/categories", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -751,7 +751,7 @@ app.get("/api/v1/categories/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -772,7 +772,7 @@ app.post("/api/v1/categories/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -789,7 +789,7 @@ app.delete("/api/v1/categories/:username/:pettype", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -835,7 +835,7 @@ app.post("/api/v1/bid/", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -870,7 +870,7 @@ app.get("/api/v1/bid/:ctuname/ct", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -905,7 +905,7 @@ app.get("/api/v1/bid/:pouname/po", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -941,7 +941,7 @@ app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -984,7 +984,7 @@ app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1029,7 +1029,7 @@ app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1090,7 +1090,7 @@ app.put("/api/v1/bid/", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1135,7 +1135,7 @@ app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1188,7 +1188,7 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
             res.status(409).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1239,7 +1239,7 @@ app.put("/api/v1/bid/:ctuname/:pouname/pay", async (req, res) => {
             res.status(409).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1283,7 +1283,7 @@ app.post("/api/v1/availability/:ctuname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1310,7 +1310,7 @@ app.get("/api/v1/availability/", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1353,7 +1353,7 @@ app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1388,7 +1388,7 @@ app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
 //             res.status(400).json({
 //                 status: "failed",
 //                 data: {
-//                     "error": error
+//                     error: error
 //                 }
 //             })
 //         }
@@ -1430,7 +1430,7 @@ app.delete("/api/v1/availability/:ctuname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1468,7 +1468,7 @@ app.get("/api/v1/rating/:ctuname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1503,7 +1503,7 @@ app.get("/api/v1/review/:ctuname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1513,6 +1513,120 @@ app.get("/api/v1/review/:ctuname", async (req, res) => {
 
 
 /* API calls for PCSAdmin */
+
+
+
+/*
+    Gets the expected salary of all fulltime Caretakers, for a specified timeframe.
+
+    The specific details on the computation are:
+        Within alias pet_day_prices:
+            generate_series() is used to generate all pet-days for a specific username.
+            The OVERLAPS operator is used to identify all won Bids which overlap with the specified timeframe. It is
+                assumed that a won Bid will have been paid for.
+            The GREATEST and LEAST operators collectively limit the days examined to exactly within the confines of the
+                specified dates and the Bid timeframe itself.
+            The important columns returned are ctuname and price; day is used to differentiate them.
+            The other columns (petName and pouname) are used to maintain uniqueness of rows through the GROUP BY clause.
+
+        Within alias filter:
+            rank() and PARTITION BY are used to order the output days by username. This needs to be done rather than
+                ORDER BY because 60 pet-days must be taken off of each Fulltimer.
+            WHERE RANK > 60 selects for this, within each partition.
+
+        Within alias bonuses:
+            No rows will be returned for Fulltimers who fail to reach the 60 pet-day barrier. They must be artificially 
+                added back in to ensure that they will appear in the final list.
+            The RIGHT JOIN operator adds these Fulltimers back in.
+            The COALESCE operator assigns them a 'price' of 0, i.e. they get no bonuses.
+            All other Fulltimers will have some rows, each representing one pet-day, each with its own price.
+            These collectively represent the bonuses of the Fulltimers.
+
+        Within alias salaries:
+            The bonuses for the salary are modified based on the rating of the Fulltimer.
+            The CASE block gives a 10% bonus to the salary if the rating is between 4 and 5 inclusive, and 5% bonus if 
+                the rating is between 3 and 4 inclusive (4 is not included only by elimination, since the first case is 
+                examined first).
+
+        This is collectively returned, along with the ctuname of the Caretaker.
+
+    Expected inputs:
+        Path parameters:
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the salary for 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+app.get("/api/v1/admin/salary/fulltimers/:s_time/:e_time", async (req, res) => {
+    db.query(
+        "SELECT ctuname," +
+        "    (3000 + SUM(cost) * 0.8) * (" +
+        "        SELECT" +
+        "            CASE" +
+        "                WHEN AVG(rating) BETWEEN 4 AND 5" +
+        "                    THEN 1.1" +
+        "                WHEN AVG(rating) BETWEEN 3 AND 4" +
+        "                    THEN 1.05" +
+        "                ELSE 1" +
+        "            END" +
+        "            FROM Bid RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
+        "            WHERE ctuname = username" +
+        "    ) AS salary" +
+        "    FROM (" +
+        "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
+        "            FROM (" +
+        "                SELECT ctuname, day, price, pouname, petName" +
+        "                    FROM (" +
+        "                        SELECT ctuname, day, price, pouname, petName," +
+        "                            rank() OVER (" +
+        "                                PARTITION BY ctuname" +
+        "                                ORDER BY day, price" +
+        "                            )" +
+        "                            FROM (" +
+        "                                SELECT" +
+        "                                    generate_series(" +
+        "                                        GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                                        LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                                        '1 day'::interval" +
+        "                                    ) AS day, price, ctuname, pouname, petName" +
+        "                                    FROM Bid NATURAL JOIN Cares RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
+        "                                    WHERE ctuname = username AND is_win = true" +
+        "                                        AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
+        "                                    ORDER BY ctuname, day, price, pouname, petName" +
+        "                            ) AS pet_day_prices" +
+        "                            GROUP BY ctuname, day, price, pouname, petName" +
+        "                    ) AS filter" +
+        "                    WHERE rank > 60" +
+        "            ) AS bonuses RIGHT JOIN Fulltimer ON (bonuses.ctuname = Fulltimer.username)" +
+        "            GROUP BY username, day, price, pouname, petName" +
+        "    ) AS salaries" +
+        "    GROUP BY ctuname",
+        [req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    salaries: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
+
 
 /*
     Gets the expected salary of a Caretaker, for a specified timeframe.
@@ -1569,11 +1683,11 @@ app.get("/api/v1/admin/salary/:ctuname/:s_time/:e_time", async (req, res) => {
         "                GREATEST(to_date($2, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
         "                LEAST(to_date($3, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
         "                '1 day'::interval" +
-        "            ) AS day, price" +
+        "            ) AS day, price, pouname, petName" +
         "            FROM Bid NATURAL JOIN Cares" +
         "            WHERE ctuname = $1 AND is_win = true" +
         "                AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))" +
-        "            ORDER BY day, price" +
+        "            ORDER BY day, price, pouname, petName" +
         "            OFFSET" +
         "                CASE" +
         "                    WHEN $1 = ANY(SELECT username FROM Fulltimer)" +
@@ -1600,7 +1714,7 @@ app.get("/api/v1/admin/salary/:ctuname/:s_time/:e_time", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }

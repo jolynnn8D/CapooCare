@@ -552,12 +552,15 @@ INSERT INTO Cares VALUES ('yellowchicken', 'dog', 40);
 INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
 INSERT INTO Cares VALUES ('yellowchicken', 'cat', 50);
 INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
+INSERT INTO Cares VALUES ('purpledog', 'big dogs', 150);
+INSERT INTO Cares VALUES ('purpledog', 'cat', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
 /* Remove the following line to encounter pet type error */
 INSERT INTO Cares VALUES ('yellowbird', 'big dogs', 90);
 
 INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-01-01', '2020-03-04');
 INSERT INTO Has_Availability VALUES ('yellowchicken', '2021-01-01', '2021-03-04');
+INSERT INTO Has_Availability VALUES ('purpledog', '2021-01-01', '2021-03-04');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2021-01-01', '2021-03-04');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
@@ -568,6 +571,8 @@ CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-02-05', '20
 -- The following test case overloads 'marythemess' with more bids than she can accept
 CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
 CALL add_bid('marythemess', 'Bark', 'big dogs', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'purpledog', '2021-02-01', '2021-02-23', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Purr', 'cat', 'purpledog', '2021-02-03', '2021-02-22', 'cash', 'ctPickup');
 CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2021-02-24', '2021-02-28', 'cash', 'poDeliver');
 CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowchicken', '2021-02-25', '2021-02-28', 'cash', 'ctPickup');
 CALL add_bid('marythemess', 'Purr', 'cat', 'yellowchicken', '2021-02-26', '2021-02-28', 'cash', 'poDeliver');
