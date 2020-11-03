@@ -1358,6 +1358,45 @@ app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
     )
 });
 
+// Gets all Availabilities from All Caretakers within a timeframe. All availabilities indicated by the caretaker will be
+// returned in this query, within the s_time and e_time indicated in this API call.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get('/api/v1/availability/:s_time/:e_time', async (req, res) => {
+    console.log(req.params);
+    db.query("SELECT * FROM has_availability WHERE s_time <= to_date($1,'YYYYMMDD') AND e_time >= to_date($2,'YYYYMMDD')",
+        [req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows,
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
 // Gets all Availabilities from a Caretaker. All availabilities indicated by the caretaker will be
 // returned in this query.
 /*
@@ -1455,6 +1494,41 @@ app.get("/api/v1/rating/:ctuname", async (req, res) => {
                 status: "success",
                 data: {
                     rating: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
+
+// Get the average rating of all Caretakers. The rating is the average of all given ratings, or NULL if no ratings have
+// been given.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/rating", async (req, res) => {
+    db.query("SELECT ctuname, AVG(rating) AS avg_rating FROM Bid GROUP BY ctuname").then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    rating: result.rows
                 }
             })
         }

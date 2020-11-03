@@ -7,7 +7,7 @@ const careTakersModel = {
     caretakers: [],
     petCareList: [],
     petTypeList: [],
-    availability: [],
+    setAvailableCaretakers: [],
     userReviews: [],
     userRating: [],
 
@@ -129,6 +129,16 @@ const careTakersModel = {
     addAvailability: action((state, payload) => {
       state.availability.push(payload);
     }),
+    getAvailableCaretakers: thunk(async(actions, payload) => {
+      console.log(payload);
+      const {s_time, e_time} = payload;
+      const url = serverUrl + "/api/v1/availability/" + convertDate(s_time) + "/" + convertDate(e_time);
+      const {data} = await axios.get(url);
+      actions.setAvailableCaretakers(data.data.availabilities);
+    }),
+      setAvailableCaretakers: action((state, payload) => {
+        state.availableCaretakers = payload;
+      }),
     deleteUserAvailability: thunk(async(actions, payload) => {
       const { ctuname, s_time, e_time } = payload;
       const url = serverUrl + "/api/v1/availability/" + ctuname + "/" + convertDate(sqlToJsDate(s_time)) + "/" + convertDate(sqlToJsDate(e_time))
@@ -169,6 +179,18 @@ const careTakersModel = {
     setUserRating: action((state, payload) => {
       state.userRating = payload;
     }),
+
+    careTakerRatings: [],
+    getCareTakerRatings: thunk(async(actions, payload) => {
+      const url = serverUrl + "/api/v1/rating";
+      const {data} = await axios.get(url);
+      actions.setCareTakerRatings(data.data.rating);
+    }),
+    setCareTakerRatings: action((state, payload) => {
+      state.careTakerRatings = payload;
+    }),
+
+
   }
 
 export default careTakersModel;
