@@ -3,8 +3,6 @@ require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const db = require("./database/init");
-const morgan = require('morgan');
-const { Pool } = require('pg');
 const keys = require("./keys");
 const port = keys.port || 5000;
 
@@ -16,7 +14,11 @@ app.use(express.json());
 // If True, then the database will be wiped and re-initialized. By default, use False.
 const forceInitializeDatabase = keys.forceInitializeDatabase || false
 
+<<<<<<< HEAD
 if (forceInitializeDatabase === "true") {
+=======
+if (forceInitializeDatabase === "true" || forceInitializeDatabase === "True") {
+>>>>>>> 24d0878112806de2c82774c045136ea00599aa1e
     console.log("Re-initializing database...");
     db.initDatabase();
 }
@@ -54,7 +56,7 @@ app.get("/api/v1/users", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -82,7 +84,7 @@ app.get("/api/v1/users/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -108,7 +110,7 @@ app.get("/api/v1/accounts", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -138,7 +140,7 @@ app.get("/api/v1/accounts/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -165,7 +167,7 @@ app.get("/api/v1/caretaker", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -192,7 +194,7 @@ app.get("/api/v1/caretaker/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -212,7 +214,7 @@ app.get("/api/v1/pettype", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -252,7 +254,7 @@ app.post("/api/v1/fulltimer", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -288,7 +290,7 @@ app.post("/api/v1/parttimer", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -323,7 +325,7 @@ app.put("/api/v1/caretaker/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -347,10 +349,122 @@ app.delete("/api/v1/caretaker/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
+});
+
+/*
+    Gets the number of pet-days for a Caretaker during a specific timeframe. Group this by the type of pet cared for.
+
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the pets cared for during that 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+
+app.get("/api/v1/caretaker/summary/:ctuname/:s_time/:e_time/pettype", async (req, res) => {
+    db.query(
+        "SELECT petType AS pet_type, COUNT(day) AS count" +
+        "    FROM (" +
+        "        SELECT" +
+        "            generate_series(" +
+        "                GREATEST(to_date($2, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                LEAST(to_date($3, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                '1 day'::interval" +
+        "            ) AS day, petType, pouname, petName" +
+        "            FROM Bid NATURAL JOIN Cares" +
+        "            WHERE ctuname = $1 AND is_win = true" +
+        "                AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))" +
+        "            GROUP BY day, petType, pouname, petName" +
+        "    ) AS pet_days" +
+        "    GROUP BY petType" +
+        "    ORDER BY count DESC",
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    petdays: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
+
+
+/*
+    Gets the number of pet-days for a Caretaker during a specific timeframe. Group this by the petowner who owned the
+        pet.
+
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the pets cared for during that 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+
+app.get("/api/v1/caretaker/summary/:ctuname/:s_time/:e_time/petowner", async (req, res) => {
+    db.query(
+        "SELECT pouname AS username, COUNT(day) AS count" +
+        "    FROM (" +
+        "        SELECT" +
+        "            generate_series(" +
+        "                GREATEST(to_date($2, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                LEAST(to_date($3, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                '1 day'::interval" +
+        "            ) AS day, petType, pouname, petName" +
+        "            FROM Bid NATURAL JOIN Cares" +
+        "            WHERE ctuname = $1 AND is_win = true" +
+        "                AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))" +
+        "            GROUP BY day, petType, pouname, petName" +
+        "    ) AS pet_days" +
+        "    GROUP BY pouname" +
+        "    ORDER BY count DESC",
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    petdays: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
 });
 
 
@@ -374,7 +488,7 @@ app.get("/api/v1/petowner", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -401,7 +515,7 @@ app.get("/api/v1/petowner/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -435,7 +549,7 @@ app.post("/api/v1/petowner", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -469,7 +583,7 @@ app.put("/api/v1/petowner/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -493,7 +607,7 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -520,7 +634,7 @@ app.get("/api/v1/pet", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -549,7 +663,7 @@ app.get("/api/v1/pet/:username", async(req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -578,7 +692,7 @@ app.get("/api/v1/pet/:username/:pettype", async(req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -607,7 +721,7 @@ app.get("/api/v1/pet/:username/:petname", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -644,7 +758,7 @@ app.post("/api/v1/pet", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -682,7 +796,7 @@ app.put("/api/v1/pet/:username/:petname", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -709,7 +823,7 @@ app.delete("/api/v1/pet/:username/:petname", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -732,7 +846,7 @@ app.get("/api/v1/categories", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -753,7 +867,7 @@ app.get("/api/v1/categories/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -774,7 +888,7 @@ app.post("/api/v1/categories/:username", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -791,7 +905,7 @@ app.delete("/api/v1/categories/:username/:pettype", async (req, res) => {
         res.status(400).json({
             status: "failed",
             data: {
-                "error": err
+                error: err
             }
         });
     }
@@ -837,7 +951,7 @@ app.post("/api/v1/bid/", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -872,7 +986,7 @@ app.get("/api/v1/bid/:ctuname/ct", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -907,7 +1021,7 @@ app.get("/api/v1/bid/:pouname/po", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -943,7 +1057,7 @@ app.get("/api/v1/bid/:ctuname/:pouname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -986,7 +1100,7 @@ app.get("/api/v1/bid/:ctuname/:pouname/time", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1031,7 +1145,7 @@ app.get("/api/v1/bid/:ctuname/:pouname/time/pet", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1092,7 +1206,7 @@ app.put("/api/v1/bid/", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1137,7 +1251,7 @@ app.delete("/api/v1/bid/:ctuname/:pouname/pet", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1190,7 +1304,7 @@ app.put("/api/v1/bid/:ctuname/:pouname/mark", async (req, res) => {
             res.status(409).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1241,7 +1355,7 @@ app.put("/api/v1/bid/:ctuname/:pouname/pay", async (req, res) => {
             res.status(409).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1286,7 +1400,7 @@ app.post("/api/v1/availability/:ctuname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1313,7 +1427,7 @@ app.get("/api/v1/availability/", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1389,7 +1503,7 @@ app.get('/api/v1/availability/:s_time/:e_time', async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1425,7 +1539,7 @@ app.get('/api/v1/availability/:s_time/:e_time', async (req, res) => {
 //             res.status(400).json({
 //                 status: "failed",
 //                 data: {
-//                     "error": error
+//                     error: error
 //                 }
 //             })
 //         }
@@ -1464,7 +1578,7 @@ app.delete("/api/v1/availability/:ctuname/:s_time/:e_time", async (req, res) => 
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1502,7 +1616,7 @@ app.get("/api/v1/rating/:ctuname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
                 }
             })
         }
@@ -1572,7 +1686,286 @@ app.get("/api/v1/review/:ctuname", async (req, res) => {
             res.status(400).json({
                 status: "failed",
                 data: {
-                    "error": error
+                    error: error
+                }
+            })
+        }
+    )
+});
+
+
+
+/* API calls for PCSAdmin */
+
+
+
+/*
+    Gets the expected salary of all fulltime Caretakers, for a specified timeframe.
+
+    The specific details on the computation are:
+        Within alias pet_day_prices:
+            generate_series() is used to generate all pet-days for a specific username.
+            The OVERLAPS operator is used to identify all won Bids which overlap with the specified timeframe. It is
+                assumed that a won Bid will have been paid for.
+            The GREATEST and LEAST operators collectively limit the days examined to exactly within the confines of the
+                specified dates and the Bid timeframe itself.
+            The important columns returned are ctuname and price; day is used to differentiate them.
+            The other columns (petName and pouname) are used to maintain uniqueness of rows through the GROUP BY clause.
+
+        Within alias bonuses:
+            rank() and PARTITION BY are used to order the output days by username. This needs to be done rather than
+                ORDER BY because 60 pet-days must be taken off of each Fulltimer.
+            WHERE RANK > 60 selects for this, within each partition.
+            No rows will be returned for Fulltimers who fail to reach the 60 pet-day barrier. They must be artificially
+                added back in to ensure that they will appear in the final list.
+            The RIGHT JOIN operator adds these Fulltimers back in.
+            The COALESCE operator assigns them a 'price' of 0, i.e. they get no bonuses.
+            All other Fulltimers will have some rows, each representing one pet-day, each with its own price.
+            These collectively represent the bonuses of the Fulltimers.
+
+        Within alias salaries:
+            The bonuses for the salary are modified based on the rating of the Fulltimer.
+            The CASE block gives a 10% bonus to the salary if the rating is between 4 and 5 inclusive, and 5% bonus if 
+                the rating is between 3 and 4 inclusive (4 is not included only by elimination, since the first case is 
+                examined first).
+
+        This is collectively returned, along with the ctuname of the Caretaker.
+
+    Expected inputs:
+        Path parameters:
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the salary for 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+app.get("/api/v1/admin/salary/fulltimers/:s_time/:e_time", async (req, res) => {
+    db.query(
+        "SELECT ctuname," +
+        "    (3000 + SUM(cost) * 0.8) * (" +
+        "        SELECT" +
+        "            CASE" +
+        "                WHEN AVG(rating) BETWEEN 4 AND 5" +
+        "                    THEN 1.1" +
+        "                WHEN AVG(rating) BETWEEN 3 AND 4" +
+        "                    THEN 1.05" +
+        "                ELSE 1" +
+        "            END" +
+        "            FROM Bid RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
+        "            WHERE ctuname = username" +
+        "    ) AS salary" +
+        "    FROM (" +
+        "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
+        "            FROM (" +
+        "                SELECT ctuname, day, price, pouname, petName," +
+        "                    rank() OVER (" +
+        "                        PARTITION BY ctuname" +
+        "                        ORDER BY day, price" +
+        "                    )" +
+        "                    FROM (" +
+        "                        SELECT" +
+        "                            generate_series(" +
+        "                                GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                                LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                                '1 day'::interval" +
+        "                            ) AS day, price, ctuname, pouname, petName" +
+        "                            FROM Bid NATURAL JOIN Cares RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
+        "                            WHERE ctuname = username AND is_win = true" +
+        "                                AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
+        "                            ORDER BY ctuname, day, price, pouname, petName" +
+        "                    ) AS pet_day_prices" +
+        "                    GROUP BY ctuname, day, price, pouname, petName" +
+        "            ) AS bonuses RIGHT JOIN Fulltimer ON (bonuses.ctuname = Fulltimer.username)" +
+"                    WHERE rank > 60" +
+        "            GROUP BY username, day, price, pouname, petName" +
+        "    ) AS salaries" +
+        "    GROUP BY ctuname",
+        [req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    salaries: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
+
+
+/*
+    Gets the expected salary of all parttime Caretakers, for a specified timeframe.
+
+    The details of this computation are similar to the single-Caretaker API written below.
+
+    Expected inputs:
+        Path parameters:
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the salary for 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+app.get("/api/v1/admin/salary/parttimers/:s_time/:e_time", async (req, res) => {
+    db.query(
+        "SELECT ctuname," +
+        "    SUM(cost) * 0.75 * (" +
+        "        SELECT" +
+        "            CASE" +
+        "                WHEN AVG(rating) BETWEEN 4 AND 5" +
+        "                    THEN 1.1" +
+        "                WHEN AVG(rating) BETWEEN 3 AND 4" +
+        "                    THEN 1.05" +
+        "                ELSE 1" +
+        "            END" +
+        "            FROM Bid RIGHT JOIN Parttimer ON (Bid.ctuname = Parttimer.username)" +
+        "            WHERE ctuname = username" +
+        "    ) AS salary" +
+        "    FROM (" +
+        "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
+        "            FROM (" +
+        "                SELECT" +
+        "                    generate_series(" +
+        "                        GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                        LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                        '1 day'::interval" +
+        "                    ) AS day, price, ctuname, pouname, petName" +
+        "                    FROM Bid NATURAL JOIN Cares RIGHT JOIN Parttimer ON (Bid.ctuname = Parttimer.username)" +
+        "                    WHERE ctuname = username AND is_win = true" +
+        "                        AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
+        "                    ORDER BY ctuname, day, price, pouname, petName" +
+        "            ) AS totalprice RIGHT JOIN Parttimer ON (totalprice.ctuname = Parttimer.username)" +
+        "            GROUP BY username, day, price, pouname, petName" +
+        "    ) AS salaries" +
+        "    GROUP BY ctuname",
+        [req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    salaries: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
+
+
+
+
+/*
+    Gets the expected salary of a Caretaker, for a specified timeframe.
+
+    The calculation values (e.g. $3000 as base salary for Fulltimers) are hardcoded, and they assume that a span of 1
+    month will be used (e.g. (20210101 to 20210131). Both endpoints will be used in the calculation. This calculation
+    considers only the bids that have been won, and assumes that won bids automatically result in payment.
+
+    For Fulltimers, the 60-petday limit is chosen based on date, followed by ascending order of price. This means that
+    if 59 petdays have been counted, and the next day has two pets, costing $50 and $70, then the cost of $50 will go
+    towards the base 60-petday value, and the Caretaker will reap bonuses for the $70.
+
+    There is a rating bonus of 10% if the rating of the Caretaker is between 4 and 5 inclusive, and 5% if between 3 and
+    4 inclusive. Since the cases start from the 10%, therefore functionally the 5% bonus is awarded only for
+    3 <= rating < 4.
+
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the salary for 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+
+app.get("/api/v1/admin/salary/:ctuname/:s_time/:e_time", async (req, res) => {
+    db.query(
+        "SELECT" +
+        "    CASE" +
+        "        WHEN $1 = ANY(SELECT username FROM Parttimer)" +
+        "            THEN SUM(price) * 0.75" +
+        "        WHEN $1 = ANY(SELECT username FROM Fulltimer)" +
+        "            THEN 3000 + SUM(price) * 0.8" +
+        "        ELSE 0" +
+        "    END * (" +
+        "        SELECT" +
+        "            CASE" +
+        "                WHEN AVG(rating) BETWEEN 4 AND 5" +
+        "                    THEN 1.1" +
+        "                WHEN AVG(rating) BETWEEN 3 and 4" +
+        "                    THEN 1.05" +
+        "                ELSE 1" +
+        "            END" +
+        "            FROM Bid" +
+        "            WHERE ctuname = $1" +
+        "    ) AS salary" +
+        "    FROM (" +
+        "        SELECT" +
+        "            generate_series(" +
+        "                GREATEST(to_date($2, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                LEAST(to_date($3, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                '1 day'::interval" +
+        "            ) AS day, price, pouname, petName" +
+        "            FROM Bid NATURAL JOIN Cares" +
+        "            WHERE ctuname = $1 AND is_win = true" +
+        "                AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))" +
+        "            ORDER BY day, price, pouname, petName" +
+        "            OFFSET" +
+        "                CASE" +
+        "                    WHEN $1 = ANY(SELECT username FROM Fulltimer)" +
+        "                        THEN 60" +
+        "                    ELSE 0" +
+        "                END" +
+        "    ) AS pet_day_prices",
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            let value = 0;
+            if (result.rows[0].salary !== null) {
+                value = result.rows[0].salary;
+            }
+            res.status(200).json({
+                status: "success",
+                data: {
+                    salary: value
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
                 }
             })
         }

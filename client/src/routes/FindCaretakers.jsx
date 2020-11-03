@@ -8,13 +8,15 @@ import { useStoreActions, useStoreState } from 'easy-peasy';
 import { v4 } from 'uuid';
 import Filter from '../components/Filter';
 import { DateRangePicker } from 'react-date-range';
+import store from "../store/store"
 import { addDays, addYears, eachDayOfInterval, toDate } from 'date-fns';
 
 
 const useStyles = makeStyles((theme) => ({
     card: {
         marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2)
+        marginBottom: theme.spacing(2),
+        width: "100%",
     },
     media: {
         height: 140,
@@ -111,7 +113,6 @@ const FindCaretakers = () => {
     const careTakers = useStoreState(state => state.careTakers.caretakers);
     const petTypes = useStoreState(state => state.careTakers.petTypeList);
     const careTakerRatings = useStoreState(state => state.careTakers.careTakerRatings);
-    const availableCaretakers = useStoreState(state => state.careTakers.availableCaretakers);
 
     careTakers.map(caretaker => caretaker.pettypes = [...petTypes].filter(pettype => pettype.ctuname === caretaker.username));
     careTakers.map(caretaker => caretaker.pettypes = caretaker.pettypes.map(pettype => pettype.pettype).join(", "))
@@ -151,14 +152,15 @@ const FindCaretakers = () => {
         // console.log(event.target.value);
     }
 
-    const handleSubmit = () => {
-        const availableCTUsernames = availableCaretakers.map(caretaker => caretaker.ctuname);
-        // console.log(availableCTUsernames);
-        console.log(dateRange);
-        getAvailableCaretakers({
+    const handleSubmit = async () => {
+        await getAvailableCaretakers({
             s_time: dateRange[0].startDate, 
             e_time: dateRange[0].endDate
         });
+        const availCaretakers = store.getState().careTakers.availableCaretakers;
+        const availableCTUsernames = availCaretakers.map(caretaker => caretaker.ctuname);
+        // console.log(availableCTUsernames);
+        console.log(dateRange);
         setFilteredCaretakers(careTakers);
         setFilteredCaretakers(
             careTakers.filter(caretaker => availableCTUsernames.includes(caretaker.username))
@@ -215,27 +217,18 @@ const FindCaretakers = () => {
                     Look for Caretakers in this timeframe!
                 </Button>
                 {filteredCaretakers.map((caretaker) => (
-                    <Card key={v4()} className={classes.card} variant="outlined" width={1}>
+                    <Card key={v4()} className={classes.card} variant="outlined">
                         <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}>
                             <CardContent>
                                 <Typography gutterBottom variant="h5" component="h2">
                                     {caretaker.username + ` (${caretaker.carername})`}
                                 </Typography>
                                 <Typography variant="body2" component="p">
-                                    Caretaken description such as age: {caretaker.age} and salary: {caretaker.salary} about the pets that they take care of, how much they charge and all.
+                                    Caretaker age: {caretaker.age}
                                 </Typography>
                                 <div className={classes.rating}>
                                     <Rating value={caretaker.rating} precision={0.5} readOnly />
                                 </div>
-                                {caretaker.available ? (
-                                    <Button variant="outlined" color="primary">
-                                        Available
-                                    </Button>
-                                ) : (
-                                        <Button variant="outlined" disabled>
-                                            Unavailable
-                                        </Button>
-                                    )}
                                 <Typography variant="body2" component="p">
                                     Takes care of: {caretaker.pettypes}
                                     {/* Takes care of: {caretaker.pettypes.map(pettype => pettype.pettype).join(", ")} */}

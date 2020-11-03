@@ -7,10 +7,12 @@ const careTakersModel = {
     caretakers: [],
     petCareList: [],
     petTypeList: [],
-    setAvailableCaretakers: [],
+    availableCaretakers: [],
     userReviews: [],
     userRating: [],
+    careTakerRatings: [],
 
+  
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get(serverUrl + "/api/v1/caretaker");
       actions.setUsers(data.data.users); 
@@ -180,7 +182,6 @@ const careTakersModel = {
       state.userRating = payload;
     }),
 
-    careTakerRatings: [],
     getCareTakerRatings: thunk(async(actions, payload) => {
       const url = serverUrl + "/api/v1/rating";
       const {data} = await axios.get(url);
