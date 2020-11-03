@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types';
-import { Button, TextField } from '@material-ui/core'
+import { Button, FormControl, InputLabel, Select, TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import { CREATE, EDIT, DELETE } from "../constants"
+import { useStoreActions, useStoreState } from 'easy-peasy';
 
 const useStyles = makeStyles((theme) => ({
     textfield: {
@@ -20,8 +21,10 @@ const AddPet = (props) => {
     const classes = useStyles();
     const [petName, setPetName] = useState('');
     const [petType, setPetType] = useState('');
-    const [petAge, setPetAge] = useState('');
+    const [petAge, setPetAge] = useState(0);
     const [petRequirements, setPetRequirements] = useState('');
+    const getPetCategories = useStoreActions(actions => actions.pets.getPetCategories);
+    const petCategories = useStoreState(state => state.pets.petCategories);
 
     const sendData = (action) => {
         props.parentCallback({
@@ -37,8 +40,8 @@ const AddPet = (props) => {
         closeModal();
     }
     
-
     useEffect(() => {
+        getPetCategories();
         setPetName(props.parentData.petName);
         setPetType(props.parentData.petType);
         setPetAge(props.parentData.petAge);
@@ -47,7 +50,7 @@ const AddPet = (props) => {
     }, [])
 
     return (
-        <div>
+        <form>
             <TextField
                 variant="outlined"
                 label="Pet Name"
@@ -61,19 +64,26 @@ const AddPet = (props) => {
                 className={classes.textfield}
                 onChange={(event) => setPetName(event.target.value)}
             />
-            <TextField
-                variant="outlined"
-                label="Pet Type"
-                required
-                fullWidth
-                id="petType"
-                autoComplete="petType"
-                defaultValue={props.parentData.petType}
-                multiline
-                autoFocus
-                className={classes.textfield}
-                onChange={(event) => setPetType(event.target.value)}
-            />
+            <FormControl required variant="outlined" fullWidth className={classes.formControl} >
+                <InputLabel htmlFor='select-caretaker-petType'>Pet Type</InputLabel>
+                    <Select
+                        native
+                        value={petType}
+                        label="Pet Type"
+                        onChange={(event) => setPetType(event.target.value)}
+                        inputProps={{
+                            name: 'pettype',
+                            id: 'select-caretaker-petType',
+                        }}
+                    >
+                        <option aria-label="None" value="" />
+                        {petCategories.map((type) => (
+                                <option key={type.pettype} value={type.pettype}>
+                                    {type.pettype}
+                                </option>
+                        ))}
+                    </Select>
+            </FormControl>
             <TextField
                 variant="outlined"
                 label="Pet Age"
@@ -81,13 +91,13 @@ const AddPet = (props) => {
                 fullWidth
                 id="petAge"
                 autoComplete="petAge"
-                defaultValue={props.parentData.petAge}
-                multiline
-                autoFocus
                 type="number"
+                defaultValue={props.parentData.petAge}
+                autoFocus
                 className={classes.textfield}
                 onChange={(event) => setPetAge(event.target.value)}
             />
+            
             <TextField
                 variant="outlined"
                 label="Special Requirements"
@@ -117,7 +127,7 @@ const AddPet = (props) => {
                 </Button> : null }
             
 
-        </div>
+        </form>
     )
 }
 
@@ -137,7 +147,7 @@ AddPet.defaultProps = {
     parentData: {
         petName: "",
         petType: "",
-        petAge: "",
+        petAge: 0,
         petRequirements: ""
     },
     modalType: CREATE

@@ -3,6 +3,7 @@ import { Card, CardActionArea, CardContent, CardMedia, Typography, Button, Grid 
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
 import { v4 } from 'uuid';
+import { useStoreState } from 'easy-peasy';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +42,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const welcomeCardsInfo = [
+const WelcomeCards = () => {
+    const classes = useStyles();
+
+    const user = useStoreState(state => state.user.singleUser);
+
+    const welcomeCardsInfo = [
     {
         name: 'Caretaking Services',
         available: true,
@@ -52,14 +58,12 @@ const welcomeCardsInfo = [
     {
         name: 'Caretaker Settings',
         available: true,
-        link: '/users/1/caretaker-admin',
+        link: '/users/' + user.username + '/caretaker-admin',
         description: 'Edit your caretaker profile',
         imageLink: 'https://storage.googleapis.com/petbacker/images/blog/2018/pet-care-dog-sitting-services.jpg',
     },
-]
+    ]
 
-const WelcomeCards = () => {
-    const classes = useStyles();
     return (
         <Grid container spacing={3}>
             {welcomeCardsInfo.map((welcomeCardInfo) => (

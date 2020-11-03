@@ -356,8 +356,8 @@ DECLARE rate NUMERIC;
             END IF;
         ELSE -- If CT is a parttimer
             SELECT AVG(rating) INTO rate
-                FROM Caretaker AS C
-                WHERE NEW.ctuname = C.username;
+                FROM Bid AS B
+                WHERE NEW.ctuname = B.ctuname;
             IF rate IS NULL OR rate < 4 THEN
                 IF care >= 2 AND NEW.is_win = True THEN
                     RAISE EXCEPTION 'This caretaker has exceeded their capacity.';
@@ -402,8 +402,8 @@ DECLARE rate NUMERIC;
             RETURN NULL;
         ELSE -- If CT is a parttimer
             SELECT AVG(rating) INTO rate
-                FROM Caretaker AS C
-                WHERE NEW.ctuname = C.username;
+                FROM Bid AS B
+                WHERE NEW.ctuname = B.ctuname;
             IF rate IS NULL OR rate < 4 THEN
                 IF care >= 2 THEN
                     UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND NEW.s_time = Bid.s_time AND NEW.e_time = Bid.e_time;
@@ -495,9 +495,26 @@ CREATE OR REPLACE PROCEDURE add_bid(
 
 /* Views */
 CREATE OR REPLACE VIEW Users AS (
-   SELECT username, carerName, age, salary, true AS is_carer FROM CareTaker
-   UNION ALL
-   SELECT username, ownerName, age, NULL AS salary, false AS is_carer FROM PetOwner
+   SELECT CASE WHEN C.username IS NULL THEN P.username 
+            ELSE C.username END AS username, 
+        CASE WHEN C.carername IS NULL THEN P.ownername 
+            ELSE C.carername END AS firstname, 
+        CASE WHEN C.age IS NULL THEN P.age 
+            ELSE C.age END AS age, 
+        salary, 
+        CASE WHEN P.username IS NULL THEN false  
+            ELSE true END AS is_petowner, 
+        CASE WHEN C.username IS NULL THEN false 
+            ELSE true END AS is_carer,
+        CASE WHEN C.username IN (
+            SELECT username
+            FROM fulltimer
+        ) THEN true ELSE false END AS is_fulltimer,
+        CASE WHEN C.username IN (
+            SELECT username
+            FROM parttimer
+        ) THEN true ELSE false END AS is_parttimer
+    FROM petowner P FULL OUTER JOIN caretaker C ON P.username = C.username
 );
 
 CREATE OR REPLACE VIEW Accounts AS (
@@ -535,22 +552,30 @@ INSERT INTO Cares VALUES ('yellowchicken', 'dog', 40);
 INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
 INSERT INTO Cares VALUES ('yellowchicken', 'cat', 50);
 INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
+INSERT INTO Cares VALUES ('purpledog', 'big dogs', 150);
+INSERT INTO Cares VALUES ('purpledog', 'cat', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
 /* Remove the following line to encounter pet type error */
 INSERT INTO Cares VALUES ('yellowbird', 'big dogs', 90);
 
 INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-01-01', '2020-03-04');
 INSERT INTO Has_Availability VALUES ('yellowchicken', '2021-01-01', '2021-03-04');
+INSERT INTO Has_Availability VALUES ('purpledog', '2021-01-01', '2021-03-04');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2021-01-01', '2021-03-04');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
-CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-02-05', '2021-02-20', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowbird', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-01-05', '2021-01-20', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Ruff' AND pettype = 'big dogs' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210220','YYYYMMDD');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210120','YYYYMMDD');
 
 -- The following test case overloads 'marythemess' with more bids than she can accept
-CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-02', '2021-02-28', NULL, NULL);
-CALL add_bid('marythemess', 'Bark', 'big dogs', 'yellowchicken', '2021-01-02', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Bark', 'big dogs', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'purpledog', '2021-02-01', '2021-02-23', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Purr', 'cat', 'purpledog', '2021-02-03', '2021-02-22', 'cash', 'ctPickup');
 CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2021-02-24', '2021-02-28', 'cash', 'poDeliver');
 CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowchicken', '2021-02-25', '2021-02-28', 'cash', 'ctPickup');
 CALL add_bid('marythemess', 'Purr', 'cat', 'yellowchicken', '2021-02-26', '2021-02-28', 'cash', 'poDeliver');

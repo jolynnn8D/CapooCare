@@ -1,5 +1,5 @@
-import React from 'react'
-import Grid from '@material-ui/core/Grid'
+import React, { useState } from 'react'
+import { Grid, Typography } from '@material-ui/core'
 import Calendar from 'react-calendar'
 import { makeStyles } from '@material-ui/core/styles'
 import 'react-calendar/dist/Calendar.css'
@@ -18,15 +18,16 @@ const useStyles = makeStyles({
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const CalendarView = () => {
     const classes = useStyles();
+    const [date, setDate] = useState(new Date());
 
     return (
         <Grid container>
             <Grid item xs={8}>
-                <Calendar className={classes.calendar}>
-                </Calendar>
+                <Calendar className={classes.calendar} 
+                    onChange={(res) => setDate(res)}
+                />
             </Grid>
             <Grid item xs={4}>
-                <BidList subheader={months}/>
             </Grid>
 
         </Grid>
