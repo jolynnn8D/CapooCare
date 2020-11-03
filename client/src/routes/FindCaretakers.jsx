@@ -135,8 +135,6 @@ const FindCaretakers = () => {
         )
     }, [search, careTakers])
 
-    
-
     const sortCareTakers = (event) => {
         setSortValue(event.target.value);
         setFilteredCaretakers(
@@ -152,13 +150,15 @@ const FindCaretakers = () => {
     }
 
     const handleSubmit = () => {
-        const availableCTUsernames = availableCaretakers.map(caretaker => caretaker.ctuname);
         // console.log(availableCTUsernames);
         console.log(dateRange);
         getAvailableCaretakers({
             s_time: dateRange[0].startDate, 
             e_time: dateRange[0].endDate
         });
+
+        const availableCTUsernames = availableCaretakers.map(caretaker => caretaker.ctuname);
+
         setFilteredCaretakers(careTakers);
         setFilteredCaretakers(
             careTakers.filter(caretaker => availableCTUsernames.includes(caretaker.username))

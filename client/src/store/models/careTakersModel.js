@@ -7,7 +7,7 @@ const careTakersModel = {
     caretakers: [],
     petCareList: [],
     petTypeList: [],
-    setAvailableCaretakers: [],
+    availableCaretakers: [],
     userReviews: [],
     userRating: [],
 
