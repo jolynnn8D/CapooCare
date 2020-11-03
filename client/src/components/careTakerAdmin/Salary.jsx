@@ -27,7 +27,7 @@ const Salary = (props) => {
     }, []);
     return (
         <Card className={classes.salaryCard}>
-            <Typography variant='h6'> Salary for {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}: {userSalary}</Typography>
+            <Typography variant='h6'> Salary for {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}: ${userSalary}</Typography>
         </Card>
     )
 }
