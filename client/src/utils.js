@@ -44,4 +44,11 @@ function differenceInTwoDates(s_date, e_date){
 
 }
 
-export {convertDate, sqlToJsDate, stringToJsDate, differenceInTwoDates, isValidStringDate }
+function getPrevMonths(months_ago) {
+  const curr_month = new Date().getMonth()
+  var resultDate = new Date();
+  resultDate.setMonth(curr_month-months_ago);
+  resultDate.setDate(1);
+  return resultDate;
+}
+export {convertDate, sqlToJsDate, stringToJsDate, differenceInTwoDates, isValidStringDate, getPrevMonths }
