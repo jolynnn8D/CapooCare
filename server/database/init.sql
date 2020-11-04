@@ -295,9 +295,15 @@ DECLARE bidcount NUMERIC;
         SELECT COUNT(*) INTO bidcount
             FROM Bid
             WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win = True AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
-        IF ft > 0 AND bidcount < 5 THEN
-            UPDATE Bid SET is_win = True WHERE ctuname = NEW.ctuname AND pouname = NEW.pouname AND petname = NEW.petname
-                 AND pettype = NEW.pettype AND s_time = NEW.s_time AND e_time = NEW.e_time;
+        IF ft > 0 THEN
+            -- If the Fulltimer has capacity
+            IF bidcount < 5 THEN
+                UPDATE Bid SET is_win = True WHERE ctuname = NEW.ctuname AND pouname = NEW.pouname AND petname = NEW.petname
+                    AND pettype = NEW.pettype AND s_time = NEW.s_time AND e_time = NEW.e_time;
+            ELSE
+                UPDATE Bid SET is_win = False WHERE ctuname = NEW.ctuname AND pouname = NEW.pouname AND petname = NEW.petname
+                    AND pettype = NEW.pettype AND s_time = NEW.s_time AND e_time = NEW.e_time;
+            END IF;
         END IF;
         RETURN NEW;
     END; $$
@@ -535,6 +541,7 @@ CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-
 CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
 
 CALL add_parttimer('yellowbird', 'bird', 35, 'cat', 60);
+CALL add_parttimer('orangedonald', 'bird', 35, 'cat', 60);
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
