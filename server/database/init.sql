@@ -547,7 +547,7 @@ INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
 INSERT INTO PCSAdmin(username, adminName) VALUES ('White', 'white');
 
 /* Setting categories and their base price */
-INSERT INTO Category VALUES ('dog', 60),('cat', 60),('rabbit', 50),('big dogs', 70),('lizard', 60),('bird', 60);
+INSERT INTO Category(pettype, base_price) VALUES ('dog', 60),('cat', 60),('rabbit', 50),('big dogs', 70),('lizard', 60),('bird', 60);
 
 CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
 CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');

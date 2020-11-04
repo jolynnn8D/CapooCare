@@ -1901,6 +1901,32 @@ app.get("/api/v1/admin/salary/:ctuname/:s_time/:e_time", async (req, res) => {
     )
 });
 
+/* Add a new pet category and their base price */
+
+app.post("/api/v1/admin/category", async (req, res) => {
+    db.query(
+        "INSERT INTO Category(pettype, base_price) VALUES ($1 , $2) RETURNING *",
+        [req.body.category, req.body.base_price]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    category: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
 
 
 app.listen(port, () => {
