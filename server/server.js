@@ -1708,7 +1708,7 @@ app.get("/api/v1/admin/salary/fulltimers/:s_time/:e_time", async (req, res) => {
         "                    ) AS pet_day_prices" +
         "                    GROUP BY ctuname, day, price, pouname, petName" +
         "            ) AS bonuses RIGHT JOIN Fulltimer ON (bonuses.ctuname = Fulltimer.username)" +
-"                    WHERE rank > 60" +
+        "            WHERE rank > 60" +
         "            GROUP BY username, day, price, pouname, petName" +
         "    ) AS salaries" +
         "    GROUP BY ctuname",
