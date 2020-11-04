@@ -140,7 +140,12 @@ CREATE OR REPLACE PROCEDURE
     LANGUAGE plpgsql;
 
 ------------------------------------------------ CareTaker ------------------------------------------------------------
-/* Insert into fulltimers, will add into caretakers table */
+
+/* This procedure is used to add 
+    - New fulltimers
+    - Existing fulltimers' new availabilities (availabilities must be two periods of at least 150 days each within a year)
+*/
+
 CREATE OR REPLACE PROCEDURE add_fulltimer(
     ctuname VARCHAR(50),
     aname VARCHAR(50),
@@ -153,16 +158,33 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
     period2_e DATE
     )  AS $$
     DECLARE ctx NUMERIC;
+    DECLARE period1 NUMERIC;
+    DECLARE period2 NUMERIC;
+    DECLARE t_period NUMERIC;
     BEGIN
-            SELECT COUNT(*) INTO ctx FROM FullTimer
-                WHERE FullTimer.username = ctuname;
-            IF ctx = 0 THEN
-                INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
-                INSERT INTO FullTimer VALUES (ctuname);
+        -- check if both periods overlap
+        IF (period1_s, period1_e) OVERLAPS (period2_s, period2_e) THEN
+            RAISE EXCEPTION 'Invalid periods: Periods are overlapping.';
+        ELSE
+            SELECT (period1_e - period1_s + 1) AS DAYS INTO period1;
+            SELECT (period2_e - period2_s + 1) AS DAYS INTO period2;
+            IF (period1 < 150 OR period2 < 150) THEN
+                RAISE EXCEPTION 'Invalid periods: Less than 150 days.';
             END IF;
-            INSERT INTO Cares VALUES (ctuname, pettype, price);
-            INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
-            INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
+            SELECT (period2_e - period1_s + 1) AS DAYS INTO t_period;
+            IF (t_period > 360) THEN
+                RAISE EXCEPTION 'Invalid periods: Periods are not within a year.';
+            ELSE
+                SELECT COUNT(*) INTO ctx FROM FullTimer WHERE FullTimer.username = ctuname;
+                IF ctx = 0 THEN
+                    INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
+                    INSERT INTO FullTimer VALUES (ctuname);
+                END IF;
+                INSERT INTO Cares VALUES (ctuname, pettype, price);
+                INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
+                INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
+            END IF;
+        END If;
     END;$$
 LANGUAGE plpgsql;
 
@@ -251,34 +273,6 @@ LANGUAGE plpgsql;
 CREATE TRIGGER check_fulltimer
 BEFORE INSERT ON FullTimer
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
-
-/* check if the periods are 150 consecutive days within a year*/
-
-CREATE OR REPLACE FUNCTION check_period()
-RETURNS TRIGGER AS
-    $$ 
-    DECLARE period1 NUMERIC;
-    DECLARE period2 NUMERIC;
-    BEGIN
-        -- check if both periods overlap
-        IF (NEW.period1_s, NEW.period1_e) OVERLAPS (NEW.period2_s, NEW.period2_e) THEN
-            RAISE EXCEPTION 'Invalid periods: Periods are overlapping.';
-        ELSE
-            SELECT (NEW.period1_e - NEW.period1_s) AS DAYS INTO period1;
-            SELECT (NEW.period2_e - NEW.period2_s) AS DAYS INTO period2;
-            IF (period1 < 150 OR period2 < 150) THEN
-                RAISE EXCEPTION 'Invalid periods: Less than 150 days.';
-            ELSE
-                RETURN NEW;
-            END IF;
-        END IF;
-    END; $$
-LANGUAGE plpgsql;
-
-
-CREATE TRIGGER check_ft_period
-BEFORE INSERT ON FullTimer
-FOR EACH ROW EXECUTE PROCEDURE check_period();
 
 ------------------------------------------------------------ Bid ------------------------------------------------------------
 
@@ -483,7 +477,7 @@ CREATE OR REPLACE PROCEDURE add_bid(
             END IF;
 
             -- Calculate cost
-            SELECT (Cares.price * (_e_time - _s_time)) INTO cost
+            SELECT (Cares.price * (_e_time - _s_time + 1)) INTO cost
                 FROM Cares
                 WHERE Cares.ctuname = _ctuname AND Cares.pettype = _pettype;
             INSERT INTO Bid(pouname, petname, pettype, ctuname, s_time, e_time, cost, pay_type, pet_pickup)
