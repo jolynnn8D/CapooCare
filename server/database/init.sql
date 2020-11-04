@@ -75,7 +75,8 @@ CREATE TABLE PartTimer (
 );
 
 CREATE TABLE Category (
-    pettype VARCHAR(20) PRIMARY KEY
+    pettype VARCHAR(20) PRIMARY KEY,
+    base_price INTEGER NOT NULL
 );
 
 CREATE TABLE Has_Availability (
@@ -179,8 +180,8 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
                 IF ctx = 0 THEN
                     INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
                     INSERT INTO FullTimer VALUES (ctuname);
+                    INSERT INTO Cares VALUES (ctuname, pettype, price);
                 END IF;
-                INSERT INTO Cares VALUES (ctuname, pettype, price);
                 INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
                 INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
             END IF;
@@ -273,6 +274,28 @@ LANGUAGE plpgsql;
 CREATE TRIGGER check_fulltimer
 BEFORE INSERT ON FullTimer
 FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
+
+---------------------------------------------------------- Cares ------------------------------------------------------------
+/* Checks if the price of FT is the same as base price set by PCSadmine for each category */
+
+CREATE OR REPLACE FUNCTION check_ft_cares_price()
+RETURNS TRIGGER AS
+$$ BEGIN
+        IF (SELECT 1 WHERE EXISTS (SELECT 1 FROM FullTimer WHERE NEW.ctuname = FullTimer.username)) THEN
+            IF (NEW.price <> (SELECT base_price FROM Category WHERE Category.pettype = NEW.pettype)) THEN
+                RAISE EXCEPTION 'Cares prices for Fulltimers must adhere to the basic prices set by PCSadmin.';
+            ELSE
+                RETURN NEW;
+            END IF;
+        ELSE
+            RETURN NEW;
+        END IF;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_ft_cares_price
+BEFORE INSERT ON Cares
+FOR EACH ROW EXECUTE PROCEDURE check_ft_cares_price();
 
 ------------------------------------------------------------ Bid ------------------------------------------------------------
 
@@ -521,14 +544,19 @@ CREATE OR REPLACE VIEW Accounts AS (
 
 /* SEED */
 INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
+INSERT INTO PCSAdmin(username, adminName) VALUES ('White', 'white');
 
-INSERT INTO Category VALUES ('dog'),('cat'),('rabbit'),('big dogs'),('lizard'),('bird');
+/* Setting categories and their base price */
+INSERT INTO Category VALUES ('dog', 60),('cat', 60),('rabbit', 50),('big dogs', 70),('lizard', 60),('bird', 60);
 
-CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 50, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
 CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 35, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 50, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+/* add next year periods for redduck FT */
+CALL add_fulltimer('redduck', NULL, NULL, NULL, NULL, '2021-01-01', '2021-05-30', '2021-06-01', '2021-12-20');
 
 CALL add_parttimer('yellowbird', 'bird', 35, 'cat', 60);
+CALL add_parttimer('bluerhino', 'rhino', 28, 'cat', 35);
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
@@ -541,14 +569,17 @@ INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
 INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Purr', 15, 'Hates dogs');
 INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Sneak', 20, 'Needs to go outside a lot');
 
-INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 40);
-INSERT INTO Cares VALUES ('yellowchicken', 'dog', 40);
+/* Fulltimers' cares */
+INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 50);
+INSERT INTO Cares VALUES ('yellowchicken', 'dog', 60);
 INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
-INSERT INTO Cares VALUES ('yellowchicken', 'cat', 50);
-INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
-INSERT INTO Cares VALUES ('purpledog', 'big dogs', 150);
-INSERT INTO Cares VALUES ('purpledog', 'cat', 80);
-INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
+INSERT INTO Cares VALUES ('yellowchicken', 'cat', 60);
+INSERT INTO Cares VALUES ('redduck', 'big dogs', 70);
+INSERT INTO Cares VALUES ('purpledog', 'big dogs', 70);
+INSERT INTO Cares VALUES ('purpledog', 'cat', 60);
+
+/* Parttimers' Cares */
+INSERT INTO Cares VALUES ('yellowbird', 'dog', 60);
 /* Remove the following line to encounter pet type error */
 INSERT INTO Cares VALUES ('yellowbird', 'big dogs', 90);
 
