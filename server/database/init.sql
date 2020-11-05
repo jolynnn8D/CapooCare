@@ -420,8 +420,8 @@ DECLARE rate NUMERIC;
             WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win = True AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
 
         IF ctx > 0 THEN -- If CT is a fulltimer
-            IF care >= 5 THEN -- If marking this Bid would exceed the capacity of the caretaker, automatically cancel all remaining Bids for this Availability
-                UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND NEW.s_time = Bid.s_time AND NEW.e_time = Bid.e_time;
+            IF care >= 5 THEN -- If marking this Bid would exceed the capacity of the caretaker, automatically cancel all remaining Bids overlapping this Availability
+                UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
             END IF;
             RETURN NULL;
         ELSE -- If CT is a parttimer
@@ -430,12 +430,12 @@ DECLARE rate NUMERIC;
                 WHERE NEW.ctuname = B.ctuname;
             IF rate IS NULL OR rate < 4 THEN
                 IF care >= 2 THEN
-                    UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND NEW.s_time = Bid.s_time AND NEW.e_time = Bid.e_time;
+                    UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
                 END IF;
                 RETURN NULL;
             ELSE
                 IF care >= 5 THEN
-                    UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND NEW.s_time = Bid.s_time AND NEW.e_time = Bid.e_time;
+                    UPDATE Bid SET is_win = False WHERE NEW.ctuname = Bid.ctuname AND Bid.is_win IS NULL AND (NEW.s_time, NEW.e_time) OVERLAPS (Bid.s_time, Bid.e_time);
                 END IF;
                 RETURN NULL;
             END IF;
