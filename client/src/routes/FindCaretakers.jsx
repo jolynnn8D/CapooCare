@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton } from '@material-ui/core';
 import Search from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/core/styles';
 import Rating from '@material-ui/lab/Rating';
 import { Link } from 'react-router-dom';
+import { useStoreActions, useStoreState } from 'easy-peasy';
+import { v4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -48,43 +50,71 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const caretakersList = [
-    {
-        name: 'Caretaker 1',
-        id: '1',
-        available: true,
-        takesCareOf: [
-            'Dogs',
-            'Cats',
-            'Birds'
-        ],
-        rating: 4.5
-    },
-    {
-        name: 'Caretaker 2',
-        id: '2',
-        available: true,
-        takesCareOf: [
-            'Dogs',
-            'Cats',
-            'Birds'
-        ],
-        rating: 3.6
-    },
-]
+// const caretakersList = [
+//     {
+//         name: 'Caretaker 1',
+//         id: '1',
+//         available: true,
+//         takesCareOf: [
+//             'Dogs',
+//             'Cats',
+//             'Birds'
+//         ],
+//         rating: 4.5
+//     },
+//     {
+//         name: 'Caretaker 2',
+//         id: '2',
+//         available: true,
+//         takesCareOf: [
+//             'Dogs',
+//             'Cats',
+//             'Birds'
+//         ],
+//         rating: 3.6
+//     },
+// ]
 
 const FindCaretakers = () => {
     const classes = useStyles();
+    const [search, setSearch] = useState("");
+    const [filteredCaretakers, setFilteredCaretakers] = useState([]);
+
+    const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers);
+    const getPetTypeList = useStoreActions(actions => actions.careTakers.getPetTypeList);
+    useEffect(() => {
+        getCareTakers();
+        getPetTypeList();
+        return () => {};
+    }, [])
+
+    const careTakers = useStoreState(state => state.careTakers.caretakers);
+    const petTypes = useStoreState(state => state.careTakers.petTypeList);
+
+    careTakers.map(caretaker => caretaker.pettypes = [...petTypes].filter(pettype => pettype.ctuname === caretaker.username));
+    careTakers.map(caretaker => caretaker.pettypes = caretaker.pettypes.map(pettype => pettype.pettype).join(", "))
+
+    // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
+    console.log(careTakers);
+
+    useEffect(() => {
+        setFilteredCaretakers(
+            careTakers.filter(caretaker => {
+                return caretaker.pettypes.toLowerCase().includes(search.toLowerCase());
+            })
+        )
+    }, [search, careTakers])
 
     return (
         <div>
-            <Container component="main" maxWidth="ml" className={classes.container}>
+            <Container component="main" maxWidth="md" className={classes.container}>
                 <Typography component="h1" variant="h3" color="textPrimary" align="left">
                     Caretakers
                 </Typography>
                 <TextField
+                    onChange={(event) => setSearch(event.target.value)}
                     className={classes.margin}
-                    label="Search"
+                    label="Search pet type"
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -95,20 +125,20 @@ const FindCaretakers = () => {
                     variant="outlined"
                     fullWidth
                 />
-                {caretakersList.map((caretakerInfo) => (
-                    <Card className={classes.card} variant="outlined" width={1}>
-                        <CardActionArea component={Link} to={`/users/${caretakerInfo.id}/caretaker`} style={{ textDecoration: 'none' }}>
+                {filteredCaretakers.map((caretaker) => (
+                    <Card key={v4()} className={classes.card} variant="outlined" width={1}>
+                        <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}>
                             <CardContent>
                                 <Typography gutterBottom variant="h5" component="h2">
-                                    {caretakerInfo.name}
+                                    {caretaker.carername}
                                 </Typography>
                                 <Typography variant="body2" component="p">
-                                    Caretaken description about the pets that they take care of, how much they charge and all.
+                                    Caretaken description such as age: {caretaker.age} and salary: {caretaker.salary} about the pets that they take care of, how much they charge and all.
                                 </Typography>
                                 <div className={classes.rating}>
-                                    <Rating value={caretakerInfo.rating} precision={0.5} readOnly />
+                                    <Rating value={caretaker.rating} precision={0.5} readOnly />
                                 </div>
-                                {caretakerInfo.available ? (
+                                {caretaker.available ? (
                                     <Button variant="outlined" color="primary">
                                         Available
                                     </Button>
@@ -118,7 +148,8 @@ const FindCaretakers = () => {
                                         </Button>
                                     )}
                                 <Typography variant="body2" component="p">
-                                    Takes care of: {caretakerInfo.takesCareOf.join(", ")}
+                                    Takes care of: {caretaker.pettypes}
+                                    {/* Takes care of: {caretaker.pettypes.map(pettype => pettype.pettype).join(", ")} */}
                                 </Typography>
                                 <Button size="small" color="primary">
                                     Learn More

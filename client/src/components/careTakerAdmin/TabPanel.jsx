@@ -11,9 +11,10 @@ import Box from '@material-ui/core/Box';
 import CalendarView from "./CalendarView"
 import BidPanel from "./BidPanel"
 import PetCareList from "./PetCareList"
+import CaretakerAvailability from './CaretakerAvailability';
 
 function TabPanel(props) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, username, ...other } = props;
 
   return (
     <div
@@ -25,7 +26,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          <span>{children}</span>
         </Box>
       )}
     </div>
@@ -52,7 +53,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FullWidthTabs() {
+export default function FullWidthTabs(props) {
+  const {username} = props;
   const classes = useStyles();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
@@ -67,7 +69,7 @@ export default function FullWidthTabs() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" color="white">
+      <AppBar position="static" color="default">
         <Tabs
           value={value}
           onChange={handleChange}
@@ -78,7 +80,7 @@ export default function FullWidthTabs() {
           centered
         >
           <Tab label="Bids" {...a11yProps(0)} />
-          <Tab label="Salary" {...a11yProps(1)} />
+          <Tab label="Availability/Salary" {...a11yProps(1)} />
           <Tab label="Pet Price" {...a11yProps(2)} />
         </Tabs>
       </AppBar>
@@ -88,14 +90,14 @@ export default function FullWidthTabs() {
         onChangeIndex={handleChangeIndex}
       >
         <TabPanel value={value} index={0} dir={theme.direction}>
-          <CalendarView/>
-          <BidPanel/>
+          {/* <CalendarView/> */}
+          <BidPanel username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          Salary details
+          <CaretakerAvailability username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <PetCareList owner={true}/>
+          <PetCareList owner={true} username={props.username}/>
         </TabPanel>
       </SwipeableViews>
     </div>

@@ -1,36 +1,83 @@
 import { action, thunk } from 'easy-peasy';
 import axios from 'axios';
+import {serverUrl} from "./serverUrl"
 
 const petsModel = {
   allPets: [],
   ownerSpecificPets: [],
+  petCategories: [],
+  biddablePets: [],
+
   getAllPets: thunk(async (actions, payload) => {
-      const {data} = await axios.get("http://localhost:5000/api/v1/pet"); // get all pets
+      const {data} = await axios.get(serverUrl + "/api/v1/pet"); // get all pets
       actions.setAllPets(data.data.pets); 
     }),
   setAllPets: action((state, payload) => { // action
     state.allPets = [...payload];
   }),
 
-  // getOwnerPets: thunk(async (actions, payload) => {
-  //     const {userName} = {payload};
-  //     const {data} = await axios.get("http://localhost:5000/api/v1/pet"); // get all pets
-  //     actions.setAllPets(data.data.pets); 
-  //   }),
+  getOwnerPets: thunk(async (actions, payload) => {
+      const username = payload;
+      const url = serverUrl + "/api/v1/pet/" + username;
+      const {data} = await axios.get(url); 
+      actions.setOwnerPets(data.data.pets); 
+    }),
+  setOwnerPets: action((state, payload) => {
+    state.ownerSpecificPets = [...payload];
+  }),
+
+  getOwnerPetsOfType: thunk(async (actions, payload) => {
+    const { username, pettype } = payload;
+    const url = serverUrl + "/api/v1/pet/" + username + "/" + pettype;
+    console.log(url);
+    const {data} = await axios.get(url); 
+    actions.setBiddablePets(data.data.pets); 
+  }),
+  setBiddablePets: action((state, payload) => {
+    state.biddablePets = [...payload];
+  }),
+
   addPet: thunk(async (actions, payload) => {
-      const {username, petName, petType, petAge, requirements} = {...payload};
-      const {data} = await axios.post("http://localhost:5000/api/v1/pet", {
-        username,
-        petName, 
-        petType,
-        petAge,
-        requirements
-      }); // get all pets
-      actions.addAPet(data);
+      const {username, petname, pettype, petage, requirements} = {...payload};
+      const {data} = await axios.post(serverUrl + "/api/v1/pet", {
+        username: username,
+        petname: petname,
+        pettype: pettype,
+        petage: petage,
+        requirements: requirements
+      });
+      actions.addAPet(data.data.pet);
     }),
     addAPet: action((state, payload) => {
-      state.allPets.push(payload);
-    })
+      state.ownerSpecificPets.push(payload);
+    }),
+
+  editPet: thunk(async (actions, payload) => {
+    const{username, petname, pettype, petage, requirements} = {...payload};
+    const url = serverUrl + "/api/v1/pet/" + username + "/" + petname;
+    const {data} = await axios.put(url, {
+      pettype: pettype,
+      petage: petage,
+      requirements: requirements
+    });
+  }),
+  // EDIT ACTION TO UPDATE UI HERE REQUIRED
+
+  deletePet: thunk(async (actions,payload) => {
+    const { username, petname } = {...payload};
+    const url = serverUrl + "/api/v1/pet/" + username + "/" + petname;
+    console.log(url)
+    const {data} = await axios.delete(url);
+  }),
+
+  getPetCategories: thunk(async (actions,payload) => {
+    const url = serverUrl + "/api/v1/categories";
+    const {data} = await axios.get(url);
+    actions.getAllCategories(data.data.pets);
+  }), 
+  getAllCategories: action((state, payload) => {
+    state.petCategories = [...payload];
+  }),
 }
 
 export default petsModel;

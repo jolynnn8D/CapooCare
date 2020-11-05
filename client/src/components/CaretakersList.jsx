@@ -2,8 +2,6 @@ import * as React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { useEffect } from 'react';
-import { v4 } from 'uuid';
-
 
 // const columns = [
 //   { field: 'id', headerName: 'ID', width: 70 },
@@ -40,32 +38,38 @@ import { v4 } from 'uuid';
 //   { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
 // ];
 const columns = [
-  { field: 'id', headerName: 'User ID', width: 70 },
-  { field: 'username', headerName: 'Username', width: 70 },
-  { field: 'aname', headerName: 'First name', width: 130 },
+  { field: 'id', headerName: 'Index', width: 100 },
+  { field: 'username', headerName: 'Username', width: 130 },
+  { field: 'carername', headerName: 'First name', width: 130 },
   { field: 'age', headerName: 'Age', width: 130 },
+  { field: 'pettypes', headerName: 'Pet types', width: 130 },
+  { field: 'rating', headerName: 'Rating', width: 130 },
+  { field: 'salary', headerName: 'Salary', width: 130 }
 ];
 
 const CaretakersList = () => {
 
   const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers); // use getCareTakers action
 
-  // const tests = [{"user_id": 1, "name": "hung"}, {"user_id": 2, "name": "something"}];
   useEffect(() => {
     getCareTakers();
     return () => {};
   }, [])
-  const careTakers = useStoreState(state => state.careTakers.users);
+  const caretakers = useStoreState(state => state.careTakers.caretakers);
+  // console.log(caretakers);
   var id = 0;
   return (
-
-      <DataGrid rows={careTakers.map(user => ({
+    <div style={{ height: 800, width: '90%', marginTop: 100}}>
+      <DataGrid rows={caretakers.map(caretaker => ({
         "id": ++id,
-        "username": user.username,
-        "aname": user.carername,
-        "age": user.age,   
-        "pettypes": user.pettypes
-      }))} columns={columns} pageSize={5} checkboxSelection />
+        "username": caretaker.username,
+        "carername": caretaker.carername,
+        "age": caretaker.age,   
+        "pettypes": caretaker.pettypes,
+        "rating": caretaker.rating,
+        "salary": caretaker.salary
+      }))} columns={columns} pageSize={10} checkboxSelection />
+    </div>
   );
 }
 

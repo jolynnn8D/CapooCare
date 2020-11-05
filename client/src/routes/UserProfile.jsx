@@ -1,10 +1,13 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles';
 
 import UserCard from "../components/userProfile/UserCard"
 import PetList from "../components/userProfile/PetList"
 import ProfileTabs from "../components/userProfile/ProfileTabs"
+import { useParams } from 'react-router-dom';
+import OrderList from '../components/userProfile/OrderList';
 
 const useStyles = makeStyles({
     verticalSections: {
@@ -12,21 +15,27 @@ const useStyles = makeStyles({
     }
 })
 
-const UserProfile = (props) => {
+const UserProfile = () => {
     const classes = useStyles();
-    const username = props.match.params.username;
+    const params = useParams();
+
+    // console.log(params);
+    const username = params.username;
+
     return (
         <Grid container>
             <Grid item className={classes.verticalSections} xs={7}>
                 <Grid item xs={12}>
-                    <UserCard userName={username}/>
+                    <UserCard username={username} display={'petowner'}/>
                 </Grid>
                 <Grid item>
-                    <PetList/>
+                    <PetList username={username}/>
                 </Grid>
             </Grid>
             <Grid item className={classes.verticalSections} xs={4}>
-                <ProfileTabs/>
+                {/* <ProfileTabs username={username}/> */}
+                <Typography variant="h3" align="center"> Bid List </Typography>
+                <OrderList username={username}/>
             </Grid>
         </Grid>
     )
