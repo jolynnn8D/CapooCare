@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import {Box, Tab, Tabs, Typography} from '@material-ui/core';
+import { useStoreActions, useStoreState } from 'easy-peasy';
+
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,11 +53,21 @@ const useStyles = makeStyles((theme) => ({
 export default function CaretakersVerticalTabs() {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const [month, setMonth] = useState(new Date().getMonth());
+  const caretakers = useStoreState(state => state.careTakers.caretakers);
+  const getCareTakers = useStoreActions(actions => actions.careTakers.getCareTakers);
+  let index = 0;
+  let tabIndex = 0;
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
+  }; 
 
+  useEffect(() => {
+    getCareTakers();
+    return () => {};
+  }, [])
+  
   return (
     <div className={classes.root}>
       <Tabs
@@ -68,35 +78,19 @@ export default function CaretakersVerticalTabs() {
         aria-label="Vertical tabs example"
         className={classes.tabs}
       >
-        <Tab label="Item One" {...a11yProps(0)} />
-        <Tab label="Item Two" {...a11yProps(1)} />
-        <Tab label="Item Three" {...a11yProps(2)} />
-        <Tab label="Item Four" {...a11yProps(3)} />
-        <Tab label="Item Five" {...a11yProps(4)} />
-        <Tab label="Item Six" {...a11yProps(5)} />
-        <Tab label="Item Seven" {...a11yProps(6)} />
+      {caretakers.map((caretaker) => {
+        return (
+          <Tab key={caretaker.username} label={caretaker.username} {...a11yProps(index++)}/>
+        );
+      })}
       </Tabs>
-      <TabPanel value={value} index={0}>
-        Item One
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        Item Two
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        Item Three
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        Item Four
-      </TabPanel>
-      <TabPanel value={value} index={4}>
-        Item Five
-      </TabPanel>
-      <TabPanel value={value} index={5}>
-        Item Six
-      </TabPanel>
-      <TabPanel value={value} index={6}>
-        Item Seven
-      </TabPanel>
+      {caretakers.map((caretaker) => {
+        return(
+          <TabPanel key={caretaker.username} value={value} index={tabIndex++}>
+            {caretaker.username}
+          </TabPanel>
+        )
+      })}
     </div>
   );
 }

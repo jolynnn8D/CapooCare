@@ -1,6 +1,7 @@
 import React from 'react'
 import PriceList from '../components/admin/PriceList';
 import ViewAllCaretakers from '../components/admin/ViewAllCaretakers';
+import SummaryCard from "../components/admin/SummaryCard"
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
@@ -28,6 +29,9 @@ const Adminpage = () => {
         </Grid>
         <Grid item xs={6}>
           <PriceList className={classes.component}/>
+        </Grid>
+        <Grid item xs={6}>
+          <SummaryCard className={classes.component}/>
         </Grid>
       </Grid>
     </div>

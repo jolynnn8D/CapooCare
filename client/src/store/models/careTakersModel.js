@@ -11,6 +11,7 @@ const careTakersModel = {
     userReviews: [],
     userRating: [],
     careTakerRatings: [],
+    availability: [],
 
   
     getCareTakers: thunk(async (actions, payload) => {
