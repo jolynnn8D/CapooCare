@@ -380,8 +380,9 @@ app.get("/api/v1/caretaker/summary/:ctuname/:s_time/:e_time/lucrative", async (r
         "                    SELECT pettype" +
         "                        FROM Cares" +
         "                        WHERE ctuname = $1" +
-        "                ) AND s_time >= to_date($2, 'YYYYMMDD') AND e_time <= to_date($3, 'YYYYMMDD')" +
+        "                )" +
         "        ) AND is_win = true" +
+        "               AND s_time >= to_date($2, 'YYYYMMDD') AND e_time <= to_date($3, 'YYYYMMDD')" +
         "        GROUP BY pettype" +
         "    UNION" +
         "    SELECT pettype, 0 AS lucrative_score" +
