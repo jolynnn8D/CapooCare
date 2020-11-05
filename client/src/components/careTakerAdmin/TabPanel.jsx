@@ -99,7 +99,7 @@ export default function FullWidthTabs(props) {
           <Salary username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>
-          <PetCareList owner={true} username={props.username}/>
+          <PetCareList userType="ct" username={props.username}/>
         </TabPanel>
       </SwipeableViews>
     </div>
