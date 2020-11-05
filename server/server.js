@@ -609,7 +609,84 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
     }
 });
 
+/* Get all caretakers that can take care of all the petowners' pet at a certain period of time. 
+    Results are arranged according to decreasing rating then by increasing total cost */
 
+app.get("/api/v1/petowner/:username/all_ct",  async (req, res) => {
+    try {
+        const results = await db.query(
+            "SELECT DISTINCT A.ctuname,   " +
+            "COALESCE((SELECT AVG(rating)  FROM Bid Where ctuname = A.ctuname GROUP BY ctuname),3) AS rating, " +
+            "(SELECT SUM(price) * (to_date($3,'YYYYMMDD') - to_date($2,'YYYYMMDD') + 1) AS DAYS  " +
+            "    FROM Cares  " +
+            "    WHERE ctuname = A.ctuname AND pettype IN ( " +
+            "                SELECT DISTINCT pettype FROM Owned_Pet_Belongs WHERE pouname = $1 )) AS price " +
+            " " +
+            "FROM  Has_Availability A  " +
+            "WHERE NOT EXISTS ( " +
+            "        SELECT 1 " +
+            "        FROM (SELECT DISTINCT pettype FROM Owned_Pet_Belongs WHERE pouname = $1) AS PT " +
+            "        WHERE NOT EXISTS ( " +
+            "                    SELECT price " +
+            "                    FROM (SELECT DISTINCT pettype, price  " +
+            "                            FROM Cares  " +
+            "                            WHERE ctuname = A.ctuname) AS C2 " +
+            "                    WHERE C2.pettype = PT.pettype " +
+            "                        ) " +
+            "        ) " +
+            "    AND s_time <= to_date($2,'YYYYMMDD') " +
+            "    AND e_time >= to_date($3,'YYYYMMDD') " +
+            "    AND ( " +
+            "            (  " +
+            "                A.ctuname IN (SELECT username FROM Fulltimer)  " +
+            "                AND " +
+            "                (SELECT COUNT(*) " +
+            "                FROM Bid " +
+            "                WHERE A.ctuname = Bid.ctuname AND Bid.is_win = True  AND (to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD'))  " +
+            "                    OVERLAPS (Bid.s_time, Bid.e_time)) < 5 " +
+            "            ) " +
+            "        OR " +
+            "            ( " +
+            "                A.ctuname IN (SELECT username FROM Parttimer)  " +
+            "                AND " +
+            "                CASE WHEN (SELECT AVG(rating) " +
+            "                            FROM Bid AS B " +
+            "                            WHERE  A.ctuname = B.ctuname) IS NULL  " +
+            "                            OR " +
+            "                            (SELECT AVG(rating) " +
+            "                            FROM Bid AS B " +
+            "                            WHERE  A.ctuname = B.ctuname) < 4  " +
+            "                        THEN  " +
+            "                        (SELECT COUNT(*) " +
+            "                        FROM Bid " +
+            "                        WHERE A.ctuname = Bid.ctuname AND Bid.is_win = True AND (to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD'))  " +
+            "                            OVERLAPS (Bid.s_time, Bid.e_time)) < 2 " +
+            "                    ELSE (SELECT COUNT(*) " +
+            "                            FROM Bid " +
+            "                            WHERE 'johnthebest' = Bid.ctuname AND Bid.is_win = True AND (to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD'))  " +
+            "                                OVERLAPS (Bid.s_time, Bid.e_time)) < 5 " +
+            "                END " +
+            "            ) " +
+            "        ) " +
+            "ORDER BY rating DESC, " +
+            "         price ASC; " 
+            , [req.params.username, req.body.s_time, req.body.e_time]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                caretakers: results.rows
+
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                error: err
+            }
+        });
+    }
+})
 
 /* API calls for Pets */
 
@@ -827,7 +904,7 @@ app.delete("/api/v1/pet/:username/:petname", async (req, res) => {
 
 /* API calls for Category */
 
-// Get all the pet categories
+// Get all the pet categories and their base prices
 app.get("/api/v1/categories", async (req, res) => {
     try {
         const results = await db.query("SELECT * FROM Category");
@@ -1904,6 +1981,32 @@ app.get("/api/v1/admin/salary/:ctuname/:s_time/:e_time", async (req, res) => {
     )
 });
 
+/* Add a new pet category and their base price */
+
+app.post("/api/v1/admin/category", async (req, res) => {
+    db.query(
+        "INSERT INTO Category(pettype, base_price) VALUES ($1 , $2) RETURNING *",
+        [req.body.category, req.body.base_price]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    category: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
 
 
 app.listen(port, () => {
