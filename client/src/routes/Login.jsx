@@ -80,6 +80,7 @@ const Login = () => {
             Routes[3].path = '/users/' + username;
             Routes[4].path = '/users/' + username + '/caretaker';
             Routes[5].path = '/users/' + username + '/caretaker-admin';
+            Routes[6].path = '/users/caretakers';
             setRoutes(Routes);
             history.push('homepage');
           } else {
