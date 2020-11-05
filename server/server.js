@@ -1751,7 +1751,7 @@ app.get("/api/v1/review/:ctuname", async (req, res) => {
 app.get("/api/v1/admin/salary/fulltimers/:s_time/:e_time", async (req, res) => {
     db.query(
         "SELECT ctuname," +
-        "    (3000 + SUM(cost) * 0.8) * (" +
+        "    (3000 + SUM(cost) * 0.80) * (" +
         "        SELECT" +
         "            CASE" +
         "                WHEN AVG(rating) BETWEEN 4 AND 5" +
@@ -1766,26 +1766,29 @@ app.get("/api/v1/admin/salary/fulltimers/:s_time/:e_time", async (req, res) => {
         "    FROM (" +
         "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
         "            FROM (" +
-        "                SELECT ctuname, day, price, pouname, petName," +
-        "                    rank() OVER (" +
-        "                        PARTITION BY ctuname" +
-        "                        ORDER BY day, price" +
-        "                    )" +
+        "                SELECT ctuname, day, price, pouname, petName" +
         "                    FROM (" +
-        "                        SELECT" +
-        "                            generate_series(" +
-        "                                GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
-        "                                LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
-        "                                '1 day'::interval" +
-        "                            ) AS day, price, ctuname, pouname, petName" +
-        "                            FROM Bid NATURAL JOIN Cares RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
-        "                            WHERE ctuname = username AND is_win = true" +
-        "                                AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
-        "                            ORDER BY ctuname, day, price, pouname, petName" +
-        "                    ) AS pet_day_prices" +
-        "                    GROUP BY ctuname, day, price, pouname, petName" +
+        "                       SELECT ctuname, day, price, pouname, petName," +
+        "                           rank() OVER (" +
+        "                               PARTITION BY ctuname" +
+        "                               ORDER BY day, price" +
+        "                           )" +
+        "                           FROM (" +
+        "                               SELECT" +
+        "                                   generate_series(" +
+        "                                       GREATEST(to_date($1, 'YYYYMMDD')::timestamp, s_time::timestamp)," +
+        "                                       LEAST(to_date($2, 'YYYYMMDD')::timestamp, e_time::timestamp)," +
+        "                                       '1 day'::interval" +
+        "                                   ) AS day, price, ctuname, pouname, petName" +
+        "                                   FROM Bid NATURAL JOIN Cares RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
+        "                                   WHERE ctuname = username AND is_win = true" +
+        "                                       AND (s_time, e_time) OVERLAPS (to_date($1, 'YYYYMMDD'), to_date($2, 'YYYYMMDD'))" +
+        "                                   ORDER BY ctuname, day, price, pouname, petName" +
+        "                           ) AS pet_day_prices" +
+        "                           GROUP BY ctuname, day, price, pouname, petName" +
+        "                    ) AS filter" +
+        "                    WHERE rank > 60" +
         "            ) AS bonuses RIGHT JOIN Fulltimer ON (bonuses.ctuname = Fulltimer.username)" +
-"                    WHERE rank > 60" +
         "            GROUP BY username, day, price, pouname, petName" +
         "    ) AS salaries" +
         "    GROUP BY ctuname",
@@ -1920,7 +1923,7 @@ app.get("/api/v1/admin/salary/:ctuname/:s_time/:e_time", async (req, res) => {
         "        WHEN $1 = ANY(SELECT username FROM Parttimer)" +
         "            THEN SUM(price) * 0.75" +
         "        WHEN $1 = ANY(SELECT username FROM Fulltimer)" +
-        "            THEN 3000 + SUM(price) * 0.8" +
+        "            THEN 3000 + COALESCE(SUM(price), 0) * 0.80" +
         "        ELSE 0" +
         "    END * (" +
         "        SELECT" +
