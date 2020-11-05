@@ -11,7 +11,51 @@ const careTakersModel = {
     userReviews: [],
     userRating: [],
     careTakerRatings: [],
+    availability: [],
+    singleCaretakerSalary: [],
+    singleCaretakerPettypeSummary: [],
+    singleCaretakerPetownerSummary: [],
 
+    getSingleCaretakerPetownerSummary: thunk(async (actions, payload) => {
+      const {ctuname, s_time, e_time} = {...payload};
+      // console.log(payload);
+      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + '/pettype';
+      const {data} = await axios.get(url);
+      console.log(data);
+      actions.setSingleCaretakerPetownerSummary(data.data.petdays);
+    }),
+
+    setSingleCaretakerPetownerSummary: action((state, payload) => {
+      state.singleCaretakerPetownerSummary = payload;
+    }),
+
+    getSingleCaretakerPettypeSummary: thunk(async (actions, payload) => {
+      const {ctuname, s_time, e_time} = {...payload};
+      // console.log(payload);
+      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + '/petowner';
+      const {data} = await axios.get(url);
+      console.log(data);
+      actions.setSingleCaretakerPettypeSummary(data.data.petdays);
+    }),
+
+    setSingleCaretakerPettypeSummary: action((state, payload) => {
+      state.singleCaretakerPettypeSummary = payload;
+    }),
+
+    getSingleCaretakerSalary: thunk(async (actions, payload) => {
+      const { ctuname, s_time, e_time } ={ ...payload };
+      // console.log(payload)
+      const url = serverUrl + "/api/v1/admin/salary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time);
+      // console.log(url)
+      const {data} = await axios.get(url);
+      actions.setSingleCaretakerSalary(data.data); 
+    }), 
+
+    setSingleCaretakerSalary: action((state, payload) => { // action
+      if (payload.salary !== null ) {
+          state.singleCaretakerSalary = payload.salary;
+      }
+    }),
   
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get(serverUrl + "/api/v1/caretaker");

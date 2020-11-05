@@ -129,7 +129,26 @@ app.get("/api/v1/accounts/:username", async (req, res) => {
         res.status(200).json({
             status: "success",
             data: {
-                account: results.rows // double-check this
+                account: results.rows[0] // double-check this
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                error: err
+            }
+        });
+    }
+});
+
+app.post("/api/v1/pcsadmin", async (req, res) => {
+    try {
+        const results = await db.query("INSERT INTO pcsadmin(username, adminname, age) VALUES ($1, $2, NULL) RETURNING *", [req.body.username, req.body.adminname]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                admin: results.rows[0] // double-check this
             }
         });
     } catch (err) {

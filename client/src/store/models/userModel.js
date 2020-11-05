@@ -4,6 +4,8 @@ import axios from 'axios';
 
 const userModel = {
     singleUser: [],
+    displayedUser: [],
+
     getUser: thunk(async (actions, payload) => {
         const username = payload;
         const url = serverUrl + "/api/v1/users/" + username;
@@ -70,7 +72,6 @@ const userModel = {
       }
     }),
 
-    displayedUser: [],
     getDisplayedUser: thunk(async (actions, payload) => {
       const username = payload;
       const url = serverUrl + "/api/v1/users/" + username;
