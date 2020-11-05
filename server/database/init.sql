@@ -173,7 +173,7 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
                 RAISE EXCEPTION 'Invalid periods: Less than 150 days.';
             END IF;
             SELECT (period2_e - period1_s + 1) AS DAYS INTO t_period;
-            IF (t_period > 360) THEN
+            IF (t_period > 365) THEN
                 RAISE EXCEPTION 'Invalid periods: Periods are not within a year.';
             ELSE
                 SELECT COUNT(*) INTO ctx FROM FullTimer WHERE FullTimer.username = ctuname;
@@ -282,6 +282,7 @@ CREATE OR REPLACE FUNCTION check_ft_cares_price()
 RETURNS TRIGGER AS
 $$ BEGIN
         IF (SELECT 1 WHERE EXISTS (SELECT 1 FROM FullTimer WHERE NEW.ctuname = FullTimer.username)) THEN
+        
             IF (NEW.price <> (SELECT base_price FROM Category WHERE Category.pettype = NEW.pettype)) THEN
                 RAISE EXCEPTION 'Cares prices for Fulltimers must adhere to the basic prices set by PCSadmin.';
             ELSE
@@ -626,3 +627,42 @@ CALL add_bid('marythemess', 'Sneak', 'cat', 'yellowchicken', '2021-02-27', '2021
 --  UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
 
 --  INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
+
+--------------- TEST all_ct query, testing with 'marythemess' at time period 2020-06-01 to 2020-06-06 ---------------------
+
+-- These are to set the ratings for following cts
+-- yellow chicken
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2020-02-24', '2020-02-28', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ'
+   AND pettype = 'big dogs' AND s_time = to_date('20200224','YYYYMMDD') AND e_time = to_date('20200228','YYYYMMDD');
+UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '5', review = 'sample review', pay_status = true
+   WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs'
+   AND s_time = to_date('20200224','YYYYMMDD') AND e_time = to_date('20200228','YYYYMMDD') AND is_win = true;
+-- yellowbird
+INSERT INTO Has_Availability VALUES ('yellowbird', '2020-01-05', '2020-01-20');
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2020-01-05', '2020-01-10', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ'
+   AND pettype = 'big dogs' AND s_time = to_date('20200105','YYYYMMDD') AND e_time = to_date('20200110','YYYYMMDD');
+UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review = 'sample review', pay_status = true
+    WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs' 
+    AND s_time = to_date('20200105','YYYYMMDD') AND e_time = to_date('20200110','YYYYMMDD');
+-- purpleddog
+CALL add_bid('marythemess', 'Purr', 'cat', 'purpledog', '2020-02-03', '2020-02-22', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'purpledog' AND pouname = 'marythemess' AND petname = 'Purr'
+   AND pettype = 'cat' AND s_time = to_date('20200203','YYYYMMDD') AND e_time = to_date('20200222','YYYYMMDD');
+UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '1', review = 'sample review', pay_status = true
+   WHERE ctuname = 'purpledog' AND pouname = 'marythemess' AND petname = 'Purr' AND pettype = 'cat'
+   AND s_time = to_date('20200203','YYYYMMDD') AND e_time = to_date('20200222','YYYYMMDD') AND is_win = true;
+
+
+INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-01', '2020-06-06');
+INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-06-01', '2020-06-06');
+INSERT INTO Has_Availability VALUES ('purpledog', '2020-06-01', '2020-06-06');
+
+-- saturation of PT capacity --
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2020-06-01', '2020-06-06', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ'
+   AND pettype = 'big dogs' AND s_time = to_date('20200601','YYYYMMDD') AND e_time = to_date('20200606','YYYYMMDD');
+CALL add_bid('marythemess', 'Meow', 'cat', 'yellowbird', '2020-06-01', '2020-06-06', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Meow'
+   AND pettype = 'cat' AND s_time = to_date('20200601','YYYYMMDD') AND e_time = to_date('20200606','YYYYMMDD');
