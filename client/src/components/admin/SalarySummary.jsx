@@ -55,6 +55,7 @@ const SalarySummary = () => {
         await getPartTimerSalary(getStartEndOfMonth(month));
         await getFullTimerSalary(getStartEndOfMonth(month));
     }
+
     return (
         <div>
             <Grid container>
@@ -64,7 +65,7 @@ const SalarySummary = () => {
                             Salary Summary
                         </Typography>
                         <FormControl required variant="outlined" fullWidth className={classes.formControl} >
-                            <InputLabel htmlFor='select-month'>Select Caretaker Type</InputLabel>
+                            <InputLabel htmlFor='select-month'>Select Month</InputLabel>
                                 <Select
                                     native
                                     value={month}
