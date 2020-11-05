@@ -49,7 +49,6 @@ const SalarySummary = () => {
 
     const handleChangeMonth = async (event) => {
         setMonth(event.target.value);
-        await updateSalaries();
     }
 
     const updateSalaries = async () => {

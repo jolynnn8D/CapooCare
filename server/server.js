@@ -612,7 +612,7 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
 /* Get all caretakers that can take care of all the petowners' pet at a certain period of time. 
     Results are arranged according to decreasing rating then by increasing total cost */
 
-app.get("/api/v1/petowner/:username/all_ct",  async (req, res) => {
+app.get("/api/v1/petowner/:username/all_ct/:s_time/:e_time",  async (req, res) => {
     try {
         const results = await db.query(
             "SELECT DISTINCT A.ctuname,   " +
@@ -670,7 +670,7 @@ app.get("/api/v1/petowner/:username/all_ct",  async (req, res) => {
             "        ) " +
             "ORDER BY rating DESC, " +
             "         price ASC; " 
-            , [req.params.username, req.body.s_time, req.body.e_time]);
+            , [req.params.username, req.params.s_time, req.params.e_time]);
         res.status(200).json({
             status: "success",
             data: {

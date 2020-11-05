@@ -191,6 +191,13 @@ const careTakersModel = {
     setCareTakerRatings: action((state, payload) => {
       state.careTakerRatings = payload;
     }),
+    getCaretakersForAllPets: thunk(async(actions, payload) => {
+      const { username, s_time, e_time } = payload;
+      const url = serverUrl + "/api/v1/petowner/" + username + "/all_ct/" + convertDate(s_time) + "/" + convertDate(e_time)
+      const { data } = await axios.get(url);
+      actions.setAvailableCaretakers(data.data.caretakers);
+    })
+
 
 
   }
