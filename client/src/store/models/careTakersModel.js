@@ -10,7 +10,9 @@ const careTakersModel = {
     availableCaretakers: [],
     userReviews: [],
     userRating: [],
+    careTakerRatings: [],
 
+  
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get(serverUrl + "/api/v1/caretaker");
       actions.setUsers(data.data.users); 
@@ -92,7 +94,7 @@ const careTakersModel = {
         var index = null;
         state.petCareList.forEach(function(value, i) {
           console.log(value.pettype)
-            if (value.pettype == payload) {
+            if (value.pettype === payload) {
 
                 index = i;
             }
@@ -154,8 +156,8 @@ const careTakersModel = {
     deleteAvailability: action((state, payload) => {
       let index = null;
       state.availability.forEach(function(avail, i) {
-        if (payload.s_time == avail.s_time &&
-            payload.e_time == avail.e_time) {
+        if (payload.s_time === avail.s_time &&
+            payload.e_time === avail.e_time) {
               index = i;
             }
       })
@@ -180,7 +182,6 @@ const careTakersModel = {
       state.userRating = payload;
     }),
 
-    careTakerRatings: [],
     getCareTakerRatings: thunk(async(actions, payload) => {
       const url = serverUrl + "/api/v1/rating";
       const {data} = await axios.get(url);

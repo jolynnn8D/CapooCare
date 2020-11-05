@@ -67,11 +67,7 @@ CREATE TABLE CareTaker (
 );
 
 CREATE TABLE FullTimer (
-    username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username),
-    period1_s  DATE NOT NULL,
-    period1_e  DATE NOT NULL,
-    period2_s  DATE NOT NULL,
-    period2_e  DATE NOT NULL
+    username VARCHAR(50) PRIMARY KEY REFERENCES CareTaker(username)
 );
 
 CREATE TABLE PartTimer (
@@ -162,11 +158,11 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
                 WHERE FullTimer.username = ctuname;
             IF ctx = 0 THEN
                 INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
-                INSERT INTO FullTimer VALUES (ctuname, period1_s, period1_e, period2_s, period2_e);
-                INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
-                INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
+                INSERT INTO FullTimer VALUES (ctuname);
             END IF;
             INSERT INTO Cares VALUES (ctuname, pettype, price);
+            INSERT INTO Has_Availability VALUES (ctuname, period1_s, period1_e);
+            INSERT INTO Has_Availability VALUES (ctuname, period2_s, period2_e);
     END;$$
 LANGUAGE plpgsql;
 
@@ -556,22 +552,30 @@ INSERT INTO Cares VALUES ('yellowchicken', 'dog', 40);
 INSERT INTO Cares VALUES ('yellowchicken', 'big dogs', 70);
 INSERT INTO Cares VALUES ('yellowchicken', 'cat', 50);
 INSERT INTO Cares VALUES ('redduck', 'big dogs', 80);
+INSERT INTO Cares VALUES ('purpledog', 'big dogs', 150);
+INSERT INTO Cares VALUES ('purpledog', 'cat', 80);
 INSERT INTO Cares VALUES ('yellowbird', 'dog', 50);
 /* Remove the following line to encounter pet type error */
 INSERT INTO Cares VALUES ('yellowbird', 'big dogs', 90);
 
 INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-01-01', '2020-03-04');
 INSERT INTO Has_Availability VALUES ('yellowchicken', '2021-01-01', '2021-03-04');
+INSERT INTO Has_Availability VALUES ('purpledog', '2021-01-01', '2021-03-04');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2021-01-01', '2021-03-04');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
 INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
 
-CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-02-05', '2021-02-20', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowbird', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowbird', '2021-01-05', '2021-01-20', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Ruff' AND pettype = 'big dogs' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210220','YYYYMMDD');
+UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dogs' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210120','YYYYMMDD');
 
 -- The following test case overloads 'marythemess' with more bids than she can accept
-CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-02', '2021-02-28', NULL, NULL);
-CALL add_bid('marythemess', 'Bark', 'big dogs', 'yellowchicken', '2021-01-02', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Bark', 'big dogs', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Champ', 'big dogs', 'purpledog', '2021-02-01', '2021-02-23', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Purr', 'cat', 'purpledog', '2021-02-03', '2021-02-22', 'cash', 'ctPickup');
 CALL add_bid('marythemess', 'Champ', 'big dogs', 'yellowchicken', '2021-02-24', '2021-02-28', 'cash', 'poDeliver');
 CALL add_bid('marythemess', 'Ruff', 'big dogs', 'yellowchicken', '2021-02-25', '2021-02-28', 'cash', 'ctPickup');
 CALL add_bid('marythemess', 'Purr', 'cat', 'yellowchicken', '2021-02-26', '2021-02-28', 'cash', 'poDeliver');
