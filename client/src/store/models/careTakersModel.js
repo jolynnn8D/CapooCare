@@ -11,7 +11,51 @@ const careTakersModel = {
     userReviews: [],
     userRating: [],
     careTakerRatings: [],
+    availability: [],
+    singleCaretakerSalary: [],
+    singleCaretakerPettypeSummary: [],
+    singleCaretakerPetownerSummary: [],
 
+    getSingleCaretakerPetownerSummary: thunk(async (actions, payload) => {
+      const {ctuname, s_time, e_time} = {...payload};
+      // console.log(payload);
+      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + '/petowner';
+      const {data} = await axios.get(url);
+      // console.log(data);
+      actions.setSingleCaretakerPetownerSummary(data.data.petdays);
+    }),
+
+    setSingleCaretakerPetownerSummary: action((state, payload) => {
+      state.singleCaretakerPetownerSummary = payload;
+    }),
+
+    getSingleCaretakerPettypeSummary: thunk(async (actions, payload) => {
+      const {ctuname, s_time, e_time} = {...payload};
+      // console.log(payload);
+      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + '/pettype';
+      const {data} = await axios.get(url);
+      // console.log(data);
+      actions.setSingleCaretakerPettypeSummary(data.data.petdays);
+    }),
+
+    setSingleCaretakerPettypeSummary: action((state, payload) => {
+      state.singleCaretakerPettypeSummary = payload;
+    }),
+
+    getSingleCaretakerSalary: thunk(async (actions, payload) => {
+      const { ctuname, s_time, e_time } ={ ...payload };
+      // console.log(payload)
+      const url = serverUrl + "/api/v1/admin/salary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time);
+      // console.log(url)
+      const {data} = await axios.get(url);
+      actions.setSingleCaretakerSalary(data.data); 
+    }), 
+
+    setSingleCaretakerSalary: action((state, payload) => { // action
+      if (payload.salary !== null ) {
+          state.singleCaretakerSalary = payload.salary;
+      }
+    }),
   
     getCareTakers: thunk(async (actions, payload) => {
       const {data} = await axios.get(serverUrl + "/api/v1/caretaker");
@@ -94,7 +138,7 @@ const careTakersModel = {
         var index = null;
         state.petCareList.forEach(function(value, i) {
           console.log(value.pettype)
-            if (value.pettype == payload) {
+            if (value.pettype === payload) {
 
                 index = i;
             }
@@ -156,8 +200,8 @@ const careTakersModel = {
     deleteAvailability: action((state, payload) => {
       let index = null;
       state.availability.forEach(function(avail, i) {
-        if (payload.s_time == avail.s_time &&
-            payload.e_time == avail.e_time) {
+        if (payload.s_time === avail.s_time &&
+            payload.e_time === avail.e_time) {
               index = i;
             }
       })
@@ -190,6 +234,13 @@ const careTakersModel = {
     setCareTakerRatings: action((state, payload) => {
       state.careTakerRatings = payload;
     }),
+    getCaretakersForAllPets: thunk(async(actions, payload) => {
+      const { username, s_time, e_time } = payload;
+      const url = serverUrl + "/api/v1/petowner/" + username + "/all_ct/" + convertDate(s_time) + "/" + convertDate(e_time)
+      const { data } = await axios.get(url);
+      actions.setAvailableCaretakers(data.data.caretakers);
+    })
+
 
 
   }

@@ -51,4 +51,16 @@ function getPrevMonths(months_ago) {
   resultDate.setDate(1);
   return resultDate;
 }
-export {convertDate, sqlToJsDate, stringToJsDate, differenceInTwoDates, isValidStringDate, getPrevMonths }
+
+function getStartEndOfMonth(month) {
+  const intMonth = parseInt(month);
+  const currDate = new Date();
+  let startDate = new Date(currDate.getFullYear(), intMonth, 1);
+  let endDate = new Date(currDate.getFullYear(), intMonth+1, 0);
+  const result = {
+    s_time: startDate,
+    e_time: endDate
+  }
+  return result;
+}
+export {convertDate, sqlToJsDate, stringToJsDate, differenceInTwoDates, isValidStringDate, getPrevMonths, getStartEndOfMonth }
