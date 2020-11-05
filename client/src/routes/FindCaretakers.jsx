@@ -153,8 +153,6 @@ const FindCaretakers = () => {
         )
     }, [search, careTakers])
 
-    
-
     const sortCareTakers = (event) => {
         setSortValue(event.target.value);
         setFilteredCaretakers(

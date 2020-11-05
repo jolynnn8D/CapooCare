@@ -16,6 +16,7 @@ const Salary = (props) => {
     const getSalary = useStoreActions(actions => actions.admin.getSingleCaretakerSalary);
     const userSalary = useStoreState(state => state.admin.singleCaretakerSalary);
     const dateRange = getStartEndOfMonth(new Date().getMonth() - 1);
+    
     useEffect(() => {
         getSalary({
             ctuname: props.username,
