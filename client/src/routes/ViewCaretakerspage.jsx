@@ -17,7 +17,7 @@ const ViewCaretakerspage = () => {
   return (
     <div className={classes.verticalSections}>
       <CaretakersVerticalTabs/>
-      <CaretakersList/>
+      {/* <CaretakersList/> */}
     </div>
   );
 }

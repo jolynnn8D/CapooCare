@@ -47,7 +47,7 @@ const CaretakerProfile = (props) => {
                         </Grid>
                         <Grid item xs={12}>
                             <Card>
-                                <PetCareList owner={false} username={username}/>
+                                <PetCareList userType="po" username={username}/>
                             </Card>
                         </Grid>
                         <Grid item xs={12} className={classes.card}>

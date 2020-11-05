@@ -37,6 +37,7 @@ export default function BidList(props) {
             <ListSubheader>{`${sectionId}`}</ListSubheader>
             {bids
               .filter((bid) => sqlToJsDate(bid.s_time).getMonth() == sectionIndex || sqlToJsDate(bid.e_time).getMonth() == sectionIndex)
+              .filter((bid) => sqlToJsDate(bid.e_time).getFullYear() == new Date().getFullYear())
               .map((bid) => (
                 <ListItem 
                   button

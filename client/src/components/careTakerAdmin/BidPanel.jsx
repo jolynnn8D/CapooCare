@@ -20,6 +20,9 @@ const useStyles = makeStyles({
     },
     list: {
         height: 600
+    }, 
+    sectionHeader:{
+        marginLeft: 12
     }
 })
 
@@ -93,6 +96,7 @@ const BidPanel = (props) => {
                     />
                 </Grid>
                 <Grid item xs={4}>
+                    <Typography variant='h6' className={classes.sectionHeader}>Current year bids</Typography>
                     <BidList
                         subheader={months}
                         bids={bidList}
