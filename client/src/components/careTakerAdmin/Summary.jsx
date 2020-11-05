@@ -86,14 +86,14 @@ export const Summary = (props) => {
     <Button variant="outlined" onClick={getPetdaysSummary}>
         Change Month
     </Button>
-      <Card className={classes.salaryCard}>
-          <Typography variant='h5'> Summary for: {getStartEndOfMonth(month).s_time.toLocaleDateString()} to {getStartEndOfMonth(month).e_time.toLocaleDateString()}: {singleCaretakerPettypeSummary.map(petday => {
+      <Card className={classes.summaryCard}>
+          <Typography variant='h6'> Pet-days by Pet Type: {getStartEndOfMonth(month).s_time.toLocaleDateString()} to {getStartEndOfMonth(month).e_time.toLocaleDateString()}: {singleCaretakerPettypeSummary.map(petday => {
             console.log(petday);
             return (<h6>Type of pet: {petday.pet_type} - Number of pet days: {petday.count}</h6>)
           })}</Typography>
       </Card>
-      <Card className={classes.salaryCard}>
-          <Typography variant='h5'> Summary for: {getStartEndOfMonth(month).s_time.toLocaleDateString()} to {getStartEndOfMonth(month).e_time.toLocaleDateString()}: {singleCaretakerPetownerSummary.map(petday => {
+      <Card className={classes.summaryCard}>
+          <Typography variant='h6'> Pet-days by Pet Owner: {getStartEndOfMonth(month).s_time.toLocaleDateString()} to {getStartEndOfMonth(month).e_time.toLocaleDateString()}: {singleCaretakerPetownerSummary.map(petday => {
             return (<h6>Pet owner: {petday.username} - Number of pet days: {petday.count}</h6>)
           })}</Typography>
       </Card>

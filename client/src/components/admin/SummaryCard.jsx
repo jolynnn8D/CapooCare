@@ -36,10 +36,10 @@ const SummaryCard = () => {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            Summary Card
+            View Salary Details
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            View a summary dashboard of the caretakers
+            View salary details of caretakers
           </Typography>
         </CardContent>
       </CardActionArea>
