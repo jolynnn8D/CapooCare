@@ -663,7 +663,7 @@ app.get("/api/v1/petowner/:username/all_ct",  async (req, res) => {
             "                            OVERLAPS (Bid.s_time, Bid.e_time)) < 2 " +
             "                    ELSE (SELECT COUNT(*) " +
             "                            FROM Bid " +
-            "                            WHERE 'johnthebest' = Bid.ctuname AND Bid.is_win = True AND (to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD'))  " +
+            "                            WHERE $1 = Bid.ctuname AND Bid.is_win = True AND (to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD'))  " +
             "                                OVERLAPS (Bid.s_time, Bid.e_time)) < 5 " +
             "                END " +
             "            ) " +
