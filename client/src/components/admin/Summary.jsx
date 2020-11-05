@@ -6,7 +6,7 @@ import SalarySummary from "./SalarySummary"
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginTop: theme.spacing(10)
+        marginTop: theme.spacing(13)
     }
 }));
 

@@ -23,6 +23,7 @@ const adminModel = {
         const { s_time, e_time } = { ...payload };
         const url = serverUrl + "/api/v1/admin/salary/parttimers/" + convertDate(s_time) + "/" + convertDate(e_time);
         const {data} = await axios.get(url);
+        console.log(url)
         actions.setPartTimerSalary(data.data); 
       }), 
       setPartTimerSalary: action((state, payload) => { // action

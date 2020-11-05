@@ -53,12 +53,10 @@ function getPrevMonths(months_ago) {
 }
 
 function getStartEndOfMonth(month) {
-  let startDate = new Date();
-  let endDate = new Date();
-  startDate.setMonth(month);
-  startDate.setDate(1);
-  endDate.setMonth(month+1);
-  endDate.setDate(0);
+  const intMonth = parseInt(month);
+  const currDate = new Date();
+  let startDate = new Date(currDate.getFullYear(), intMonth, 1);
+  let endDate = new Date(currDate.getFullYear(), intMonth+1, 0);
   const result = {
     s_time: startDate,
     e_time: endDate
