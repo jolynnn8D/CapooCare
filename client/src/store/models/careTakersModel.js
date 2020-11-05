@@ -19,9 +19,9 @@ const careTakersModel = {
     getSingleCaretakerPetownerSummary: thunk(async (actions, payload) => {
       const {ctuname, s_time, e_time} = {...payload};
       // console.log(payload);
-      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + '/pettype';
+      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + '/petowner';
       const {data} = await axios.get(url);
-      console.log(data);
+      // console.log(data);
       actions.setSingleCaretakerPetownerSummary(data.data.petdays);
     }),
 
@@ -32,9 +32,9 @@ const careTakersModel = {
     getSingleCaretakerPettypeSummary: thunk(async (actions, payload) => {
       const {ctuname, s_time, e_time} = {...payload};
       // console.log(payload);
-      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + '/petowner';
+      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + '/pettype';
       const {data} = await axios.get(url);
-      console.log(data);
+      // console.log(data);
       actions.setSingleCaretakerPettypeSummary(data.data.petdays);
     }),
 

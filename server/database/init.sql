@@ -542,11 +542,11 @@ CREATE OR REPLACE VIEW Users AS (
 );
 
 CREATE OR REPLACE VIEW Accounts AS (
-   SELECT username, adminName, age, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
+   SELECT username, adminName, age, false AS is_carer, true AS is_admin FROM PCSAdmin
    UNION ALL
-   SELECT username, carerName, age, salary, true AS is_carer, false AS is_admin FROM CareTaker
+   SELECT username, carerName, age, true AS is_carer, false AS is_admin FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
+   SELECT username, ownerName, age, false AS is_carer, false AS is_admin FROM PetOwner
 );
 
 /* SEED */

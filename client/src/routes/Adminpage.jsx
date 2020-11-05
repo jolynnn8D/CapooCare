@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PriceList from '../components/admin/PriceList';
 import ViewAllCaretakers from '../components/admin/ViewAllCaretakers';
+import SummaryCard from "../components/admin/SummaryCard"
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { FormControlLabel, Checkbox, FormHelperText, FormControl, FormLabel, FormGroup, Container, Radio, RadioGroup, TextField, Card, Typography, Button } from '@material-ui/core';
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(3, 0, 2),
   },
   container: {
-      marginTop: theme.spacing(15),
+      marginTop: theme.spacing(3),
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -51,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
   header: {
       margin: theme.spacing(3),
       textAlign: 'center'
+  },
+  summarycard: {
+      marginTop: theme.spacing(3),
   }
 }));
 
@@ -77,6 +81,9 @@ const Adminpage = () => {
         </Grid>
         <Grid item xs={6}>
           <PriceList className={classes.component}/>
+        </Grid>
+        <Grid className={classes.summarycard} item xs={6} marginTop={20}>
+          <SummaryCard className={classes.component}/>
         </Grid>
         <div className={classes.container}>
           <Typography component="h1" variant="h3" color="textPrimary" align="center">
@@ -106,7 +113,7 @@ const Adminpage = () => {
                 onChange={(event) => setAdminName(event.target.value)}
             />
             <Button
-                // type="submit"
+                type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
