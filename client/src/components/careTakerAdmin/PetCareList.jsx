@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
     },
+    priceText: {
+        marginRight: theme.spacing(25),
+        textAlign: "right"
+    }
 }))
 
 const PetCareList = (props) => {
@@ -106,7 +110,7 @@ const PetCareList = (props) => {
                 <ListItemText
                     primary={careItem.pettype}
                 />
-                <ListItemText
+                <ListItemText className={classes.priceText}
                     primary={`$${careItem.price}/day`}
                 />
                 {userType == 'ct' ? 
