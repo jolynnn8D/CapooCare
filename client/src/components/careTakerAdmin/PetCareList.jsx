@@ -125,6 +125,7 @@ const PetCareList = (props) => {
 
     return (
         <div>
+            {userType=='ct' ? <>
             <Button className={classes.button}
                 variant='outlined'
                 onClick={openLucrativeModal}>
@@ -152,9 +153,7 @@ const PetCareList = (props) => {
                                 endDate: item.selection.endDate,
                                 key: item.selection.key
                             }]);
-                            // console.log(item.selection);
-                            // console.log(dateRange);
-                            // console.log(filteredCaretakers);
+                         
                         }}
                         showSelectionPreview={true}
                         moveRangeOnFirstSelection={false}
@@ -171,6 +170,7 @@ const PetCareList = (props) => {
                     </Button>
                 </Card>
             </Modal>
+            </> : null }
             <List>
                 {petCareList.map((careItem) => (
                 <>
@@ -223,7 +223,7 @@ const PetCareList = (props) => {
                 open={addCareOpen}
                 onClose={closeCareModal}>
                 <Card className={classes.modal}>
-                    <PetTypeInput parentType={onPetTypeSet} parentPrice={onPetPriceSet} isFT={singleUser.is_fulltimer}/>
+                    <PetTypeInput parentType={onPetTypeSet} parentPrice={onPetPriceSet} setParentPrice={setPetPrice} isFT={singleUser.is_fulltimer}/>
                     <Button onClick={handleAddNewPet} color="primary"> Add new pet type </Button>
                 </Card>
             </Modal>
