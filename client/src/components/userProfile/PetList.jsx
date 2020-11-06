@@ -1,7 +1,6 @@
 import React from 'react'
 import { Card, Grid, ListItem, ListItemAvatar, ListItemText, Avatar, Modal, TextField, GridList, GridListTile } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-
 import ProfilePic from "./ProfilePic"
 import { makeStyles } from '@material-ui/core/styles';
 import petImg from "../../assets/userProfile/pet.png"
@@ -10,6 +9,7 @@ import { useEffect } from 'react';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { v4 } from 'uuid';
 import { CREATE, EDIT, DELETE } from "../../constants"
+import store from "../../store/store";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
     },
     gridList: {
         width: "100%",
-        height: 450,
       },
 }));
 
@@ -53,6 +52,13 @@ const PetList = (props) => {
     const singleUser = useStoreState(state => state.user.singleUser);
     const getUser = useStoreActions(actions => actions.user.getUser);
     const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
+    const getUserPets = useStoreActions(actions => actions.pets.getOwnerPets);
+    const createPet = useStoreActions(actions => actions.pets.addPet);
+    const editPet = useStoreActions(actions => actions.pets.editPet);
+    const deletePet = useStoreActions(actions => actions.pets.deletePet);
+    let pets = useStoreState(state => state.pets.ownerSpecificPets);
+    const classes = useStyles();
+    var id = 0;
 
     const openModal = () => {
         setOpen(true);
@@ -60,9 +66,7 @@ const PetList = (props) => {
 
     const closeModal = async () => {
         setOpen(false);
-        await getUserPets(props.username);
         setPetDetails({});
-        
     }
 
     const openCreateModal = () => {
@@ -96,6 +100,7 @@ const PetList = (props) => {
 
                 getUser(singleUser.username);
                 getDisplayedUser(singleUser.username);
+                return;
             }
 
             createPet({
@@ -123,21 +128,11 @@ const PetList = (props) => {
         }
     }
 
-    const getUserPets = useStoreActions(actions => actions.pets.getOwnerPets);
-    const createPet = useStoreActions(actions => actions.pets.addPet);
-    const editPet = useStoreActions(actions => actions.pets.editPet);
-    const deletePet = useStoreActions(actions => actions.pets.deletePet);
-
     useEffect(() => {
         getUserPets(props.username);
         return () => {};
     }, [])
 
-    const pets = useStoreState(state => state.pets.ownerSpecificPets);
-    console.log(pets);
-
-    const classes = useStyles();
-    var id = 0;
     return (
         <div>
         <Card className={classes.root}>
