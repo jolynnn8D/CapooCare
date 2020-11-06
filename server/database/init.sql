@@ -550,7 +550,7 @@ CREATE OR REPLACE VIEW Accounts AS (
 );
 
 /* SEED */
-INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
+INSERT INTO PCSAdmin(username, adminName) VALUES ('sudo', 'superuser');
 --INSERT INTO PCSAdmin(username, adminName) VALUES ('White', 'white');
 --
 --/* Setting categories and their base price */
@@ -1452,9 +1452,25 @@ insert into PetOwner (username, ownerName, age) values ('pcanadaks', 'Padget Can
 insert into PetOwner (username, ownerName, age) values ('gdurnokt', 'Gunilla Durno', 63);
 
 
--- CareTaker --
+-- Category --
 
-
-
-
-
+insert into Category (pettype, base_price) values ('Pitbull', 100);
+insert into Category (pettype, base_price) values ('Terrier', 80);
+insert into Category (pettype, base_price) values ('Chihuahua', 60);
+insert into Category (pettype, base_price) values ('Dalmatian', 120);
+insert into Category (pettype, base_price) values ('Dachshund', 90);
+insert into Category (pettype, base_price) values ('Aquarium Fish', 40);
+insert into Category (pettype, base_price) values ('Pond Fish', 60);
+insert into Category (pettype, base_price) values ('Small cats', 70);
+insert into Category (pettype, base_price) values ('Large cats', 90);
+insert into Category (pettype, base_price) values ('Horse', 250);
+insert into Category (pettype, base_price) values ('Rabbit', 65);
+insert into Category (pettype, base_price) values ('Caged Birds', 50);
+insert into Category (pettype, base_price) values ('Free-range Birds', 75);
+insert into Category (pettype, base_price) values ('Snake', 135);
+insert into Category (pettype, base_price) values ('Tortoise', 45);
+insert into Category (pettype, base_price) values ('Caged Insects', 60);
+insert into Category (pettype, base_price) values ('Frogs', 65);
+insert into Category (pettype, base_price) values ('Hamster', 50);
+insert into Category (pettype, base_price) values ('Lizard', 55);
+insert into Category (pettype, base_price) values ('Mice', 65);
