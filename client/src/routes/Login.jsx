@@ -76,13 +76,42 @@ const Login = () => {
             await getUser(username);
             await getDisplayedUser(username);
 
-            Routes.splice(6, 1);
-            Routes[3].path = '/users/' + username;
-            Routes[4].path = '/users/' + username + '/caretaker';
-            Routes[5].path = '/users/' + username + '/caretaker-admin';
-            Routes[6].path = '/users/caretakers';
-            
-            setRoutes(Routes);
+            setRoutes(
+                [
+                    {
+                        path: '/',
+                        sidebarName: 'Login',
+                    },
+                    {
+                        path: '/signup',
+                        sidebarName: 'Signup',
+                    },
+                    {
+                        path: '/homepage',
+                        sidebarName: 'Homepage',
+                    },
+                    {
+                        path: '/users/' + username,
+                        sidebarName: 'Petowner Profile',
+                    },
+                    {
+                        path: '/users/' + username + '/caretaker',
+                        sidebarName: 'Caretaker Profile',
+                    },
+                    {
+                        path: '/users/' + username + '/caretaker-admin',
+                        sidebarName: 'Caretaker Settings',
+                    },
+                    {
+                        path: '/users/caretakers',
+                        sidebarName: 'Look for Caretakers',
+                    }
+                ]
+            )
+            // Routes[3].path = '/users/' + username;
+            // Routes[4].path = '/users/' + username + '/caretaker';
+            // Routes[5].path = '/users/' + username + '/caretaker-admin';
+            // Routes[6].path = '/users/caretakers';
             history.push('homepage');
           } else {
             setRoutes(

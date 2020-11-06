@@ -15,6 +15,19 @@ const careTakersModel = {
     singleCaretakerSalary: [],
     singleCaretakerPettypeSummary: [],
     singleCaretakerPetownerSummary: [],
+    mostLucrativeCategories: [],
+
+    getMostLucrativeCategories: thunk(async (actions, payload) => {
+      const {ctuname, s_time, e_time} = {...payload};
+      const url = serverUrl + "/api/v1/caretaker/summary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time) + "/lucrative";
+      const {data} = await axios.get(url);
+
+      actions.setMostLucrativeCategories(data.data.categories);
+    }),
+    
+    setMostLucrativeCategories: action((state, payload) => {
+      state.mostLucrativeCategories = payload;
+    }),
 
     getSingleCaretakerPetownerSummary: thunk(async (actions, payload) => {
       const {ctuname, s_time, e_time} = {...payload};
