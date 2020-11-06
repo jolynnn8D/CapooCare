@@ -1541,7 +1541,7 @@ app.get("/api/v1/availability/", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
-    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD')",
+    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))",
         [req.params.ctuname, req.params.s_time, req.params.e_time]
     ).then(
         (result) => {
