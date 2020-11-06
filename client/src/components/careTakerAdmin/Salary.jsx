@@ -15,7 +15,7 @@ const Salary = (props) => {
     const classes = useStyles();
     const getSalary = useStoreActions(actions => actions.admin.getSingleCaretakerSalary);
     const userSalary = useStoreState(state => state.admin.singleCaretakerSalary);
-    const dateRange = getStartEndOfMonth(new Date().getMonth() - 1);
+    const dateRange = getStartEndOfMonth(props.month);
     
     useEffect(() => {
         getSalary({
@@ -27,7 +27,7 @@ const Salary = (props) => {
     }, []);
     return (
         <Card className={classes.salaryCard}>
-            <Typography variant='h6'> Salary for {dateRange.s_time.toLocaleDateString()} to {dateRange.e_time.toLocaleDateString()}: ${userSalary}</Typography>
+            <Typography variant='h6'> Salary: ${userSalary}</Typography>
         </Card>
     )
 }

@@ -97,7 +97,6 @@ export default function FullWidthTabs(props) {
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
           <CaretakerAvailability username={props.username}/>
-          <Salary username={props.username}/>
           <Summary username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>

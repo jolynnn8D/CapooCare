@@ -1,4 +1,4 @@
-import { Chip, FormControl, Input, InputLabel, NativeSelect, Select, FormHelperText, TextField} from '@material-ui/core'
+import { Chip, FormControl, Input, InputLabel, NativeSelect, Select, FormHelperText, TextField, Typography} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types';
@@ -21,19 +21,31 @@ const useStyles = makeStyles((theme) => ({
 const PetTypeInput = (props) => {
     const [petType, setPetType] = useState();
     const [price, setPrice] = useState();
-    const {parentType, parentPrice, label, ...other} = props;
+    const {parentType, parentPrice, label, isFT, ...other} = props;
     const getPetCategories = useStoreActions(actions => actions.pets.getPetCategories);
     const petCategories = useStoreState(state => state.pets.petCategories);
 
 
     const handleChange = (event) => {
         setPetType(event.target.value);
+        setPrice(retrieveBasePrice(event.target.value));
         parentType(event);
     }
 
     const handlePriceChange = (event) => {
         setPrice(event.target.value);
         parentPrice(event);
+    }
+
+    const retrieveBasePrice = (pettype) => {
+        let basePrice = 0
+        petCategories.forEach((petCat) => {
+            if (petCat.pettype == pettype) {
+                console.log(petCat)
+                basePrice = petCat.base_price;
+            }
+        })
+        return basePrice
     }
 
     useEffect(() => {
@@ -64,14 +76,16 @@ const PetTypeInput = (props) => {
                         ))}
                     </Select>
             </FormControl>
+            <Typography> Price per day (in $): </Typography>
             <TextField
                 variant="outlined"
-                label="Enter the price per day for the pet type above"
                 required
                 fullWidth
+                value={price}
                 id="price"
                 autoComplete="price"
                 autoFocus
+                disabled={isFT}
                 type="number"
                 className={classes.textfield}
                 onChange={handlePriceChange}
