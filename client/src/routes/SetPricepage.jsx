@@ -1,14 +1,9 @@
-import React from 'react';
+import { Container, Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { useStoreActions, useStoreState } from 'easy-peasy';
+import React, { useEffect } from 'react';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: 345,
     marginTop: 200
@@ -16,38 +11,54 @@ const useStyles = makeStyles({
   media: {
     height: 140,
   },
-});
+  container: {
+    marginTop: theme.spacing(15),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+}));
 
 const SetPricepage = () => {
   const classes = useStyles();
+  const petCategories = useStoreState(state => state.pets.petCategories);
+  const getPetCategories = useStoreActions(actions => actions.pets.getPetCategories);
+  const addPetCategories = useStoreActions(actions => actions.pets.addPetCategories);
+  const basePricesTableHeaders = ['Pet Type', 'Base Price']
+
+  useEffect(() => {
+    getPetCategories();
+    return () => { };
+  }, [])
 
   return (
-    <Card className={classes.root}>
-      <CardActionArea>
-        <CardMedia
-          className={classes.media}
-          image="https://i.insider.com/5ebd4a2a1441925fab23f6c6?width=600&format=jpeg&auto=webp"
-          title="Contemplative Reptile"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            Lizard
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-      <CardActions>
-        <Button size="small" color="primary">
-          Share
-        </Button>
-        <Button size="small" color="primary">
-          Learn More
-        </Button>
-      </CardActions>
-    </Card>
+    <Container component="main" maxWidth="xs" className={classes.container}>
+      {/* <Typography variant="h6" id="tableTitle"></Typography> */}
+      <Table aria-label="base-prices-table">
+        <TableHead>
+          <TableRow>
+            {basePricesTableHeaders.map((tableHeader) => (
+              <TableCell>{tableHeader}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {petCategories.map((type) => (
+            <TableRow key={type.pettype}>
+              <TableCell>
+                {type.pettype}
+              </TableCell>
+              <TableCell>
+                {type.base_price}
+              </TableCell>
+            </TableRow>
+          ))}
+          <TableRow>
+
+          </TableRow>
+        </TableBody>
+      </Table>
+    </Container>
   )
 }
 
