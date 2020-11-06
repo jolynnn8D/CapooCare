@@ -24,6 +24,7 @@ const SalarySummary = () => {
     const classes = useStyles();
     const [ctType, setCtType] = useState('All Caretakers');
     const [month, setMonth] = useState(new Date().getMonth());
+    const [totalSalary, setTotalSalary] = useState(0);
     let partTimerSalary = useStoreState(state => state.admin.partTimerSalary);
     let fullTimerSalary = useStoreState(state => state.admin.fullTimerSalary);
     const getPartTimerSalary = useStoreActions(actions => actions.admin.getPartTimerSalary);
@@ -35,16 +36,34 @@ const SalarySummary = () => {
     };
     const monthNames = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"];
-      
+    
 
     useEffect(() => {
         getPartTimerSalary(getStartEndOfMonth(month));
         getFullTimerSalary(getStartEndOfMonth(month));
+        updateTotalSalary(caretakerTypes.all);
         return () => {};
     }, []);
 
+    const updateTotalSalary = (type) => {
+        let newSalary = 0;
+        if (type == caretakerTypes.parttime || type == caretakerTypes.all) {
+            partTimerSalary.forEach(function(ct) {
+                newSalary += parseFloat(ct.salary)
+            })
+        }
+        if (type == caretakerTypes.fulltime || type == caretakerTypes.all) {
+            fullTimerSalary.forEach(function(ct) {
+                newSalary += parseFloat(ct.salary)
+            })
+        }
+        setTotalSalary(newSalary);
+    }
     const handleChangeType = (event) => {
-        setCtType(event.target.value);
+        const type = event.target.value;
+        setCtType(type);
+        updateTotalSalary(type);
+
     }
 
     const handleChangeMonth = async (event) => {
@@ -54,6 +73,7 @@ const SalarySummary = () => {
     const updateSalaries = async () => {
         await getPartTimerSalary(getStartEndOfMonth(month));
         await getFullTimerSalary(getStartEndOfMonth(month));
+        updateTotalSalary(ctType);
     }
 
     return (
@@ -61,7 +81,7 @@ const SalarySummary = () => {
             <Grid container>
                 <Grid item xs={12}>
                     <Card className={classes.salaryCard}>
-                        <Typography variant='h6'>
+                        <Typography variant='h5'>
                             Salary Summary
                         </Typography>
                         <FormControl required variant="outlined" fullWidth className={classes.formControl} >
@@ -128,6 +148,7 @@ const SalarySummary = () => {
                                 )
                             }) : null }
                         </List>
+                        <Typography variant ='h6'> Total Salary: ${totalSalary} </Typography>
                     </Card>
                 </Grid>
             </Grid>
