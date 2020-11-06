@@ -96,7 +96,7 @@ export default function FullWidthTabs(props) {
           <BidPanel username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          <CaretakerAvailability username={props.username}/>
+          <CaretakerAvailability username={props.username} isFT={props.isFT}/>
           <Summary username={props.username}/>
         </TabPanel>
         <TabPanel value={value} index={2} dir={theme.direction}>

@@ -21,14 +21,16 @@ const useStyles = makeStyles((theme) => ({
 const PetTypeInput = (props) => {
     const [petType, setPetType] = useState();
     const [price, setPrice] = useState();
-    const {parentType, parentPrice, label, isFT, ...other} = props;
+    const {parentType, parentPrice, setParentPrice, label, isFT, ...other} = props;
     const getPetCategories = useStoreActions(actions => actions.pets.getPetCategories);
     const petCategories = useStoreState(state => state.pets.petCategories);
 
 
     const handleChange = (event) => {
+        const price = retrieveBasePrice(event.target.value)
         setPetType(event.target.value);
-        setPrice(retrieveBasePrice(event.target.value));
+        setPrice(price);
+        setParentPrice(price);
         parentType(event);
     }
 

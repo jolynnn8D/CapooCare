@@ -61,7 +61,7 @@ const CaretakerAdmin = () => {
                     </CardContent>
                 </Card>
                     <Grid item xs={12}>
-                        <TabPanel username = {username}/>
+                        <TabPanel username = {username} isFT={singleUser.is_fulltimer}/>
                     </Grid>
                 </Grid>
             </div>
