@@ -32,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
     },
+    priceText: {
+        marginRight: theme.spacing(25),
+        textAlign: "right"
+    }
 }))
 
 const PetCareList = (props) => {
@@ -42,6 +46,7 @@ const PetCareList = (props) => {
     const [petType, setPetType] = useState("");
     const [petPrice, setPetPrice] = useState("");
     const [bidPetType, setBidPetType] = useState("");
+    const singleUser = useStoreState(state => state.user.singleUser);
     const getPetCareList = useStoreActions(actions => actions.careTakers.getPetCareList);
     const addPetCareItem = useStoreActions(actions => actions.careTakers.addPetCareItem);
     const deletePetCareItem = useStoreActions(actions => actions.careTakers.deletePetType);
@@ -105,7 +110,7 @@ const PetCareList = (props) => {
                 <ListItemText
                     primary={careItem.pettype}
                 />
-                <ListItemText
+                <ListItemText className={classes.priceText}
                     primary={`$${careItem.price}/day`}
                 />
                 {userType == 'ct' ? 
@@ -145,7 +150,7 @@ const PetCareList = (props) => {
                 open={addCareOpen}
                 onClose={closeCareModal}>
                 <Card className={classes.modal}>
-                    <PetTypeInput parentType={onPetTypeSet} parentPrice={onPetPriceSet}/>
+                    <PetTypeInput parentType={onPetTypeSet} parentPrice={onPetPriceSet} isFT={singleUser.is_fulltimer}/>
                     <Button onClick={handleAddNewPet} color="primary"> Add new pet type </Button>
                 </Card>
             </Modal>

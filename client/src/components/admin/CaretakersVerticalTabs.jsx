@@ -5,6 +5,8 @@ import {Box, Tab, Tabs, Typography} from '@material-ui/core';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import UserCard from "../userProfile/UserCard"
 import PetCareList from "../careTakerAdmin/PetCareList"
+import Salary from '../careTakerAdmin/Salary';
+import Summary from '../careTakerAdmin/Summary';
 
 
 function TabPanel(props) {
@@ -90,6 +92,9 @@ export default function CaretakersVerticalTabs() {
           <TabPanel key={caretaker.username} value={value} index={tabIndex++}>
                 <UserCard display={'caretaker'} username={caretaker.username}/>
                 <PetCareList userType="admin" username={caretaker.username}/>
+                {/* <Salary username={caretaker.username}/> */}
+                <Summary username={caretaker.username}/>
+                
           </TabPanel>
         )
       })}

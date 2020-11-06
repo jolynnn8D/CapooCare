@@ -60,6 +60,7 @@ const AddPet = (props) => {
                 autoComplete="petName"
                 defaultValue={props.parentData.petName}
                 multiline
+                disabled={modalType!=CREATE}
                 autoFocus
                 className={classes.textfield}
                 onChange={(event) => setPetName(event.target.value)}
