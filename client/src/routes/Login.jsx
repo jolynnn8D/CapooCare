@@ -44,13 +44,11 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const getUser = useStoreActions(actions => actions.user.getUser);
     const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
-    const getAccount = useStoreActions(actions => actions.admin.getAccount);
     const setRoutes = useStoreActions(actions => actions.routes.setRoutes);
     
     const checkAccountExists = () => {
-        const curr_account = store.getState().admin.singleAccount;
-        // const curr_user = store.getState().user.singleUser;
-        if (curr_account == null || curr_account.length == 0) {
+        const curr_user = store.getState().user.singleUser;
+        if (curr_user == null || curr_user.length == 0) {
             setErrorMessage("Username does not exist");
             return false;
         } else {
@@ -58,50 +56,19 @@ const Login = () => {
         }
     }
 
-    const isAccountUser = () => {
-        const curr_account = store.getState().admin.singleAccount;
-        return curr_account.is_admin ? false : true;
-    }
-
     const history = useHistory();
 
 
     const handleClick = async (event) => {
-        await getAccount(username);
+        await getUser(username);
+        await getDisplayedUser(username);
         const validateAccount = checkAccountExists();
         if (validateAccount) {
-          const isUser = isAccountUser();
-
-          if (isUser) {
-            await getUser(username);
-            await getDisplayedUser(username);
-
-            Routes.splice(6, 1);
-            Routes[3].path = '/users/' + username;
-            Routes[4].path = '/users/' + username + '/caretaker';
-            Routes[5].path = '/users/' + username + '/caretaker-admin';
-            Routes[6].path = '/users/caretakers'
-            setRoutes(Routes);
-            history.push('homepage');
-          } else {
-            setRoutes(
-                [
-                    {
-                        path: '/',
-                        sidebarName: 'Login',
-                    },
-                    {
-                        path: '/signup',
-                        sidebarName: 'Signup',
-                    },
-                    {
-                        path: '/admin',
-                        sidebarName: 'PCS Administrator Settings',
-                    },
-                ]
-            );
-            history.push('/admin');
-          }
+          Routes[3].path = '/users/' + username;
+          Routes[4].path = '/users/' + username + '/caretaker';
+          Routes[5].path = '/users/' + username + '/caretaker-admin';
+          setRoutes(Routes);
+          history.push('homepage');
         }
     }
 

@@ -20,13 +20,35 @@ const useStyles = makeStyles({
     },
     list: {
         height: 600
-    }, 
-    sectionHeader:{
-        marginLeft: 12
     }
 })
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// const bidList = [
+//     {
+//         pouname: 'busypetowner123',
+//         petName: 'Max',
+//         petType: 'Corgi Dog',
+//         ctuname: 'johnthebest',
+//         s_time: new Date('2020-10-10'),
+//         e_time: new Date('2020-11-02'),
+//         pay_status: false,
+//         pay_type: 'Incomplete',
+//         cost: 60.0
+//     },
+//     {
+//         pouname: 'tiredowner',
+//         petName: 'Jess',
+//         petType: 'Labrapoodle Dog',
+//         ctuname: 'johnthebest',
+//         s_time: new Date('2020-10-26'),
+//         e_time: new Date('2020-10-30'),
+//         pay_status: false,
+//         pay_type: 'Incomplete',
+//         cost: 40.0
+//     }
+// ]
 
 const BidPanel = (props) => {
     const classes = useStyles()
@@ -67,16 +89,6 @@ const BidPanel = (props) => {
         
     }
 
-    const dateHasBid = (date) => {
-        let result = false;
-        bidList.forEach(function(bid) {
-            if(sqlToJsDate(bid.s_time) <= date && sqlToJsDate(bid.e_time) >= date) {
-                result = true;
-            }
-        })
-        return result;
-    }
-
     useEffect(() => {
         getUserBids(props.username);
         return () => {};
@@ -88,7 +100,6 @@ const BidPanel = (props) => {
             <Grid container>
                 <Grid item xs={8}>
                     <Calendar className={classes.calendar}
-                        tileDisabled={({activeStartDate, date, view }) => !dateHasBid(date)}
                         onChange={(res) => {
                             setSelectedBid({})
                             setDate(res)
@@ -96,7 +107,6 @@ const BidPanel = (props) => {
                     />
                 </Grid>
                 <Grid item xs={4}>
-                    <Typography variant='h6' className={classes.sectionHeader}>Current year bids</Typography>
                     <BidList
                         subheader={months}
                         bids={bidList}

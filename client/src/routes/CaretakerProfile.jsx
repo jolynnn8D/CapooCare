@@ -13,10 +13,7 @@ import { useStoreActions, useStoreState } from 'easy-peasy';
 
 const useStyles = makeStyles({
     verticalSections: {
-        margin: "100px 30px 30px"
-    },
-    card: {
-        marginTop: 30
+        margin: "100px 10px 30px"
     }
 })
 
@@ -45,15 +42,14 @@ const CaretakerProfile = (props) => {
                         <Grid item xs={12}>
                             <UserCard display={'caretaker'} username={username}/>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item>
                             <Card>
-                                <PetCareList userType="po" username={username}/>
+                                <PetCareList owner={false} username={username}/>
                             </Card>
                         </Grid>
-                        <Grid item xs={12} className={classes.card}>
-                            <Typography variant='h4'> Reviews </Typography> 
-                            <ReviewPanel username={username}/>
-                        </Grid>
+                    </Grid>
+                    <Grid item className = {classes.verticalSections} xs={12}>
+                        <ReviewPanel/>
                     </Grid>
                 </Grid>
             </div>

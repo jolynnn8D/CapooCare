@@ -1,7 +1,6 @@
 import React from 'react'
 import CaretakersVerticalTabs from '../components/admin/CaretakersVerticalTabs'
 import CaretakersList from '../components/CaretakersList'
-import Summary from "../components/admin/Summary"
 import { makeStyles } from '@material-ui/core/styles';
 
 
@@ -17,7 +16,7 @@ const ViewCaretakerspage = () => {
   return (
     <div className={classes.verticalSections}>
       <CaretakersVerticalTabs/>
-      {/* <CaretakersList/> */}
+      <CaretakersList/>
     </div>
   );
 }

@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const PetCareList = (props) => {
-    const { userType, username, ...other} = props;
+    const { owner, username, ...other} = props;
     const classes = useStyles();
     const [open, setOpen] = useState(false);
     const [addCareOpen, setCareOpen] = useState(false);
@@ -108,13 +108,13 @@ const PetCareList = (props) => {
                 <ListItemText
                     primary={`$${careItem.price}/day`}
                 />
-                {userType == 'ct' ? 
+                {props.owner ? 
                 <ListItemSecondaryAction>
                     <IconButton edge="end" aria-label="delete" onClick={() => deletePetCareItem({username: username, pettype: careItem.pettype})}>
                       <DeleteIcon />
                     </IconButton>
                 </ListItemSecondaryAction> : null } 
-                {userType == 'po' ? 
+                {!props.owner ? 
                 <ListItemSecondaryAction>
                     <IconButton onClick={() => openModal(careItem.pettype)}>
                         <ListItemText  
@@ -124,7 +124,7 @@ const PetCareList = (props) => {
                 </ListItem>
                  </>
                 ))}
-                {userType == 'ct' ?
+                {props.owner ?
                 <ListItem button onClick={openCareModal}>
                     <ListItemAvatar>
                         <Avatar>

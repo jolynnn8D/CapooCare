@@ -23,7 +23,7 @@ const petOwnersModel = {
     addPetOwner: thunk(async (actions, payload) => {
         console.log(payload);
         const {username, ownername, age, pettype, petname, petage, requirements} = {...payload};
-        const {data} = await axios.post(serverUrl + "/api/v1/petowner", {
+        const {data} = await axios.post("http://localhost:5000/api/v1/petowner", {
             username: username,
             ownername: ownername,
             age: age,
