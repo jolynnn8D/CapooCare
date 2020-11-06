@@ -106,14 +106,22 @@ const petsModel = {
     state.petCategories = [...payload];
   }),
 
-  addPetCategories: thunk(async (actions, payload) => {
+  addPetCategory: thunk(async (actions, payload) => {
     const { category, base_price } = {...payload};
     const url = serverUrl + "/api/v1/admin/category";
     const {data} = await axios.post(url, {
       category: category,
       base_price: base_price
     });
-  })
+  }),
+  editPetCategory: thunk(async (actions, payload) => {
+    const { category, base_price } = {...payload};
+    const url = serverUrl + "/api/v1/admin/category/" + category;
+    const {data} = await axios.put(url, {
+      category: category,
+      base_price: base_price
+    })
+  }),
 }
 
 export default petsModel;

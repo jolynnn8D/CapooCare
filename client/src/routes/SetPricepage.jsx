@@ -1,4 +1,4 @@
-import { Container, Button, Modal, Table, TableBody, TableCell, TableHead, TableRow, Typography, TextField, IconButton } from '@material-ui/core';
+import { Container, Button, Modal, Table, TableBody, TableCell, TableHead, TableRow, Typography, TextField, IconButton, Icon } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import React, { useEffect, useState } from 'react';
@@ -42,9 +42,11 @@ const SetPricepage = () => {
   const classes = useStyles();
   const petCategories = useStoreState(state => state.pets.petCategories);
   const getPetCategories = useStoreActions(actions => actions.pets.getPetCategories);
-  const addPetCategories = useStoreActions(actions => actions.pets.addPetCategories);
-  const basePricesTableHeaders = ['Pet Type', 'Base Price', 'Delete', 'Modify']
+  const addPetCategory = useStoreActions(actions => actions.pets.addPetCategory);
+  const editPetCategory = useStoreActions(actions => actions.pets.editPetCategory);
+  const basePricesTableHeaders = ['Pet Type', 'Base Price', 'Edit']
   const [open, setOpen] = useState(false);
+  const [isAddPetCategory, setIsAddPetCategory] = useState(false);
   const [newPetCategory, setNewPetCategory] = useState('');
   const [newPetBasePrice, setNewPetBasePrice] = useState(0);
 
@@ -53,7 +55,13 @@ const SetPricepage = () => {
     return () => { };
   }, [])
 
-  const openModal = () => {
+  const openAddModal = () => {
+    setIsAddPetCategory(true);
+    setOpen(true);
+  }
+
+  const openEditModal = () => {
+    setIsAddPetCategory(false);
     setOpen(true);
   }
 
@@ -62,7 +70,21 @@ const SetPricepage = () => {
   }
 
   const sendData = (action) => {
-    addPetCategories({
+    addPetCategory({
+      "category": newPetCategory,
+      "base_price": newPetBasePrice
+    })
+      .then((res) => {
+        closeModal();
+        getPetCategories();
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  const updateData = (action) => {
+    editPetCategory({
       "category": newPetCategory,
       "base_price": newPetBasePrice
     })
@@ -79,7 +101,7 @@ const SetPricepage = () => {
     <div>
       <Container component="main" maxWidth="ml" className={classes.container}>
         <Typography variant="h2" id="tableTitle">Set Base Prices</Typography>
-        <Button variant="contained" color="primary" onClick={openModal}>Add Base Price</Button>
+        <Button variant="contained" color="primary" onClick={openAddModal}>Add Base Price</Button>
         <Table aria-label="base-prices-table">
           <TableHead>
             <TableRow>
@@ -98,12 +120,9 @@ const SetPricepage = () => {
                   {type.base_price}
                 </TableCell>
                 <TableCell>
-                  <IconButton edge="end" aria-label="delete">
-                    <DeleteIcon />
+                  <IconButton edge="end" aria-label="edit" onClick={openEditModal}>
+                    <EditIcon />
                   </IconButton>
-                </TableCell>
-                <TableCell>
-                  <EditIcon />
                 </TableCell>
               </TableRow>
             ))}
@@ -116,7 +135,7 @@ const SetPricepage = () => {
         onClose={closeModal}
         className={classes.modal}>
         <div className={classes.paper}>
-          <Typography id="simple-modal-title" variant="h5">Add Base Price</Typography>
+            <Typography id="simple-modal-title" variant="h5">{isAddPetCategory ? "Add Base Price" : "Edit Base Price"}</Typography>
           <TextField
             variant="outlined"
             label="New Pet Type"
@@ -139,7 +158,10 @@ const SetPricepage = () => {
             className={classes.textfield}
             onChange={(event) => setNewPetBasePrice(event.target.value)}
           />
-          <Button variant="contained" color="primary" onClick={sendData}>Submit</Button>
+          {isAddPetCategory 
+            ? <Button variant="contained" color="primary" onClick={sendData}>Add</Button>
+            : <Button variant="contained" color="primary" onClick={updateData}>Edit</Button>
+          }
         </div>
       </Modal>
     </div>
