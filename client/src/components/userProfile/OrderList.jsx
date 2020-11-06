@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, List, ListItem, Grid, Typography, Button, Modal, TextField} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { v4 } from 'uuid';
+import { v4, validate } from 'uuid';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { sqlToJsDate } from '../../utils';
 
@@ -65,6 +65,11 @@ const OrderList = (props) => {
     }
 
     const submitReview = () => {
+        if (rating > 5 || rating < 0 || rating !== parseInt(rating, 10)) {
+            alert("Rating must be an integer value from 0 to 5")
+            // closeReviewModal()
+            return;
+        }
         addReviewToBid({
             bid: modalBid,
             rating: rating,
@@ -122,7 +127,7 @@ const OrderList = (props) => {
                 <Card className={classes.modal}>
                     <TextField
                             variant="outlined"
-                            label="Rating (1 to 5)"
+                            label="Rating (0 to 5)"
                             required
                             fullWidth
                             id="rating"
@@ -130,7 +135,7 @@ const OrderList = (props) => {
                             type="number"
                             InputProps={{
                                 inputProps: { 
-                                    max: 5, min: 1
+                                    max: 5, min: 0
                             }
                             }}
                             className={classes.textfield}
