@@ -107,7 +107,6 @@ const BidModal = (props) => {
     const handleSubmit = () => {
         const startDateInt = convertDate(dateRange[0].startDate);
         const endDateInt = convertDate(dateRange[0].endDate);
-        console.log(dateRange);
         addBid({
             pouname: singleUser.username,
             petname: petChoice,
