@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Grid, ListItem, ListItemAvatar, ListItemText, Avatar, Modal, TextField } from '@material-ui/core';
+import { Card, Grid, ListItem, ListItemAvatar, ListItemText, Avatar, Modal, TextField, GridList, GridListTile } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
 import ProfilePic from "./ProfilePic"
@@ -15,7 +15,11 @@ import { CREATE, EDIT, DELETE } from "../../constants"
 const useStyles = makeStyles((theme) => ({
     root: {
         padding: 30,
-        maxHeight: 600
+        maxHeight: 500,
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        overflow: 'hidden',
+        backgroundColor: theme.palette.background.paper,
     },
     petAvatar: {
         margin: 10
@@ -33,7 +37,11 @@ const useStyles = makeStyles((theme) => ({
     },
     petName: {
         textAlign: "center"
-    }
+    },
+    gridList: {
+        width: "100%",
+        height: 450,
+      },
 }));
 
 const PetList = (props) => {
@@ -131,18 +139,27 @@ const PetList = (props) => {
     const classes = useStyles();
     var id = 0;
     return (
+        <div>
         <Card className={classes.root}>
             <h2> Pets Owned </h2>
-            <Grid container>
+            <GridList cols={4} cellHeight={160} className={classes.gridList}>
                 {pets.map((pet) => {
                     return(
-                        <Grid key={v4()} item className={classes.petAvatar} onClick={() => clickOnPet(pet.petname, pet.pettype, pet.petage, pet.requirements)}>
+                        <GridListTile key={v4()} className={classes.petAvatar} cols={1} onClick={() => clickOnPet(pet.petname, pet.pettype, pet.petage, pet.requirements)}>
                             <ProfilePic img={petImg} href="#"/>
                             <h6 className={classes.petName}> {pet.petname} </h6>
-                        </Grid>)
+                        </GridListTile>)
                 })}
-            </Grid>
-            <ListItem button onClick={openCreateModal}>
+            </GridList>
+            <Modal
+                open={open}
+                onClose={closeModal}>
+                <Card className={classes.modal}>
+                    <AddPet parentData={petDetails} parentCallback={handleCreateOrEditPet} closeModal={closeModal} modalType={modalType}/>
+                </Card>
+            </Modal>
+        </Card>
+        <ListItem button onClick={openCreateModal}>
                     <ListItemAvatar>
                         <Avatar>
                             <AddIcon/>
@@ -158,15 +175,8 @@ const PetList = (props) => {
                     primary="Click to add new pet"
                 />
             </> }
-            </ListItem>
-            <Modal
-                open={open}
-                onClose={closeModal}>
-                <Card className={classes.modal}>
-                    <AddPet parentData={petDetails} parentCallback={handleCreateOrEditPet} closeModal={closeModal} modalType={modalType}/>
-                </Card>
-            </Modal>
-        </Card>
+        </ListItem>
+        </div>
     )
 }
 
