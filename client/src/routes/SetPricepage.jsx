@@ -1,4 +1,4 @@
-import { Container, Button, Modal, Table, TableBody, TableCell, TableHead, TableRow, Typography, TextField, IconButton, Icon } from '@material-ui/core';
+import { Container, Button, Modal, Table, TableBody, TableCell, TableHead, TableRow, Typography, TextField, IconButton, Icon, Card } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import React, { useEffect, useState } from 'react';
@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     alignItems: 'center',
     justifyContent: 'center',
+
   },
   paper: {
     width: 400,
@@ -34,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4, 3),
   },
   textfield: {
-    padding: theme.spacing(3)
+    margin: theme.spacing(3),
+    marginLeft: 0
   }
 }));
 
@@ -56,11 +58,13 @@ const SetPricepage = () => {
   }, [])
 
   const openAddModal = () => {
+    setNewPetCategory("");
     setIsAddPetCategory(true);
     setOpen(true);
   }
 
-  const openEditModal = () => {
+  const openEditModal = (pettype) => {
+    setNewPetCategory(pettype);
     setIsAddPetCategory(false);
     setOpen(true);
   }
@@ -120,7 +124,7 @@ const SetPricepage = () => {
                   {type.base_price}
                 </TableCell>
                 <TableCell>
-                  <IconButton edge="end" aria-label="edit" onClick={openEditModal}>
+                  <IconButton edge="end" aria-label="edit" onClick={() => openEditModal(type.pettype)}>
                     <EditIcon />
                   </IconButton>
                 </TableCell>
@@ -134,16 +138,18 @@ const SetPricepage = () => {
         open={open}
         onClose={closeModal}
         className={classes.modal}>
-        <div className={classes.paper}>
-            <Typography id="simple-modal-title" variant="h5">{isAddPetCategory ? "Add Base Price" : "Edit Base Price"}</Typography>
+        <Card className={classes.paper}>
+          <Typography id="simple-modal-title" variant="h5">{isAddPetCategory ? "Add Base Price" : "Edit Base Price"}</Typography>
           <TextField
             variant="outlined"
-            label="New Pet Type"
+            label="Pet Type"
             required
             fullWidth
+            disabled={!isAddPetCategory}
             id="newPetCategory"
             autoComplete="newPetCategory"
             autoFocus
+            defaultValue={newPetCategory}
             className={classes.textfield}
             onChange={(event) => setNewPetCategory(event.target.value)}
           />
@@ -162,7 +168,7 @@ const SetPricepage = () => {
             ? <Button variant="contained" color="primary" onClick={sendData}>Add</Button>
             : <Button variant="contained" color="primary" onClick={updateData}>Edit</Button>
           }
-        </div>
+        </Card>
       </Modal>
     </div>
   )
