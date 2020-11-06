@@ -370,6 +370,75 @@ app.delete("/api/v1/caretaker/:username", async (req, res) => {
     }
 });
 
+
+/*
+    Gets all pet categories that the Caretaker can not currently take care of, ordered by how lucrative they are for the
+    specified timeframe. A 'lucrative' category is a category with a large overall amount of money involved between all
+    Petowners and all Caretakers for all winning Bids for the specified category. This could be used by the Caretaker to
+    analyze which categories of Pet they should train themselves to care for next.
+
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker
+            s_time, which is the starting day of the timeframe (to be specified in YYYYMMDD format as a String)
+            e_time, which is the ending day of the timeframe (to be specified in YYYYMMDD format as a String)
+        IMPORTANT: Both days specified by s_time and e_time are included in the calculation. This also means that
+                        if s_time = e_time, then the lucrative score for that 1 day will be calculated.
+
+        Expected status code:
+            200 OK, if successful
+            400 Bad Request, if general failure
+ */
+app.get("/api/v1/caretaker/summary/:ctuname/:s_time/:e_time/lucrative", async (req, res) => {
+    db.query("SELECT pettype, SUM(cost) AS lucrative_score" +
+        "        FROM Bid" +
+        "        WHERE pettype IN (" +
+        "            SELECT pettype" +
+        "                FROM Category" +
+        "                WHERE pettype NOT IN (" +
+        "                    SELECT pettype" +
+        "                        FROM Cares" +
+        "                        WHERE ctuname = $1" +
+        "                )" +
+        "        ) AND is_win = true" +
+        "               AND s_time >= to_date($2, 'YYYYMMDD') AND e_time <= to_date($3, 'YYYYMMDD')" +
+        "        GROUP BY pettype" +
+        "    UNION" +
+        "    SELECT pettype, 0 AS lucrative_score" +
+        "        FROM Category" +
+        "        WHERE pettype NOT IN (" +
+        "            SELECT pettype" +
+        "                FROM Bid" +
+        "                WHERE is_win = true" +
+        "        ) AND pettype NOT IN (" +
+        "            SELECT pettype" +
+        "                FROM Cares" +
+        "                WHERE ctuname = $1" +
+        "        )" +
+        "    ORDER BY lucrative_score DESC, pettype;",
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    categories: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
+
+
 /*
     Gets the number of pet-days for a Caretaker during a specific timeframe. Group this by the type of pet cared for.
 
@@ -1541,7 +1610,7 @@ app.get("/api/v1/availability/", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
-    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD')",
+    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))",
         [req.params.ctuname, req.params.s_time, req.params.e_time]
     ).then(
         (result) => {

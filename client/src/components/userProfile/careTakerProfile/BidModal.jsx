@@ -7,6 +7,7 @@ import { DateRangePicker } from 'react-date-range';
 import { addDays, addYears, eachDayOfInterval, toDate } from 'date-fns';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import {convertDate} from '../../../utils';
+import ViewAllCaretakers from '../../admin/ViewAllCaretakers';
 
 const handleSelect = (ranges) => {
     console.log(ranges);
@@ -104,10 +105,28 @@ const BidModal = (props) => {
         return () => {};
     }, [])
 
+    const paramsIsValid = () => {
+        if (petChoice == "") {
+            alert("Please select a pet");
+            return false;
+        }
+        if (paymentType == "") {
+            alert("Please choose a payment type.");
+            return false;
+        }
+        if (pickupType == "") {
+            alert("Please choose a pickup type");
+            return false;
+        }
+        return true;
+    }
+
     const handleSubmit = () => {
         const startDateInt = convertDate(dateRange[0].startDate);
         const endDateInt = convertDate(dateRange[0].endDate);
-        console.log(dateRange);
+        if (!paramsIsValid()) {
+            return;
+        }
         addBid({
             pouname: singleUser.username,
             petname: petChoice,

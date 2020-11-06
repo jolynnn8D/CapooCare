@@ -63,4 +63,17 @@ function getStartEndOfMonth(month) {
   }
   return result;
 }
-export {convertDate, sqlToJsDate, stringToJsDate, differenceInTwoDates, isValidStringDate, getPrevMonths, getStartEndOfMonth }
+
+function dateStringtoSqlDate(date) {
+  let jsDate = stringToJsDate(date);
+  let pad = function(num) { return ('00'+num).slice(-2) };
+  let newDate = jsDate.getUTCFullYear()        + '-' +
+        pad(jsDate.getUTCMonth() + 1) + '-' +
+        pad(jsDate.getUTCDate())       + ' ' +
+        pad(jsDate.getUTCHours())      + ':' +
+        pad(jsDate.getUTCMinutes())    + ':' +
+        pad(jsDate.getUTCSeconds())    
+  console.log(newDate);
+  return newDate;
+}
+export {convertDate, sqlToJsDate, stringToJsDate, differenceInTwoDates, isValidStringDate, getPrevMonths, getStartEndOfMonth, dateStringtoSqlDate }

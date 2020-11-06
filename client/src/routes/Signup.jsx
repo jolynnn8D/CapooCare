@@ -6,6 +6,8 @@ import { useStoreActions, useStoreState } from 'easy-peasy';
 import AddPet from "../components/AddPet";
 import PetTypeInput from "../components/PetTypeInput"
 import Availability from '../components/Availability';
+import { sqlToJsDate, differenceInTwoDates, stringToJsDate, isValidStringDate } from "../utils";
+
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -82,6 +84,7 @@ const Signup = () => {
         setPetPrice(event.target.value);
     }
 
+
     const addPartTimeCareTaker = useStoreActions(actions => actions.careTakers.addPartTimeCareTaker);
     const addFullTimeCareTaker = useStoreActions(actions => actions.careTakers.addFullTimeCareTaker);
     const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
@@ -102,6 +105,36 @@ const Signup = () => {
         })
         return result;
     }
+    const validateDates = () => {
+        if (p1startDate.length != 8 || p1endDate.length != 8 || p2startDate.length != 8 || p2endDate.length != 8) {
+            alert("Please enter date in the format YYYYMMDD")
+            return false;
+        }
+        if (stringToJsDate(p1startDate) > stringToJsDate(p1endDate) || stringToJsDate(p2startDate) > stringToJsDate(p2endDate)) {
+            alert("Please enter a start date that is before the end date")
+            return false;
+        }
+        if (!(isValidStringDate(p1startDate) && isValidStringDate(p1endDate)) || !(isValidStringDate(p2startDate) && isValidStringDate(p2endDate))) {
+            alert("Invalid date entered. Please enter in the format YYYYMMDD")
+            return false;
+        }
+        if (stringToJsDate(p1startDate) < new Date() || stringToJsDate(p2startDate) < new Date()) {
+            alert("Please enter a start date in the future.")
+            return false;
+        }
+        const dayDifference = differenceInTwoDates(p1startDate, p1endDate)
+        const p2dayDifference = differenceInTwoDates(p2startDate, p2endDate);
+        if (dayDifference < 150 || p2dayDifference < 150) {
+            alert("You need to add an availability period of at least 150 days")
+            return false;
+        }
+        if (differenceInTwoDates(p1startDate, p2endDate) > 365) {
+            alert("The two availabilities need to occur within a one year time frame.")
+            return false;
+        }
+        
+        return true;
+    }  
 
     const fieldsAreValid = () => {
         if (userInDatabase()) {
@@ -129,6 +162,13 @@ const Signup = () => {
                 setErrorMessage('Price per day cannot be 0 or empty')
                 setError(true);
                 return false;
+            }
+            if (caretakerType == "fulltime") {
+                if (!validateDates()) {
+                    setErrorMessage('Incorrect date input')
+                    setError(true);
+                    return false;
+                }
             }
         }
         if (isPetOwner) {
@@ -278,7 +318,7 @@ const Signup = () => {
                         </RadioGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> 
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} setParentPrice={setPetPrice} isFT={caretakerType == 'fulltime'} label = "Choose a pet type you can care for"/> 
                     <Availability setP1StartDate={setP1StartDate} setP1EndDate={setP1EndDate} setP2StartDate={setP2StartDate} setP2EndDate={setP2EndDate}/> </>
                     : isPetCaretaker ?
                     <> <FormControl component="fieldset" className={classes.formControl}>
