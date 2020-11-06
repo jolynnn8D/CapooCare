@@ -2163,6 +2163,32 @@ app.post("/api/v1/admin/category", async (req, res) => {
     )
 });
 
+/* Edit previous pet category's base price */
+
+app.put("/api/v1/admin/category/:pettype", async (req, res) => {
+    db.query(
+        "UPDATE Category SET base_price = $2 WHERE pettype = $1 RETURNING *",
+        [req.body.category, req.body.base_price]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    category: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
 
 app.listen(port, () => {
     console.log(`server has started on port ${port}`);
