@@ -1,13 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Modal from '@material-ui/core/Modal';
-import Card from '@material-ui/core/Card';
-import Button from '@material-ui/core/Button';
+import {Typography, Button, Grid, Card, Modal, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText} from '@material-ui/core';
+import store from "../../store/store";
+import { DateRangePicker } from 'react-date-range';
 
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
@@ -18,7 +13,6 @@ import BidModal from '../userProfile/careTakerProfile/BidModal';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import PetTypeInput from '../PetTypeInput';
 import { v4 } from 'uuid';
-
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -35,7 +29,11 @@ const useStyles = makeStyles((theme) => ({
     priceText: {
         marginRight: theme.spacing(25),
         textAlign: "right"
-    }
+    },
+    lucrativeCard: {
+        marginTop: 30,
+        padding: 20
+    },
 }))
 
 const PetCareList = (props) => {
@@ -51,11 +49,40 @@ const PetCareList = (props) => {
     const addPetCareItem = useStoreActions(actions => actions.careTakers.addPetCareItem);
     const deletePetCareItem = useStoreActions(actions => actions.careTakers.deletePetType);
     const petCareList = useStoreState(state => state.careTakers.petCareList);
+    const [openLucativeModal, setOpenLucrativeModal] = useState(false);
+    const [dateRange, setDateRange] = useState([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: "selection"
+        }
+    ]);
+    const getMostLucrativeCategories = useStoreActions(actions => actions.careTakers.getMostLucrativeCategories);
+    const [mostLucrativeCategories, setMostLucrativeCategories] = useState([]);
+
+    const openLucrativeModal = () => {
+        setOpenLucrativeModal(true);
+    }
+    
+    const closeLucrativeModal = () => {
+        setOpenLucrativeModal(false);
+    }
+
+    const handleSubmit = async () => {
+        await getMostLucrativeCategories({
+            ctuname: props.username,
+            s_time: dateRange[0].startDate, 
+            e_time: dateRange[0].endDate
+        })
+
+        const mostLucrativeCategories = store.getState().careTakers.mostLucrativeCategories;
+        setMostLucrativeCategories(mostLucrativeCategories);
+        setOpenLucrativeModal(false);
+    }
 
     const openModal = (bidPet) => {
         setBidPetType(bidPet);
         setOpen(true);
-     
     }
     
     const closeModal = () => {
@@ -98,6 +125,52 @@ const PetCareList = (props) => {
 
     return (
         <div>
+            <Button className={classes.button}
+                variant='outlined'
+                onClick={openLucrativeModal}>
+                Click to find most Lucrative Pet Categories in the past! (Select a timeframe)
+            </Button>
+            <Card className={classes.lucrativeCard}>
+                <Typography variant='h5'> Categories and Lucrative Score: 
+                {mostLucrativeCategories.length == 0 
+                    ? <Typography>There is no available data! </Typography> 
+                    : mostLucrativeCategories.map(category => {
+                    return (<h6>Category of pet: {category.pettype} - Lucrative Score: {category.lucrative_score}</h6>)
+                })}</Typography>
+            </Card>
+            <Modal
+                open={openLucativeModal}
+                onClose={closeLucrativeModal}>
+                <Card className = {classes.modal}>
+                    <Grid item xs={12}>
+                    <DateRangePicker
+                        id="form-datepicker"
+                        onChange={item => {
+                            console.log(item);
+                            setDateRange([{
+                                startDate: item.selection.startDate,
+                                endDate: item.selection.endDate,
+                                key: item.selection.key
+                            }]);
+                            // console.log(item.selection);
+                            // console.log(dateRange);
+                            // console.log(filteredCaretakers);
+                        }}
+                        showSelectionPreview={true}
+                        moveRangeOnFirstSelection={false}
+                        ranges={dateRange}
+                        direction="horizontal"
+                    />
+                    </Grid>
+                    <Button className={classes.button}
+                        variant="outlined"
+                        fullWidth
+                        color="primary"
+                        onClick={() => handleSubmit()}>
+                        Look for most Lucrative Pet Categories in this timeframe!
+                    </Button>
+                </Card>
+            </Modal>
             <List>
                 {petCareList.map((careItem) => (
                 <>
