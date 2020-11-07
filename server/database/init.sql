@@ -62,7 +62,7 @@ CREATE TABLE PetOwner (
 CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
     carerName VARCHAR(50) NOT NULL,
-    age   INTEGER DEFAULT NULL,
+    age   INTEGER DEFAULT NULL
 );
 
 CREATE TABLE FullTimer (
@@ -177,7 +177,7 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
             ELSE
                 SELECT COUNT(*) INTO ctx FROM FullTimer WHERE FullTimer.username = ctuname;
                 IF ctx = 0 THEN
-                    INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
+                    INSERT INTO CareTaker VALUES (ctuname, aname, age);
                     INSERT INTO FullTimer VALUES (ctuname);
                     INSERT INTO Cares VALUES (ctuname, pettype, price);
                 END IF;
@@ -194,15 +194,14 @@ CREATE OR REPLACE PROCEDURE add_parttimer(
     aname VARCHAR(50),
     age   INTEGER,
     pettype VARCHAR(20),
-    price INTEGER,
-    salary INTEGER DEFAULT NULL
+    price INTEGER
     )  AS $$
     DECLARE ctx NUMERIC;
     BEGIN
         SELECT COUNT(*) INTO ctx FROM PartTimer
                 WHERE PartTimer.username = ctuname;
         IF ctx = 0 THEN
-            INSERT INTO CareTaker VALUES (ctuname, aname, age, salary);
+            INSERT INTO CareTaker VALUES (ctuname, aname, age);
             INSERT INTO PartTimer VALUES (ctuname);
         END IF;
         INSERT INTO Cares VALUES (ctuname, pettype, price);
@@ -296,6 +295,23 @@ LANGUAGE plpgsql;
 CREATE TRIGGER check_ft_cares_price
 BEFORE INSERT ON Cares
 FOR EACH ROW EXECUTE PROCEDURE check_ft_cares_price();
+
+---------------------------------------------------------- Category ------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION check_update_base_price()
+RETURNS TRIGGER AS
+$$ BEGIN
+        --if base price of category changes, update FT cares' prices as well
+        IF (NEW.base_price <> OLD.base_price) THEN
+            UPDATE Cares SET price = New.base_price WHERE (Cares.ctuname IN (SELECT username FROM FullTimer)) AND Cares.pettype = NEW.pettype;
+        END IF;
+        RETURN NEW;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_update_base_price
+BEFORE UPDATE ON Category
+FOR EACH ROW EXECUTE PROCEDURE check_update_base_price();
 
 ------------------------------------------------------------ Bid ------------------------------------------------------------
 
@@ -523,8 +539,7 @@ CREATE OR REPLACE VIEW Users AS (
         CASE WHEN C.carername IS NULL THEN P.ownername 
             ELSE C.carername END AS firstname, 
         CASE WHEN C.age IS NULL THEN P.age 
-            ELSE C.age END AS age, 
-        salary, 
+            ELSE C.age END AS age,
         CASE WHEN P.username IS NULL THEN false  
             ELSE true END AS is_petowner, 
         CASE WHEN C.username IS NULL THEN false 
@@ -623,12 +638,12 @@ CALL add_bid('marythemess', 'Sneak', 'cat', 'yellowchicken', '2021-02-27', '2021
 CALL add_bid('marythemess', 'Sneak', 'cat', 'yellowbird', '2020-08-08', '2020-08-09', 'cash', 'poDeliver');
 
 -- The following test case sets up a completed Bid
--- CALL add_bid('marythemess', 'Champ', 'big dog', 'yellowchicken', '2020-02-05', '2020-02-20', 'credit card', 'ctPickup');
--- UPDATE Bid SET is_win = true WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ'
---    AND pettype = 'big dog' AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD');
--- UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review = 'sample review', pay_status = true
---    WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog'
---    AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD') AND is_win = true;
+CALL add_bid('marythemess', 'Champ', 'big dog', 'yellowchicken', '2020-02-05', '2020-02-20', 'credit card', 'ctPickup');
+UPDATE Bid SET is_win = true WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ'
+   AND pettype = 'big dog' AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD');
+UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review = 'sample review', pay_status = true
+   WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog'
+   AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD') AND is_win = true;
 
  /* Expected outcome: 'marythemess' wins both bids at timestamp 1-4 and 2-4. This causes 'johnthebest' to lose the 2-4		
      bid. The 1-4 bid by 'johnthebest' that is inserted afterwards immediately loses as well, since 'yellowbird' has		

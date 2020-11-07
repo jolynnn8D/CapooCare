@@ -65,7 +65,8 @@ const OrderList = (props) => {
     }
 
     const submitReview = () => {
-        if (rating > 5 || rating < 0 || rating !== parseInt(rating, 10)) {
+        console.log(rating == parseInt(rating, 10));
+        if (rating > 5 || rating < 0 || rating != parseInt(rating, 10)) {
             alert("Rating must be an integer value from 0 to 5")
             // closeReviewModal()
             return;

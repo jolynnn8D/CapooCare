@@ -66,7 +66,7 @@ const NavBar = (props) => {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" className={classes.title}>
-                            PCS Application
+                            CapooCare
                         </Typography>
                     </Toolbar>
                 </AppBar>
