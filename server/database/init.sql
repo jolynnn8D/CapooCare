@@ -2987,3 +2987,71 @@ insert into Category (pettype, base_price) values ('Frogs', 65);
 insert into Category (pettype, base_price) values ('Hamster', 50);
 insert into Category (pettype, base_price) values ('Lizard', 55);
 insert into Category (pettype, base_price) values ('Mice', 65);
+
+
+-- Owned_Pet_belongs --
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('gpundy8', 'Tortoise', 'Zsa zsa', 15);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('mgoom3', 'Free-range Birds', 'Ricard', 5);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('eburrass7', 'Terrier', 'Jere', 18);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ljanicijevic5', 'Caged Birds', 'Stanton', 5);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('bmcilherran6', 'Rabbit', 'Allie', 16);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('joakhill9', 'Dalmatian', 'Cullie', 15);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('mgoom3', 'Aquarium Fish', 'Farr', 17);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ygill4', 'Caged Birds', 'Marie-jeanne', 11);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ygill4', 'Frogs', 'Tarra', 17);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('gpetrolli1', 'Mice', 'Ingrim', 15);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('joakhill9', 'Hamster', 'Leila', 20);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ygill4', 'Frogs', 'Diann', 16);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ygill4', 'Rabbit', 'Talbot', 19);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ygill4', 'Rabbit', 'Dani', 5);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ljanicijevic5', 'Caged Insects', 'Nichol', 4);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('joakhill9', 'Pond Fish', 'Carmine', 4);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('bmcilherran6', 'Large cats', 'Shellysheldon', 18);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('svorley2', 'Snake', 'Bernardina', 14);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ygill4', 'Free-range Birds', 'Jen', 17);
+insert into Owned_Pet_Belongs (pouname, pettype, petname, petage) values ('ljanicijevic5', 'Lizard', 'Bessy', 16);
+
+-- Cares --
+insert into Cares (ctuname, pettype, price) values ('msquier1', 'Horse', 75);
+insert into Cares (ctuname, pettype, price) values ('fwoodwingah', 'Caged Insects', 48);
+insert into Cares (ctuname, pettype, price) values ('bgillionai', 'Mice', 52);
+insert into Cares (ctuname, pettype, price) values ('msquier1', 'Dalmatian', 83);
+insert into Cares (ctuname, pettype, price) values ('sbagge4', 'Lizard', 77);
+insert into Cares (ctuname, pettype, price) values ('lailmerag', 'Mice', 76);
+insert into Cares (ctuname, pettype, price) values ('fwoodwingah', 'Hamster', 86);
+insert into Cares (ctuname, pettype, price) values ('sbagge4', 'Large cats', 45);
+insert into Cares (ctuname, pettype, price) values ('msquier1', 'Caged Birds', 82);
+insert into Cares (ctuname, pettype, price) values ('cbarenskieaf', 'Tortoise', 76);
+insert into Cares (ctuname, pettype, price) values ('hglasbey3', 'Caged Birds', 69);
+insert into Cares (ctuname, pettype, price) values ('gmonnelly2', 'Pitbull', 50);
+insert into Cares (ctuname, pettype, price) values ('cbarenskieaf', 'Dalmatian', 97);
+insert into Cares (ctuname, pettype, price) values ('fwoodwingah', 'Tortoise', 49);
+insert into Cares (ctuname, pettype, price) values ('hglasbey3', 'Lizard', 40);
+insert into Cares (ctuname, pettype, price) values ('clampkin0', 'Caged Birds', 74);
+insert into Cares (ctuname, pettype, price) values ('gmonnelly2', 'Hamster', 86);
+insert into Cares (ctuname, pettype, price) values ('msquier1', 'Dachshund', 74);
+insert into Cares (ctuname, pettype, price) values ('msquier1', 'Aquarium Fish', 90);
+insert into Cares (ctuname, pettype, price) values ('lailmerag', 'Free-range Birds', 40);
+
+
+-- Bid --
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'lailmerag', '2020-06-16', '2020-07-17', 194, 'true', 1, 'cash', 'transfer', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'cbarenskieaf', '2020-06-17', '2020-07-13', 102, 'true', 5, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'lailmerag', '2020-06-08', '2020-07-13', 103, 'true', 2, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'fwoodwingah', '2020-06-28', '2020-07-25', 285, 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'clampkin0', '2020-06-14', '2020-07-14', 112, 'true', 4, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'fwoodwingah', '2020-06-07', '2020-07-03', 142, 'true', 1, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'jwestcotaj', '2020-06-11', '2020-07-19', 149, 'true', 4, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'fwoodwingah', '2020-06-07', '2020-07-26', 117, 'true', 0, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'bgillionai', '2020-06-01', '2020-07-30', 210, 'true', 2, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('gpundy8', 'Zsa zsa', 'Tortoise', 'hglasbey3', '2020-06-29', '2020-07-21', 134, 'true', 5, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'hglasbey3', '2020-07-28', '2020-08-04', 297, 'true', 2, 'cash', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'jwestcotaj', '2020-07-16', '2020-08-08', 108, 'true', 5, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'fwoodwingah', '2020-07-15', '2020-08-11', 74, 'true', 1, 'cash', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'lailmerag', '2020-07-09', '2020-08-19', 94, 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'msquier1', '2020-07-18', '2020-08-26', 235, 'true', 1, 'cash', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'fwoodwingah', '2020-07-24', '2020-08-02', 168, 'true', 5, 'cash', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'jwestcotaj', '2020-07-21', '2020-08-29', 180, 'true', 5, 'cash', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'jwestcotaj', '2020-07-20', '2020-08-28', 82, 'true', 5, 'cash', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'cbarenskieaf', '2020-07-23', '2020-08-06', 138, 'true', 2, 'cash', 'transfer', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('mgoom3', 'Ricard', 'Free-range Birds', 'hglasbey3', '2020-07-28', '2020-08-20', 277, 'true', 3, 'credit card', 'poDeliver', 'true');
