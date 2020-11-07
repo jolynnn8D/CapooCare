@@ -139,9 +139,10 @@ const CaretakerAvailability = (props) => {
                         </ListItemAvatar>
                         <ListItemText primary= {`${sqlToJsDate(avail.s_time).toDateString()} to ${sqlToJsDate(avail.e_time).toDateString()}`}/>
                         <ListItemSecondaryAction>
+                        {!props.isFT ?
                             <IconButton edge="end" aria-label="delete" onClick={()=>handleDeleteAvailability(avail)}>
                                 <DeleteIcon />
-                            </IconButton>
+                            </IconButton> : null }
                         </ListItemSecondaryAction>
                     </ListItem>
                 )
