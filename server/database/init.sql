@@ -296,6 +296,23 @@ CREATE TRIGGER check_ft_cares_price
 BEFORE INSERT ON Cares
 FOR EACH ROW EXECUTE PROCEDURE check_ft_cares_price();
 
+---------------------------------------------------------- Category ------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION check_update_base_price()
+RETURNS TRIGGER AS
+$$ BEGIN
+        --if base price of category changes, update FT cares' prices as well
+        IF (NEW.base_price <> OLD.base_price) THEN
+            UPDATE Cares SET price = New.base_price WHERE (Cares.ctuname IN (SELECT username FROM FullTimer)) AND Cares.pettype = NEW.pettype;
+        END IF;
+        RETURN NEW;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_update_base_price
+BEFORE UPDATE ON Category
+FOR EACH ROW EXECUTE PROCEDURE check_update_base_price();
+
 ------------------------------------------------------------ Bid ------------------------------------------------------------
 
 CREATE OR REPLACE FUNCTION mark_bid_automatically_for_fulltimer()
