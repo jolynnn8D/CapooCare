@@ -63,7 +63,6 @@ CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
     carerName VARCHAR(50) NOT NULL,
     age   INTEGER DEFAULT NULL,
-    salary INTEGER DEFAULT NULL
 );
 
 CREATE TABLE FullTimer (
@@ -81,8 +80,8 @@ CREATE TABLE Category (
 
 CREATE TABLE Has_Availability (
     ctuname VARCHAR(50) REFERENCES CareTaker(username) ON DELETE CASCADE,
-    s_time DATE,
-    e_time DATE,
+    s_time DATE NOT NULL,
+    e_time DATE NOT NULL,
     CHECK (e_time > s_time),
     PRIMARY KEY(ctuname, s_time, e_time)
 );
