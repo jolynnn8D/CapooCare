@@ -10,8 +10,9 @@ import Filter from '../components/Filter';
 import { DateRangePicker } from 'react-date-range';
 import store from "../store/store"
 import { addDays, addYears, eachDayOfInterval, toDate } from 'date-fns';
-import Axios from 'axios';
-import { serverUrl } from '../store/models/serverUrl';
+import { useHistory } from 'react-router-dom';
+import { FixedSizeList } from 'react-window';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -99,6 +100,7 @@ const useStyles = makeStyles((theme) => ({
 
 const FindCaretakers = () => {
     const classes = useStyles();
+    const history = useHistory();
     const [search, setSearch] = useState("");
     const [availModal, setAvailModal] = useState(false);
     const [filteredCaretakers, setFilteredCaretakers] = useState([]);
@@ -119,13 +121,17 @@ const FindCaretakers = () => {
     const getCareTakerRatings = useStoreActions(actions => actions.careTakers.getCareTakerRatings);
     const getAvailableCaretakers = useStoreActions(actions => actions.careTakers.getAvailableCaretakers);
     const getCaretakersForAllPets = useStoreActions(actions => actions.careTakers.getCaretakersForAllPets);
+    
     useEffect(() => {
         getCareTakers();
         getPetTypeList();
         getCareTakerRatings();
-        setFilteredCaretakers(careTakers);
+        const allCareTakers = store.getState().careTakers.caretakers;
+        setFilteredCaretakers(allCareTakers);
+        console.log(filteredCaretakers)
         return () => {};
     }, []);
+
 
     const careTakers = useStoreState(state => state.careTakers.caretakers);
     const petTypes = useStoreState(state => state.careTakers.petTypeList);
@@ -143,8 +149,8 @@ const FindCaretakers = () => {
         }
     })
 
-    console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
-    console.log(careTakers);
+    // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
+    // console.log(careTakers);
 
     // useEffect(() => {
     //     setFilteredCaretakers(
@@ -160,6 +166,7 @@ const FindCaretakers = () => {
                 return caretaker.pettypes.toLowerCase().includes(search.toLowerCase());
             })
         )
+        console.log(filteredCaretakers)
     }
 
     const sortCareTakers = (event) => {
@@ -216,6 +223,39 @@ const FindCaretakers = () => {
 
     }
 
+    const viewCaretakerProfile = (username) => {
+        history.push(`/users/${username}/caretaker`)
+    }
+    const renderRow = ({index, style}) => {
+      
+        const caretaker = filteredCaretakers[index];
+        return (
+            <Card key={v4()} className={classes.card} variant="outlined" style={style}>
+                {/* <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}> */}
+                <CardActionArea onClick={() => viewCaretakerProfile(caretaker.username)}>
+                    <CardContent>
+                        <Typography gutterBottom variant="h5" component="h2">
+                            {caretaker.username + ` (${caretaker.carername})`}
+                        </Typography>
+                        <Typography variant="body2" component="p">
+                            Caretaker age: {caretaker.age}
+                        </Typography>
+                        <div className={classes.rating}>
+                            <Rating value={caretaker.rating} precision={0.5} readOnly />
+                        </div>
+                        <Typography variant="body2" component="p">
+                            Takes care of: {caretaker.pettypes}
+                            {/* Takes care of: {caretaker.pettypes.map(pettype => pettype.pettype).join(", ")} */}
+                        </Typography>
+                        <Button size="small" color="primary">
+                            Learn More
+                        </Button>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
+        );
+      }
+
     return (
         <div>
             <Container component="main" maxWidth="md" className={classes.container}>
@@ -250,32 +290,9 @@ const FindCaretakers = () => {
                     Click to filter caretaker by availability
                 </Button>
 
-                <List style={{maxHeight:500, overflow: 'auto'}}>
-                {careTakers.map((caretaker) => (
-                    <Card key={v4()} className={classes.card} variant="outlined">
-                        <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}>
-                            <CardContent>
-                                <Typography gutterBottom variant="h5" component="h2">
-                                    {caretaker.username + ` (${caretaker.carername})`}
-                                </Typography>
-                                <Typography variant="body2" component="p">
-                                    Caretaker age: {caretaker.age}
-                                </Typography>
-                                <div className={classes.rating}>
-                                    <Rating value={caretaker.rating} precision={0.5} readOnly />
-                                </div>
-                                <Typography variant="body2" component="p">
-                                    Takes care of: {caretaker.pettypes}
-                                    {/* Takes care of: {caretaker.pettypes.map(pettype => pettype.pettype).join(", ")} */}
-                                </Typography>
-                                <Button size="small" color="primary">
-                                    Learn More
-                                </Button>
-                            </CardContent>
-                        </CardActionArea>
-                    </Card>
-                ))}
-                </List>
+                <FixedSizeList height={560} width={300} itemSize={180} itemCount={filteredCaretakers.length} style={{overflow: 'auto', width: "100%"}}> 
+                    {renderRow}
+                </FixedSizeList>
             </Container>
             <Modal
                 open={availModal}
