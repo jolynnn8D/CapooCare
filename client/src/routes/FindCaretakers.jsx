@@ -152,13 +152,13 @@ const FindCaretakers = () => {
     // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
     // console.log(careTakers);
 
-    // useEffect(() => {
-    //     setFilteredCaretakers(
-    //         careTakers.filter(caretaker => {
-    //             return caretaker.pettypes.toLowerCase().includes(search.toLowerCase());
-    //         })
-    //     )
-    // }, [search, careTakers])
+    useEffect(() => {
+        setFilteredCaretakers(
+            careTakers.filter(caretaker => {
+                return caretaker.pettypes.toLowerCase().includes(search.toLowerCase());
+            })
+        )
+    }, [search, careTakers])
 
     const handleSearchChange = () => {
         setFilteredCaretakers(
@@ -227,7 +227,6 @@ const FindCaretakers = () => {
         history.push(`/users/${username}/caretaker`)
     }
     const renderRow = ({index, style}) => {
-      
         const caretaker = filteredCaretakers[index];
         return (
             <Card key={v4()} className={classes.card} variant="outlined" style={style}>
@@ -255,7 +254,7 @@ const FindCaretakers = () => {
             </Card>
         );
       }
-
+    
     return (
         <div>
             <Container component="main" maxWidth="md" className={classes.container}>
@@ -276,11 +275,11 @@ const FindCaretakers = () => {
                     variant="outlined"
                     fullWidth
                 />
-                <Button className={classes.button}
+                {/* <Button className={classes.button}
                     variant='outlined'
                     onClick={handleSearchChange}>
                     Search
-                </Button>
+                </Button> */}
                 <Filter count={filteredCaretakers.length}
                         sortValue={sortValue}
                         sortCareTakers={sortCareTakers} />
