@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, List, ListItem, Grid, Typography, Button, Modal, TextField} from '@material-ui/core';
+import { Card, List, ListItem, Grid, Typography, Button, Modal, TextField, Select, FormControl, InputLabel} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { v4, validate } from 'uuid';
 import { useStoreActions, useStoreState } from 'easy-peasy';
@@ -65,11 +65,6 @@ const OrderList = (props) => {
     }
 
     const submitReview = () => {
-        if (rating > 5 || rating < 0 || rating !== parseInt(rating, 10)) {
-            alert("Rating must be an integer value from 0 to 5")
-            // closeReviewModal()
-            return;
-        }
         addReviewToBid({
             bid: modalBid,
             rating: rating,
@@ -125,22 +120,21 @@ const OrderList = (props) => {
                 open={reviewModal}
                 onClose={closeReviewModal}>
                 <Card className={classes.modal}>
-                    <TextField
-                            variant="outlined"
-                            label="Rating (0 to 5)"
-                            required
-                            fullWidth
-                            id="rating"
-                            autoFocus
-                            type="number"
-                            InputProps={{
-                                inputProps: { 
-                                    max: 5, min: 0
-                            }
-                            }}
-                            className={classes.textfield}
+                    <FormControl required variant="outlined" fullWidth >
+                        <InputLabel htmlFor='rating'>Rating</InputLabel>
+                        <Select
+                            native
+                            value={rating}
+                            label="Rating"
                             onChange={(event) => setRating(event.target.value)}
-                        />
+                        >
+                            {[0,1,2,3,4,5].map((rating) => (
+                                    <option key={rating} value={rating}>
+                                        {rating}
+                                    </option>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <TextField
                         id="review"
                         label="Leave review here"
