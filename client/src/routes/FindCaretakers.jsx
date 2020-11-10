@@ -122,6 +122,7 @@ const FindCaretakers = () => {
         getCareTakers();
         getPetTypeList();
         getCareTakerRatings();
+        setFilteredCaretakers(careTakers);
         return () => {};
     }, [])
 
@@ -145,13 +146,21 @@ const FindCaretakers = () => {
     // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
     // console.log(careTakers);
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     setFilteredCaretakers(
+    //         careTakers.filter(caretaker => {
+    //             return caretaker.pettypes.toLowerCase().includes(search.toLowerCase());
+    //         })
+    //     )
+    // }, [search, careTakers])
+
+    const handleSearchChange = () => {
         setFilteredCaretakers(
             careTakers.filter(caretaker => {
                 return caretaker.pettypes.toLowerCase().includes(search.toLowerCase());
             })
         )
-    }, [search, careTakers])
+    }
 
     const sortCareTakers = (event) => {
         setSortValue(event.target.value);
@@ -227,6 +236,11 @@ const FindCaretakers = () => {
                     variant="outlined"
                     fullWidth
                 />
+                <Button className={classes.button}
+                    variant='outlined'
+                    onClick={handleSearchChange}>
+                    Search
+                </Button>
                 <Filter count={filteredCaretakers.length}
                         sortValue={sortValue}
                         sortCareTakers={sortCareTakers} />
