@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton, Modal, Grid } from '@material-ui/core';
+import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton, Modal, Grid, List } from '@material-ui/core';
 import Search from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/core/styles';
 import Rating from '@material-ui/lab/Rating';
 import { Link } from 'react-router-dom';
-import { useStoreActions, useStoreState } from 'easy-peasy';
+import { thunk, useStoreActions, useStoreState } from 'easy-peasy';
 import { v4 } from 'uuid';
 import Filter from '../components/Filter';
 import { DateRangePicker } from 'react-date-range';
 import store from "../store/store"
 import { addDays, addYears, eachDayOfInterval, toDate } from 'date-fns';
+import Axios from 'axios';
+import { serverUrl } from '../store/models/serverUrl';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -117,14 +119,12 @@ const FindCaretakers = () => {
     const getCareTakerRatings = useStoreActions(actions => actions.careTakers.getCareTakerRatings);
     const getAvailableCaretakers = useStoreActions(actions => actions.careTakers.getAvailableCaretakers);
     const getCaretakersForAllPets = useStoreActions(actions => actions.careTakers.getCaretakersForAllPets);
-
     useEffect(() => {
         getCareTakers();
         getPetTypeList();
         getCareTakerRatings();
         return () => {};
-    }, [])
-
+    }, []);
 
     const careTakers = useStoreState(state => state.careTakers.caretakers);
     const petTypes = useStoreState(state => state.careTakers.petTypeList);
@@ -142,8 +142,8 @@ const FindCaretakers = () => {
         }
     })
 
-    // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
-    // console.log(careTakers);
+    console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
+    console.log(careTakers);
 
     useEffect(() => {
         setFilteredCaretakers(
@@ -236,8 +236,8 @@ const FindCaretakers = () => {
                     Click to filter caretaker by availability
                 </Button>
 
-              
-                {filteredCaretakers.map((caretaker) => (
+                <List style={{maxHeight:500, overflow: 'auto'}}>
+                {careTakers.map((caretaker) => (
                     <Card key={v4()} className={classes.card} variant="outlined">
                         <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}>
                             <CardContent>
@@ -261,6 +261,7 @@ const FindCaretakers = () => {
                         </CardActionArea>
                     </Card>
                 ))}
+                </List>
             </Container>
             <Modal
                 open={availModal}

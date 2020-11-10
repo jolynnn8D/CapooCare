@@ -330,7 +330,7 @@ const Signup = () => {
                         </RadioGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> </> : null}
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} setParentPrice={setPetPrice} isFT={caretakerType == 'fulltime'} label = "Choose a pet type you can care for"/> </> : null}
                     {  isPetOwner ? <AddPet parentCallback = {callbackAddPet} /> : null }
                     <Button
                         // type="submit"
