@@ -126,9 +126,6 @@ const FindCaretakers = () => {
         getCareTakers();
         getPetTypeList();
         getCareTakerRatings();
-        const allCareTakers = store.getState().careTakers.caretakers;
-        setFilteredCaretakers(allCareTakers);
-        console.log(filteredCaretakers)
         return () => {};
     }, []);
 
@@ -275,11 +272,6 @@ const FindCaretakers = () => {
                     variant="outlined"
                     fullWidth
                 />
-                {/* <Button className={classes.button}
-                    variant='outlined'
-                    onClick={handleSearchChange}>
-                    Search
-                </Button> */}
                 <Filter count={filteredCaretakers.length}
                         sortValue={sortValue}
                         sortCareTakers={sortCareTakers} />

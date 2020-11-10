@@ -62,6 +62,7 @@ const careTakersModel = {
       const url = serverUrl + "/api/v1/admin/salary/" + ctuname + "/" + convertDate(s_time) + "/" + convertDate(e_time);
       // console.log(url)
       const {data} = await axios.get(url);
+      // console.log(data)
       actions.setSingleCaretakerSalary(data.data); 
     }), 
 

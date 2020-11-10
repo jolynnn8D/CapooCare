@@ -8,6 +8,7 @@ import { addDays, addYears, eachDayOfInterval, toDate } from 'date-fns';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import {convertDate} from '../../../utils';
 import ViewAllCaretakers from '../../admin/ViewAllCaretakers';
+import store from "../../../store/store"
 
 const handleSelect = (ranges) => {
     console.log(ranges);
@@ -97,10 +98,10 @@ const BidModal = (props) => {
             ctuname: props.ctuname,
             s_time: minDate,
             e_time: maxDate
-        })
-            .then((result) => {
+        }).then((result) => {
                 // console.log(userAvailability)
-                findDisabledDates(userAvailability)
+                const currAvailability = store.getState().careTakers.availability;
+                findDisabledDates(currAvailability)
             })
         return () => {};
     }, [])
