@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) =>
         },
         fullList: {
             width: 'auto',
+        },
+        header: {
+            backgroundColor: "#1976D2"
         }
     })
 ); 
@@ -60,7 +63,7 @@ const NavBar = (props) => {
     return (
         <div>
             <div className={classes.root}>
-                <AppBar>
+                <AppBar className={classes.header}>
                     <Toolbar>
                         <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
                             <MenuIcon />
