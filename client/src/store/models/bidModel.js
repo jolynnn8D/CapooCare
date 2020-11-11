@@ -11,7 +11,7 @@ const bidModel = {
     addBid: thunk(async (actions, payload) => {
       const {pouname, petname, pettype, ctuname, s_time, e_time, pay_type, pet_pickup} = {...payload};
       const url = serverUrl + "/api/v1/bid";
-      const {data} = await axios.post(url, {
+      const data = await axios.post(url, {
         pouname: pouname,
         petname: petname,
         pettype: pettype,
@@ -20,7 +20,13 @@ const bidModel = {
         e_time: e_time,
         pay_type: pay_type,
         pet_pickup: pet_pickup
-      });
+      }).then((res) => {
+        console.log(res)
+        alert("Bid successful");
+      }).catch((err) => {
+        alert("Bid unsuccessful");
+        console.log(err);
+      })
     }),
 
     addReviewToBid: thunk(async(actions, payload) => {

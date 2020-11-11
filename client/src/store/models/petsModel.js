@@ -39,14 +39,17 @@ const petsModel = {
 
   addPet: thunk(async (actions, payload) => {
       const {username, petname, pettype, petage, requirements} = {...payload};
-      const {data} = await axios.post(serverUrl + "/api/v1/pet", {
+      const data = await axios.post(serverUrl + "/api/v1/pet", {
         username: username,
         petname: petname,
         pettype: pettype,
         petage: petage,
         requirements: requirements
-      });
-      actions.addAPet(data.data.pet);
+      }).then((res) => {
+        actions.addAPet(res.data.data.pet); 
+      }).catch((err) => {
+        console.log(err);
+      })
     }),
     addAPet: action((state, payload) => {
       state.ownerSpecificPets.push(payload);
@@ -55,19 +58,43 @@ const petsModel = {
   editPet: thunk(async (actions, payload) => {
     const{username, petname, pettype, petage, requirements} = {...payload};
     const url = serverUrl + "/api/v1/pet/" + username + "/" + petname;
-    const {data} = await axios.put(url, {
+    const data = await axios.put(url, {
       pettype: pettype,
       petage: petage,
       requirements: requirements
-    });
+    }).then((res) => {
+      actions.editAPet(res.data.data.pet);
+    }).catch((err) => {
+      console.log(err);
+    })
   }),
-  // EDIT ACTION TO UPDATE UI HERE REQUIRED
+  editAPet: action((state, payload) => {
+    state.ownerSpecificPets.map((pet) => {
+      if (pet.petname == payload.petname) {
+        pet.pettype = payload.pettype;
+        pet.petage = payload.petage;
+        pet.requirements = payload.requirements;
+      }
+    }
+  )}),
 
   deletePet: thunk(async (actions,payload) => {
     const { username, petname } = {...payload};
     const url = serverUrl + "/api/v1/pet/" + username + "/" + petname;
     console.log(url)
-    const {data} = await axios.delete(url);
+    const data = await axios.delete(url)
+      .then((res) => {
+        actions.deleteAPet(petname)
+      }).catch((err) => {
+        console.log(err);
+      })
+  }),
+  deleteAPet: action((state, payload) => {
+    state.ownerSpecificPets.forEach(function(pet, index) {
+      if(pet.petname == payload) {
+        state.ownerSpecificPets.splice(index, 1);
+      }
+    })
   }),
 
   getPetCategories: thunk(async (actions,payload) => {
@@ -77,6 +104,23 @@ const petsModel = {
   }), 
   getAllCategories: action((state, payload) => {
     state.petCategories = [...payload];
+  }),
+
+  addPetCategory: thunk(async (actions, payload) => {
+    const { category, base_price } = {...payload};
+    const url = serverUrl + "/api/v1/admin/category";
+    const {data} = await axios.post(url, {
+      category: category,
+      base_price: base_price
+    });
+  }),
+  editPetCategory: thunk(async (actions, payload) => {
+    const { category, base_price } = {...payload};
+    const url = serverUrl + "/api/v1/admin/category/" + category;
+    const {data} = await axios.put(url, {
+      category: category,
+      base_price: base_price
+    })
   }),
 }
 

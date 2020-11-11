@@ -1,6 +1,7 @@
 import { action, thunk, debug } from 'easy-peasy';
 import {serverUrl} from "./serverUrl"
 import axios from 'axios';
+import store from "../store"
 
 const petOwnersModel = {
     singlePetOwner: null,
@@ -21,9 +22,8 @@ const petOwnersModel = {
       }),
 
     addPetOwner: thunk(async (actions, payload) => {
-        console.log(payload);
         const {username, ownername, age, pettype, petname, petage, requirements} = {...payload};
-        const {data} = await axios.post("http://localhost:5000/api/v1/petowner", {
+        const data = await axios.post(serverUrl + "/api/v1/petowner", {
             username: username,
             ownername: ownername,
             age: age,
@@ -31,8 +31,19 @@ const petOwnersModel = {
             petname: petname,
             petage: petage,
             requirements: requirements
+        }).then((res) => {
+          store.getActions().pets.addAPet({
+            pouname: ownername,
+            pettype: pettype,
+            petname: petname,
+            petage: petage,
+            requirements: requirements
+          })
+        }).catch((err) => {
+          console.log(err);
         })
       }),
+
 }
 
 export default petOwnersModel;

@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
     submit: {
       margin: theme.spacing(3, 0, 2),
+      backgroundColor: "#1976D2"
     },
     container: {
         marginTop: theme.spacing(15),
@@ -44,11 +45,13 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const getUser = useStoreActions(actions => actions.user.getUser);
     const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
+    const getAccount = useStoreActions(actions => actions.admin.getAccount);
     const setRoutes = useStoreActions(actions => actions.routes.setRoutes);
     
     const checkAccountExists = () => {
-        const curr_user = store.getState().user.singleUser;
-        if (curr_user == null || curr_user.length == 0) {
+        const curr_account = store.getState().admin.singleAccount;
+        // const curr_user = store.getState().user.singleUser;
+        if (curr_account == null || curr_account.length == 0) {
             setErrorMessage("Username does not exist");
             return false;
         } else {
@@ -56,19 +59,80 @@ const Login = () => {
         }
     }
 
+    const isAccountUser = () => {
+        const curr_account = store.getState().admin.singleAccount;
+        return curr_account.is_admin ? false : true;
+    }
+
     const history = useHistory();
 
 
     const handleClick = async (event) => {
-        await getUser(username);
-        await getDisplayedUser(username);
+        await getAccount(username);
         const validateAccount = checkAccountExists();
         if (validateAccount) {
-          Routes[3].path = '/users/' + username;
-          Routes[4].path = '/users/' + username + '/caretaker';
-          Routes[5].path = '/users/' + username + '/caretaker-admin';
-          setRoutes(Routes);
-          history.push('homepage');
+          const isUser = isAccountUser();
+
+          if (isUser) {
+            await getUser(username);
+            await getDisplayedUser(username);
+
+            setRoutes(
+                [
+                    {
+                        path: '/',
+                        sidebarName: 'Login',
+                    },
+                    {
+                        path: '/signup',
+                        sidebarName: 'Signup',
+                    },
+                    {
+                        path: '/homepage',
+                        sidebarName: 'Homepage',
+                    },
+                    {
+                        path: '/users/' + username,
+                        sidebarName: 'Petowner Profile',
+                    },
+                    {
+                        path: '/users/' + username + '/caretaker',
+                        sidebarName: 'Caretaker Profile',
+                    },
+                    {
+                        path: '/users/' + username + '/caretaker-admin',
+                        sidebarName: 'Caretaker Settings',
+                    },
+                    {
+                        path: '/users/caretakers',
+                        sidebarName: 'Look for Caretakers',
+                    }
+                ]
+            )
+            // Routes[3].path = '/users/' + username;
+            // Routes[4].path = '/users/' + username + '/caretaker';
+            // Routes[5].path = '/users/' + username + '/caretaker-admin';
+            // Routes[6].path = '/users/caretakers';
+            history.push('homepage');
+          } else {
+            setRoutes(
+                [
+                    {
+                        path: '/',
+                        sidebarName: 'Login',
+                    },
+                    {
+                        path: '/signup',
+                        sidebarName: 'Signup',
+                    },
+                    {
+                        path: '/admin',
+                        sidebarName: 'PCS Administrator Settings',
+                    },
+                ]
+            );
+            history.push('/admin');
+          }
         }
     }
 

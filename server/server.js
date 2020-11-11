@@ -129,7 +129,26 @@ app.get("/api/v1/accounts/:username", async (req, res) => {
         res.status(200).json({
             status: "success",
             data: {
-                account: results.rows // double-check this
+                account: results.rows[0] // double-check this
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: "failed",
+            data: {
+                error: err
+            }
+        });
+    }
+});
+
+app.post("/api/v1/pcsadmin", async (req, res) => {
+    try {
+        const results = await db.query("INSERT INTO pcsadmin(username, adminname, age) VALUES ($1, $2, NULL) RETURNING *", [req.body.username, req.body.adminname]);
+        res.status(200).json({
+            status: "success",
+            data: {
+                admin: results.rows[0] // double-check this
             }
         });
     } catch (err) {
@@ -681,7 +700,7 @@ app.delete("/api/v1/petowner/:username", async (req, res) => {
 /* Get all caretakers that can take care of all the petowners' pet at a certain period of time. 
     Results are arranged according to decreasing rating then by increasing total cost */
 
-app.get("/api/v1/petowner/:username/all_ct",  async (req, res) => {
+app.get("/api/v1/petowner/:username/all_ct/:s_time/:e_time",  async (req, res) => {
     try {
         const results = await db.query(
             "SELECT DISTINCT A.ctuname,   " +
@@ -739,7 +758,7 @@ app.get("/api/v1/petowner/:username/all_ct",  async (req, res) => {
             "        ) " +
             "ORDER BY rating DESC, " +
             "         price ASC; " 
-            , [req.params.username, req.body.s_time, req.body.e_time]);
+            , [req.params.username, req.params.s_time, req.params.e_time]);
         res.status(200).json({
             status: "success",
             data: {
@@ -1147,7 +1166,7 @@ app.get("/api/v1/bid/:ctuname/ct", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get("/api/v1/bid/:pouname/po", async (req, res) => {
-    db.query("SELECT * FROM Bid WHERE pouname = $1",
+    db.query("SELECT * FROM Bid WHERE pouname = $1 ORDER BY s_time DESC",
         [req.params.pouname]
     ).then(
         (result) => {
@@ -1525,6 +1544,7 @@ app.put("/api/v1/bid/:ctuname/:pouname/pay", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.post("/api/v1/availability/:ctuname", async (req, res) => {
+    console.log(req)
     db.query("INSERT INTO Has_Availability VALUES ($1, to_date($2,'YYYYMMDD'), to_date($3,'YYYYMMDD')) RETURNING *",
         [req.params.ctuname, req.body.s_time, req.body.e_time]
     ).then(
@@ -1580,23 +1600,56 @@ app.get("/api/v1/availability/", async (req, res) => {
 // returned in this query, within the s_time and e_time indicated in this API call.
 /*
     Expected inputs:
-        JSON object of the form:
-        {
-            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
-            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
-        }
-
         Path parameters:
             ctuname, which is the username of the Caretaker.
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
 
     Expected status code:
         200 OK, if successful
         400 Bad Request, if general failure
  */
 app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
-    console.log(req);
-    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD')",
+    db.query("SELECT * FROM Has_Availability WHERE ctuname = $1 AND (s_time, e_time) OVERLAPS (to_date($2, 'YYYYMMDD'), to_date($3, 'YYYYMMDD'))",
         [req.params.ctuname, req.params.s_time, req.params.e_time]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    availabilities: result.rows,
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+// Gets all Availabilities from All Caretakers within a timeframe. All availabilities indicated by the caretaker will be
+// returned in this query, within the s_time and e_time indicated in this API call.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get('/api/v1/availability/:s_time/:e_time', async (req, res) => {
+    console.log(req.params);
+    db.query("SELECT * FROM has_availability WHERE s_time <= to_date($1,'YYYYMMDD') AND e_time >= to_date($2,'YYYYMMDD')",
+        [req.params.s_time, req.params.e_time]
     ).then(
         (result) => {
             res.status(200).json({
@@ -1617,6 +1670,7 @@ app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
         }
     )
 });
+
 
 // Gets all Availabilities from a Caretaker. All availabilities indicated by the caretaker will be
 // returned in this query.
@@ -1658,22 +1712,19 @@ app.get('/api/v1/availability/:ctuname/:s_time/:e_time', async (req, res) => {
 // entirely intersect the s_time and e_time indicated will be deleted. This does not include partial overlaps.
 /*
     Expected inputs:
-        JSON object of the form:
-        {
-            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
-            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
-        }
-
         Path parameters:
             ctuname, which is the username of the Caretaker.
+            s_time: String (in the format YYYYMMDD, which will be converted by API to Date),
+            e_time: String (in the format YYYYMMDD, which will be converted by API to Date)
 
     Expected status code:
         200 OK, if successful
         400 Bad Request, if general failure
  */
-app.delete("/api/v1/availability/:ctuname", async (req, res) => {
+app.delete("/api/v1/availability/:ctuname/:s_time/:e_time", async (req, res) => {
+    console.log(req)
     db.query("DELETE FROM Has_Availability WHERE ctuname = $1 AND s_time >= to_date($2,'YYYYMMDD') AND e_time <= to_date($3,'YYYYMMDD') RETURNING *",
-        [req.params.ctuname, req.body.s_time, req.body.e_time]
+        [req.params.ctuname, req.params.s_time, req.params.e_time]
     ).then(
         (result) => {
             res.status(200).json({
@@ -1734,6 +1785,41 @@ app.get("/api/v1/rating/:ctuname", async (req, res) => {
 });
 
 
+
+// Get the average rating of all Caretakers. The rating is the average of all given ratings, or NULL if no ratings have
+// been given.
+/*
+    Expected inputs:
+        Path parameters:
+            ctuname, which is the username of the Caretaker.
+
+    Expected status code:
+        200 OK, if successful
+        400 Bad Request, if general failure
+ */
+app.get("/api/v1/rating", async (req, res) => {
+    db.query("SELECT ctuname, AVG(rating) AS avg_rating FROM Bid GROUP BY ctuname").then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    rating: result.rows
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    "error": error
+                }
+            })
+        }
+    )
+});
+
+
 // Get all reviews about a Caretaker.
 /*
     Expected inputs:
@@ -1745,7 +1831,7 @@ app.get("/api/v1/rating/:ctuname", async (req, res) => {
         400 Bad Request, if general failure
  */
 app.get("/api/v1/review/:ctuname", async (req, res) => {
-    db.query("SELECT review FROM Bid WHERE ctuname = $1 AND review IS NOT NULL",
+    db.query("SELECT pouname, rating, review FROM Bid WHERE ctuname = $1 AND review IS NOT NULL",
         [req.params.ctuname]
     ).then(
         (result) => {
@@ -2077,6 +2163,32 @@ app.post("/api/v1/admin/category", async (req, res) => {
     )
 });
 
+/* Edit previous pet category's base price */
+
+app.put("/api/v1/admin/category/:pettype", async (req, res) => {
+    db.query(
+        "UPDATE Category SET base_price = $2 WHERE pettype = $1 RETURNING *",
+        [req.body.category, req.body.base_price]
+    ).then(
+        (result) => {
+            res.status(200).json({
+                status: "success",
+                data: {
+                    category: result.rows[0]
+                }
+            })
+        }
+    ).catch(
+        (error) => {
+            res.status(400).json({
+                status: "failed",
+                data: {
+                    error: error
+                }
+            })
+        }
+    )
+});
 
 app.listen(port, () => {
     console.log(`server has started on port ${port}`);

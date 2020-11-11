@@ -23,7 +23,7 @@ const Availability = (props) => {
     const classes = useStyles();
     return (
         <div>
-            <Typography align="center" >Please enter two periods of 150 days each.</Typography> 
+            <Typography align="center" >Please enter two periods of 150 days each within a one year time frame.</Typography> 
             <TextField
                 variant="outlined"
                 label="Enter your period 1 start date in YYYYMMDD"
