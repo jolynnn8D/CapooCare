@@ -10,12 +10,12 @@
 --DROP TABLE IF EXISTS Bid CASCADE;
 --DROP VIEW IF EXISTS Users CASCADE;
 --DROP VIEW IF EXISTS Accounts CASCADE;
-
-/*                                      **IMPORTANT**
-
-
-    The code block below drops all functions, aggregates, and procedures from the database.
-    This is required because PostgreSQL can't handle overloaded functions and procedures. */
+--
+--/*                                      **IMPORTANT**
+--
+--
+--    The code block below drops all functions, aggregates, and procedures from the database.
+--    This is required because PostgreSQL can't handle overloaded functions and procedures. */
 --DO
 --$do$
 --DECLARE
@@ -45,8 +45,8 @@
 --   END IF;
 --END
 --$do$;
-
-
+--
+--
 --CREATE TABLE PCSAdmin (
 --    username VARCHAR(50) PRIMARY KEY,
 --    adminName VARCHAR(50) NOT NULL,
@@ -3056,6 +3056,14 @@ CREATE OR REPLACE VIEW Accounts AS (
 --
 ---- Availability --
 --
+--insert into Has_Availability (ctuname, s_time, e_time) values ('bgillionai', '2020-06-01', '2020-07-30');
+--insert into Has_Availability (ctuname, s_time, e_time) values ('clampkin0', '2020-06-14', '2020-07-14');
+--insert into Has_Availability (ctuname, s_time, e_time) values ('cbarenskieaf', '2020-06-17', '2020-08-06');
+--insert into Has_Availability (ctuname, s_time, e_time) values ('lailmerag', '2020-06-16', '2020-08-19');
+--insert into Has_Availability (ctuname, s_time, e_time) values ('fwoodwingah', '2020-06-07', '2020-08-25');
+--insert into Has_Availability (ctuname, s_time, e_time) values ('harlenglasgow23', '2020-03-29', '2020-12-04');
+--insert into Has_Availability (ctuname, s_time, e_time) values ('msquier1', '2020-07-18', '2020-09-26');
+--insert into Has_Availability (ctuname, s_time, e_time) values ('juleswestcot69', '2020-07-21', '2021-07-19');
 --insert into Has_Availability (ctuname, s_time, e_time) values ('bgillionai', '2021-06-01', '2021-07-30');
 --insert into Has_Availability (ctuname, s_time, e_time) values ('clampkin0', '2021-06-14', '2021-07-14');
 --insert into Has_Availability (ctuname, s_time, e_time) values ('cbarenskieaf', '2021-06-17', '2021-08-06');
@@ -3066,25 +3074,25 @@ CREATE OR REPLACE VIEW Accounts AS (
 --insert into Has_Availability (ctuname, s_time, e_time) values ('juleswestcot69', '2021-07-21', '2022-07-19');
 --
 --
----- Bid --
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'lailmerag', '2021-06-16', '2021-07-17', 194, 'true', 1, 'cash', 'transfer', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'cbarenskieaf', '2021-06-17', '2021-07-13', 102, 'true', 5, 'cash', 'poDeliver', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'lailmerag', '2021-06-08', '2021-07-13', 103, 'true', 2, 'credit card', 'poDeliver', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'fwoodwingah', '2021-06-28', '2021-07-25', 285, 'true', 3, 'credit card', 'poDeliver', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'clampkin0', '2021-06-14', '2021-07-14', 112, 'true', 4, 'credit card', 'ctPickup', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'fwoodwingah', '2021-06-07', '2021-07-03', 142, 'true', 1, 'credit card', 'poDeliver', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'juleswestcot69', '2021-06-11', '2021-07-19', 149, 'true', 4, 'credit card', 'poDeliver', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'fwoodwingah', '2021-06-07', '2021-07-26', 117, 'true', 0, 'credit card', 'ctPickup', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'bgillionai', '2021-06-01', '2021-07-30', 210, 'true', 2, 'cash', 'poDeliver', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('jennychan00', 'Ploddy', 'Tortoise', 'harlenglasgow23', '2021-06-29', '2021-07-21', 134, 'true', 5, 'cash', 'poDeliver', 'true', 'Would hire again!');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'harlenglasgow23', '2021-07-28', '2021-08-04', 297, 'true', 5, 'cash', 'ctPickup', 'true', 'Cleaned up after my bird after she was shedding heavily!');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'juleswestcot69', '2021-07-16', '2021-08-08', 108, 'true', 5, 'cash', 'poDeliver', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'fwoodwingah', '2021-07-15', '2021-08-11', 74, 'true', 1, 'cash', 'ctPickup', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'lailmerag', '2021-07-09', '2021-08-19', 94, 'true', 3, 'cash', 'poDeliver', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'msquier1', '2021-07-18', '2021-08-26', 235, 'true', 1, 'cash', 'ctPickup', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'fwoodwingah', '2021-07-24', '2021-08-02', 168, 'true', 5, 'cash', 'ctPickup', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'cbarenskieaf', '2021-07-23', '2021-08-06', 138, 'true', 2, 'cash', 'transfer', 'true');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'juleswestcot69', '2021-07-21', '2021-08-29', 180, 'true', 4, 'cash', 'ctPickup', 'true', 'Very polite!.');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'juleswestcot69', '2021-07-20', '2021-08-28', 82, 'true', 5, 'cash', 'ctPickup', 'true', 'My bird really liked him!');
---insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'harlenglasgow23', '2021-07-28', '2021-08-20', 277, 'true', 4, 'credit card', 'poDeliver', 'true', 'Was very punctual.');
+------ Bid --
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'lailmerag', '2020-06-16', '2020-07-17', 194, 'true', 1, 'cash', 'transfer', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'cbarenskieaf', '2020-06-17', '2020-07-13', 102, 'true', 5, 'cash', 'poDeliver', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'lailmerag', '2020-06-08', '2020-07-13', 103, 'true', 2, 'credit card', 'poDeliver', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'fwoodwingah', '2020-06-28', '2020-07-25', 285, 'true', 3, 'credit card', 'poDeliver', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'clampkin0', '2020-06-14', '2020-07-14', 112, 'true', 4, 'credit card', 'ctPickup', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'fwoodwingah', '2020-06-07', '2020-07-03', 142, 'true', 1, 'credit card', 'poDeliver', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'juleswestcot69', '2020-06-11', '2020-07-19', 149, 'true', 4, 'credit card', 'poDeliver', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'fwoodwingah', '2020-06-07', '2020-07-26', 117, 'true', 0, 'credit card', 'ctPickup', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('jennychan00', 'Ploddy', 'Tortoise', 'bgillionai', '2020-06-01', '2020-07-30', 210, 'true', 2, 'cash', 'poDeliver', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('jennychan00', 'Ploddy', 'Tortoise', 'harlenglasgow23', '2020-06-29', '2020-07-21', 134, 'true', 5, 'cash', 'poDeliver', 'true', 'Would hire again!');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'harlenglasgow23', '2020-07-28', '2020-08-04', 297, 'true', 5, 'cash', 'ctPickup', 'true', 'Cleaned up after my bird after she was shedding heavily!');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'juleswestcot69', '2020-07-16', '2020-08-08', 108, 'true', 5, 'cash', 'poDeliver', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'fwoodwingah', '2020-07-15', '2020-08-11', 74, 'true', 1, 'cash', 'ctPickup', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'lailmerag', '2020-07-09', '2020-08-19', 94, 'true', 3, 'cash', 'poDeliver', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'msquier1', '2020-07-18', '2020-08-26', 235, 'true', 1, 'cash', 'ctPickup', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'fwoodwingah', '2020-07-24', '2020-08-02', 168, 'true', 5, 'cash', 'ctPickup', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'cbarenskieaf', '2020-07-23', '2020-08-06', 138, 'true', 2, 'cash', 'transfer', 'true');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'juleswestcot69', '2020-07-21', '2020-08-29', 180, 'true', 4, 'cash', 'ctPickup', 'true', 'Very polite!.');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'juleswestcot69', '2020-07-20', '2020-08-28', 82, 'true', 5, 'cash', 'ctPickup', 'true', 'My bird really liked him!');
+--insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, cost, is_win, rating, pay_type, pet_pickup, pay_status, review) values ('robertcunningham42', 'Chirpy', 'Free-range Birds', 'harlenglasgow23', '2020-07-28', '2020-08-20', 277, 'true', 4, 'credit card', 'poDeliver', 'true', 'Was very punctual.');
 
