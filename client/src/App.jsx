@@ -13,6 +13,8 @@ import Login from "./routes/Login";
 import Signup from "./routes/Signup";
 import FindCaretakers from "./routes/FindCaretakers";
 import NavBar from './components/NavBar';
+import Summary from "./components/admin/Summary";
+import AddAdmin from "./components/admin/AddAdmin";
 
 const App = () => {
     return (
@@ -23,7 +25,9 @@ const App = () => {
                     <Route exact path="/" component={Login} />
                     <Route exact path="/admin" component={Adminpage}/>
                     <Route exact path="/admin/set-price" component={SetPricepage}/>
+                    <Route exact path="/admin/summary" component={Summary}/>
                     <Route exact path="/admin/view-caretakers" component={ViewCaretakerspage}/>
+                    <Route exact path="/admin/add-admin" component={AddAdmin}/>
                     <Route exact path="/users/caretakers" component={FindCaretakers} />
                     <Route exact path="/users/:username/update" component={Updatepage} />
                     <Route exact path="/users/:username" component={UserProfile} />
@@ -31,6 +35,7 @@ const App = () => {
                     <Route exact path ="/users/:username/caretaker" component={CaretakerProfile}/>
                     <Route exact path="/homepage" component={Homepage} />
                     <Route exact path="/signup" component={Signup} />
+
                 </Switch>
             </Router>
         </div>

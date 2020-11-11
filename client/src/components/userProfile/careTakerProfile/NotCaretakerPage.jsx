@@ -122,11 +122,11 @@ const NotCaretakerPage = () => {
                     </FormControl>
                     { caretakerType === 'fulltime' ?
                     <>
-                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/>
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} setParentPrice={setPetPrice} isFT={caretakerType=='fulltime'} label = "Choose a pet type you can care for"/>
                     <Availability setP1StartDate={setP1StartDate} setP1EndDate={setP1EndDate} setP2StartDate={setP2StartDate} setP2EndDate={setP2EndDate}/>
                     </> :
                     <>
-                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/>
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} setParentPrice={setPetPrice} label = "Choose a pet type you can care for"/>
                     </>}
                     <Button color="primary" onClick={signUpCaretaker}> Confirm sign up </Button>
                 </Card>
