@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton, Modal, Grid } from '@material-ui/core';
+import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton, Modal, Grid, GridList} from '@material-ui/core';
 import Search from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/core/styles';
 import Rating from '@material-ui/lab/Rating';
@@ -67,33 +67,12 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         margin: theme.spacing(1)
-    }
+    },
+    gridList: {
+        width: "100%",
+        height: 450
+    },
 }));
-
-// const caretakersList = [
-//     {
-//         name: 'Caretaker 1',
-//         id: '1',
-//         available: true,
-//         takesCareOf: [
-//             'Dogs',
-//             'Cats',
-//             'Birds'
-//         ],
-//         rating: 4.5
-//     },
-//     {
-//         name: 'Caretaker 2',
-//         id: '2',
-//         available: true,
-//         takesCareOf: [
-//             'Dogs',
-//             'Cats',
-//             'Birds'
-//         ],
-//         rating: 3.6
-//     },
-// ]
 
 const FindCaretakers = () => {
     const classes = useStyles();
@@ -141,9 +120,6 @@ const FindCaretakers = () => {
             caretaker.rating = caretaker.rating[0].avg_rating;
         }
     })
-
-    // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
-    // console.log(careTakers);
 
     useEffect(() => {
         setFilteredCaretakers(
@@ -236,7 +212,7 @@ const FindCaretakers = () => {
                     Click to filter caretaker by availability
                 </Button>
 
-              
+                {/* <GridList className={classes.gridList}> */}
                 {filteredCaretakers.map((caretaker) => (
                     <Card key={v4()} className={classes.card} variant="outlined">
                         <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}>
@@ -261,6 +237,7 @@ const FindCaretakers = () => {
                         </CardActionArea>
                     </Card>
                 ))}
+                {/* </GridList> */}
             </Container>
             <Modal
                 open={availModal}
