@@ -13,6 +13,7 @@ import BidModal from '../userProfile/careTakerProfile/BidModal';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import PetTypeInput from '../PetTypeInput';
 import { v4 } from 'uuid';
+import { eachDayOfInterval } from 'date-fns';
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -158,6 +159,7 @@ const PetCareList = (props) => {
                         showSelectionPreview={true}
                         moveRangeOnFirstSelection={false}
                         ranges={dateRange}
+                        // disabledDay ={(day) => {return day > new Date()}}
                         direction="horizontal"
                     />
                     </Grid>
