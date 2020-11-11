@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import {Box, Tab, Tabs, Typography} from '@material-ui/core';
+import {Box, List, Tab, Tabs, Typography} from '@material-ui/core';
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import UserCard from "../userProfile/UserCard"
 import PetCareList from "../careTakerAdmin/PetCareList"
@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
     display: 'flex',
+    height: theme.spacing(80),
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,

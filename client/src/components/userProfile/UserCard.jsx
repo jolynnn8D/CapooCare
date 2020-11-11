@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         marginBottom: 40,
         padding: 50,
-        height: 250
+        maxHeight: 500,
     },
 
     profileTextArea: {
