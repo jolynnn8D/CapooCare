@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react';
-<<<<<<< HEAD
-import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton, Modal, Grid, GridList} from '@material-ui/core';
-=======
 import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton, Modal, Grid, List } from '@material-ui/core';
->>>>>>> 4e290f79b3392d3e23cc9558d38b1e802228ecf2
 import Search from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/core/styles';
 import Rating from '@material-ui/lab/Rating';
@@ -260,8 +256,6 @@ const FindCaretakers = () => {
                     onClick={openAvailModal}>
                     Click to filter caretaker by availability
                 </Button>
-
-<<<<<<< HEAD
                 {/* <GridList className={classes.gridList}> */}
                 {filteredCaretakers.map((caretaker) => (
                     <Card key={v4()} className={classes.card} variant="outlined">
@@ -288,11 +282,9 @@ const FindCaretakers = () => {
                     </Card>
                 ))}
                 {/* </GridList> */}
-=======
                 <FixedSizeList height={560} width={300} itemSize={180} itemCount={filteredCaretakers.length} style={{overflow: 'auto', width: "100%"}}> 
                     {renderRow}
                 </FixedSizeList>
->>>>>>> 4e290f79b3392d3e23cc9558d38b1e802228ecf2
             </Container>
             <Modal
                 open={availModal}
