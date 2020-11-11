@@ -70,33 +70,12 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         margin: theme.spacing(1)
-    }
+    },
+    gridList: {
+        width: "100%",
+        height: 450
+    },
 }));
-
-// const caretakersList = [
-//     {
-//         name: 'Caretaker 1',
-//         id: '1',
-//         available: true,
-//         takesCareOf: [
-//             'Dogs',
-//             'Cats',
-//             'Birds'
-//         ],
-//         rating: 4.5
-//     },
-//     {
-//         name: 'Caretaker 2',
-//         id: '2',
-//         available: true,
-//         takesCareOf: [
-//             'Dogs',
-//             'Cats',
-//             'Birds'
-//         ],
-//         rating: 3.6
-//     },
-// ]
 
 const FindCaretakers = () => {
     const classes = useStyles();
@@ -145,9 +124,6 @@ const FindCaretakers = () => {
             caretaker.rating = caretaker.rating[0].avg_rating;
         }
     })
-
-    // console.log([...petTypes].filter(pettype => pettype.ctuname === "yellowchicken"));
-    // console.log(careTakers);
 
     useEffect(() => {
         setFilteredCaretakers(
@@ -280,7 +256,32 @@ const FindCaretakers = () => {
                     onClick={openAvailModal}>
                     Click to filter caretaker by availability
                 </Button>
-
+                {/* <GridList className={classes.gridList}> */}
+                {filteredCaretakers.map((caretaker) => (
+                    <Card key={v4()} className={classes.card} variant="outlined">
+                        <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}>
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="h2">
+                                    {caretaker.username + ` (${caretaker.carername})`}
+                                </Typography>
+                                <Typography variant="body2" component="p">
+                                    Caretaker age: {caretaker.age}
+                                </Typography>
+                                <div className={classes.rating}>
+                                    <Rating value={caretaker.rating} precision={0.5} readOnly />
+                                </div>
+                                <Typography variant="body2" component="p">
+                                    Takes care of: {caretaker.pettypes}
+                                    {/* Takes care of: {caretaker.pettypes.map(pettype => pettype.pettype).join(", ")} */}
+                                </Typography>
+                                <Button size="small" color="primary">
+                                    Learn More
+                                </Button>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                ))}
+                {/* </GridList> */}
                 <FixedSizeList height={560} width={300} itemSize={180} itemCount={filteredCaretakers.length} style={{overflow: 'auto', width: "100%"}}> 
                     {renderRow}
                 </FixedSizeList>

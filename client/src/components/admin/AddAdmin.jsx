@@ -37,12 +37,18 @@ const AddAdmin = () => {
     const [username, setUsername] = useState('');
     const [adminname, setAdminName] = useState('');
     const addAdmin = useStoreActions(actions => actions.admin.addAdmin);
-    
-    const submit = async () => {
-        await addAdmin({
+    const getNewAdminAccount = useStoreActions(actions => actions.admin.getNewAdminAccount);
+
+    const submit = async (e) => {
+        // console.log(username);
+        e.preventDefault();
+        await getNewAdminAccount(username);
+
+        addAdmin({
           username: username,
           adminname: adminname
         });
+
         setUsername('');
         setAdminName('');
     }
@@ -81,7 +87,7 @@ const AddAdmin = () => {
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick = {() => submit()}
+              onClick = {(e) => submit(e)}
           >
               Signup
           </Button>

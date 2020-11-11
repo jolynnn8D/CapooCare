@@ -9,6 +9,21 @@ const adminModel = {
     fullTimerSalary: [],
     singleAccount: [],
 
+    getNewAdminAccount: thunk(async (actions, payload) => {
+      const username = payload;
+      const url = serverUrl + "/api/v1/accounts/" + username;
+      await axios.get(url).then(response => {
+        // console.log(response.data.data);
+        if (response.data.data.account != null) {
+          alert('Username already exists in the database!')
+        } else {
+          // console.log("here");
+          return response.data.data.account;
+        }
+      }).catch((error) => {
+        alert("Please choose a different username!");
+      })
+    }),
     getAccount: thunk(async (actions, payload) => {
     const username = payload;
     const url = serverUrl + "/api/v1/accounts/" + username;
@@ -17,7 +32,7 @@ const adminModel = {
       if (response.data.status === "success") {
         return response.data.data.account;
       } else {
-        alert(`Username does not exist in the database!`);
+        alert('Username does not exist in the database!');
       }
     }).catch((error) => {
       alert("Please choose a different username!");
@@ -36,9 +51,11 @@ const adminModel = {
     addAdmin: thunk(async (actions, payload) => {
       // console.log(payload);
       const {username, adminname} = {...payload};
-      const {data} = await axios.post(serverUrl + "/api/v1/pcsadmin", {
+      const data = await axios.post(serverUrl + "/api/v1/pcsadmin", {
           username: username,
           adminname: adminname,
+      }).then(response => {
+        alert("Admin added!");
       })
     }),
 
