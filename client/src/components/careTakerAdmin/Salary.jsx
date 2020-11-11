@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Salary = (props) => {
     const classes = useStyles();
-    const getSalary = useStoreActions(actions => actions.admin.getSingleCaretakerSalary);
-    const userSalary = useStoreState(state => state.admin.singleCaretakerSalary);
+    const getSalary = useStoreActions(actions => actions.careTakers.getSingleCaretakerSalary);
+    const userSalary = useStoreState(state => state.careTakers.singleCaretakerSalary);
     const dateRange = getStartEndOfMonth(props.month);
     
     useEffect(() => {

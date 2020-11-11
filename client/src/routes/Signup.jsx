@@ -7,6 +7,7 @@ import AddPet from "../components/AddPet";
 import PetTypeInput from "../components/PetTypeInput"
 import Availability from '../components/Availability';
 import { sqlToJsDate, differenceInTwoDates, stringToJsDate, isValidStringDate } from "../utils";
+import store from "../store/store"
 
 
 const useStyles = makeStyles((theme) => ({
@@ -89,23 +90,18 @@ const Signup = () => {
     const addPartTimeCareTaker = useStoreActions(actions => actions.careTakers.addPartTimeCareTaker);
     const addFullTimeCareTaker = useStoreActions(actions => actions.careTakers.addFullTimeCareTaker);
     const addPetOwner = useStoreActions(actions => actions.petOwners.addPetOwner);
-    const getAllUsers = useStoreActions(actions => actions.user.getAllUsers);
-    const allUsers = useStoreState(state => state.user.allUsers);
-    
-    useEffect(() => {
-        getAllUsers();
-        return () => {};
-    }, []);
-    
+    const getAccount = useStoreActions(actions => actions.admin.getAccount);
+
+
     const userInDatabase = () => {
-        var result = false;
-        allUsers.map((user) => {
-            if (user.username == username) {
-                result = true;
-            }
-        })
-        return result;
+        const curr_account = store.getState().admin.singleAccount;
+        if (curr_account == null || curr_account.length == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
+
     const validateDates = () => {
         if (p1startDate.length != 8 || p1endDate.length != 8 || p2startDate.length != 8 || p2endDate.length != 8) {
             alert("Please enter date in the format YYYYMMDD")
@@ -187,6 +183,8 @@ const Signup = () => {
         return true;
     }
     const submit = async () => {
+        await getAccount(username);
+
         if (!fieldsAreValid()) {
             return;
         }
@@ -330,7 +328,7 @@ const Signup = () => {
                         </RadioGroup>
                         <FormHelperText>Choose at least one role!</FormHelperText>
                     </FormControl>
-                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} label = "Choose a pet type you can care for"/> </> : null}
+                    <PetTypeInput parentType = {onSelectType} parentPrice={onInputPrice} setParentPrice={setPetPrice} isFT={caretakerType == 'fulltime'} label = "Choose a pet type you can care for"/> </> : null}
                     {  isPetOwner ? <AddPet parentCallback = {callbackAddPet} /> : null }
                     <Button
                         // type="submit"
