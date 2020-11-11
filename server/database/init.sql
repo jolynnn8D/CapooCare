@@ -279,9 +279,14 @@ FOR EACH ROW EXECUTE PROCEDURE not_parttimer();
 CREATE OR REPLACE FUNCTION check_ft_cares_price()
 RETURNS TRIGGER AS
 $$ BEGIN
-        IF (SELECT 1 WHERE EXISTS (SELECT 1 FROM FullTimer WHERE NEW.ctuname = FullTimer.username)) THEN
+        IF (SELECT 1 WHERE EXISTS (
+                SELECT 1
+                    FROM FullTimer
+                    WHERE NEW.ctuname = FullTimer.username)) THEN
         
-            IF (NEW.price <> (SELECT base_price FROM Category WHERE Category.pettype = NEW.pettype)) THEN
+            IF (NEW.price <> (SELECT base_price
+                                    FROM Category
+                                    WHERE Category.pettype = NEW.pettype)) THEN
                 RAISE EXCEPTION 'Cares prices for Fulltimers must adhere to the basic prices set by PCSadmin.';
             ELSE
                 RETURN NEW;
