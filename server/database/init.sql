@@ -62,8 +62,7 @@ CREATE TABLE PetOwner (
 CREATE TABLE CareTaker (
     username VARCHAR(50) PRIMARY KEY,
     carerName VARCHAR(50) NOT NULL,
-    age   INTEGER DEFAULT NULL,
-    salary INTEGER DEFAULT NULL
+    age   INTEGER DEFAULT NULL
 );
 
 CREATE TABLE FullTimer (
@@ -178,7 +177,7 @@ CREATE OR REPLACE PROCEDURE add_fulltimer(
             ELSE
                 SELECT COUNT(*) INTO ctx FROM FullTimer WHERE FullTimer.username = ctuname;
                 IF ctx = 0 THEN
-                    INSERT INTO CareTaker VALUES (ctuname, aname, age, null);
+                    INSERT INTO CareTaker VALUES (ctuname, aname, age);
                     INSERT INTO FullTimer VALUES (ctuname);
                     INSERT INTO Cares VALUES (ctuname, pettype, price);
                 END IF;
@@ -195,15 +194,14 @@ CREATE OR REPLACE PROCEDURE add_parttimer(
     aname VARCHAR(50),
     age   INTEGER,
     pettype VARCHAR(20),
-    price INTEGER,
-    salary INTEGER DEFAULT NULL
+    price INTEGER
     )  AS $$
     DECLARE ctx NUMERIC;
     BEGIN
         SELECT COUNT(*) INTO ctx FROM PartTimer
                 WHERE PartTimer.username = ctuname;
         IF ctx = 0 THEN
-            INSERT INTO CareTaker VALUES (ctuname, aname, age, salary);
+            INSERT INTO CareTaker VALUES (ctuname, aname, age);
             INSERT INTO PartTimer VALUES (ctuname);
         END IF;
         INSERT INTO Cares VALUES (ctuname, pettype, price);
@@ -297,6 +295,23 @@ LANGUAGE plpgsql;
 CREATE TRIGGER check_ft_cares_price
 BEFORE INSERT ON Cares
 FOR EACH ROW EXECUTE PROCEDURE check_ft_cares_price();
+
+---------------------------------------------------------- Category ------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION check_update_base_price()
+RETURNS TRIGGER AS
+$$ BEGIN
+        --if base price of category changes, update FT cares' prices as well
+        IF (NEW.base_price <> OLD.base_price) THEN
+            UPDATE Cares SET price = New.base_price WHERE (Cares.ctuname IN (SELECT username FROM FullTimer)) AND Cares.pettype = NEW.pettype;
+        END IF;
+        RETURN NEW;
+    END; $$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_update_base_price
+BEFORE UPDATE ON Category
+FOR EACH ROW EXECUTE PROCEDURE check_update_base_price();
 
 ------------------------------------------------------------ Bid ------------------------------------------------------------
 
@@ -524,8 +539,7 @@ CREATE OR REPLACE VIEW Users AS (
         CASE WHEN C.carername IS NULL THEN P.ownername 
             ELSE C.carername END AS firstname, 
         CASE WHEN C.age IS NULL THEN P.age 
-            ELSE C.age END AS age, 
-        salary, 
+            ELSE C.age END AS age,
         CASE WHEN P.username IS NULL THEN false  
             ELSE true END AS is_petowner, 
         CASE WHEN C.username IS NULL THEN false 
@@ -542,11 +556,11 @@ CREATE OR REPLACE VIEW Users AS (
 );
 
 CREATE OR REPLACE VIEW Accounts AS (
-   SELECT username, adminName, age, NULL AS salary, false AS is_carer, true AS is_admin FROM PCSAdmin
+   SELECT username, adminName, age, false AS is_carer, true AS is_admin FROM PCSAdmin
    UNION ALL
-   SELECT username, carerName, age, salary, true AS is_carer, false AS is_admin FROM CareTaker
+   SELECT username, carerName, age, true AS is_carer, false AS is_admin FROM CareTaker
    UNION ALL
-   SELECT username, ownerName, age, NULL AS salary, false AS is_carer, false AS is_admin FROM PetOwner
+   SELECT username, ownerName, age, false AS is_carer, false AS is_admin FROM PetOwner
 );
 
 /* SEED */
