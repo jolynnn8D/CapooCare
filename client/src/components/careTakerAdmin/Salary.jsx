@@ -1,3 +1,5 @@
+/* THIS FILE IS NOT BEING USED */ 
+
 import React, { useState, useEffect } from 'react'
 import { useStoreActions, useStoreState } from 'easy-peasy';
 import { makeStyles } from '@material-ui/core/styles';
@@ -27,7 +29,7 @@ const Salary = (props) => {
     }, []);
     return (
         <Card className={classes.salaryCard}>
-            <Typography variant='h6'> Salary: ${userSalary}</Typography>
+            <Typography variant='h6'> Salary: ${parseFloat(userSalary).toFixed(2)}</Typography>
         </Card>
     )
 }

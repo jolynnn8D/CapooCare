@@ -3,7 +3,6 @@ import { useStoreActions, useStoreState } from 'easy-peasy';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Card, FormControl, Grid, InputLabel, List, Select, Typography } from '@material-ui/core';
 import { getStartEndOfMonth } from "../../utils";
-import Salary from './Salary';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,9 +25,13 @@ export const Summary = (props) => {
   const getSingleCaretakerPetownerSummary = useStoreActions(actions => actions.careTakers.getSingleCaretakerPetownerSummary);
   const singleCaretakerPettypeSummary = useStoreState(state => state.careTakers.singleCaretakerPettypeSummary);
   const singleCaretakerPetownerSummary = useStoreState(state => state.careTakers.singleCaretakerPetownerSummary);
+  const getSalary = useStoreActions(actions => actions.careTakers.getSingleCaretakerSalary);
+  const userSalary = useStoreState(state => state.careTakers.singleCaretakerSalary);
   const [month, setMonth] = useState(new Date().getMonth());
   const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
+  let dateRange = getStartEndOfMonth(month);
+  
 
   useEffect(() => {
     getSingleCaretakerPettypeSummary({
@@ -42,6 +45,11 @@ export const Summary = (props) => {
       s_time: getStartEndOfMonth(month).s_time,
       e_time: getStartEndOfMonth(month).e_time
     });
+    getSalary({
+      ctuname: props.username,
+      s_time: dateRange.s_time,
+      e_time: dateRange.e_time, 
+  });
 
     return () => {};
   }, []);
@@ -62,6 +70,17 @@ export const Summary = (props) => {
       s_time: getStartEndOfMonth(month).s_time,
       e_time: getStartEndOfMonth(month).e_time
     });
+  }
+
+  const handleChange = () => {
+    getPetdaysSummary();
+    dateRange = getStartEndOfMonth(month);
+    getSalary({
+      ctuname: props.username,
+      s_time: dateRange.s_time,
+      e_time: dateRange.e_time, 
+  });
+
   }
 
   return (
@@ -88,10 +107,12 @@ export const Summary = (props) => {
             })}
           </Select>
     </FormControl>
-    <Button variant="outlined" onClick={getPetdaysSummary}>
+    <Button variant="outlined" onClick={handleChange}>
         Change Month
     </Button>
-      <Salary username={props.username} month={month}/>
+      <Card className={classes.summaryCard}>
+            <Typography variant='h6'> Salary: ${parseFloat(userSalary).toFixed(2)}</Typography>
+      </Card>
       <Card className={classes.summaryCard}>
           <Typography variant='h6'> Pet-days by Pet Type: 
           {singleCaretakerPettypeSummary.length == 0 
