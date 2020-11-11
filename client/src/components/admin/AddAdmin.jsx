@@ -40,7 +40,7 @@ const AddAdmin = () => {
     const getNewAdminAccount = useStoreActions(actions => actions.admin.getNewAdminAccount);
 
     const submit = async (e) => {
-        console.log(username);
+        // console.log(username);
         e.preventDefault();
         await getNewAdminAccount(username);
 

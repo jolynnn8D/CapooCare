@@ -51,9 +51,11 @@ const adminModel = {
     addAdmin: thunk(async (actions, payload) => {
       // console.log(payload);
       const {username, adminname} = {...payload};
-      const {data} = await axios.post(serverUrl + "/api/v1/pcsadmin", {
+      const data = await axios.post(serverUrl + "/api/v1/pcsadmin", {
           username: username,
           adminname: adminname,
+      }).then(response => {
+        alert("Admin added!");
       })
     }),
 
