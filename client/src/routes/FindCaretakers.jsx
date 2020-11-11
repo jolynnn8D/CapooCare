@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from 'react';
+<<<<<<< HEAD
 import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton, Modal, Grid, GridList} from '@material-ui/core';
+=======
+import { TextField, InputAdornment, Typography, Container, Card, CardActionArea, CardMedia, CardContent, CardActions, Button, Paper, InputBase, Divider, IconButton, Modal, Grid, List } from '@material-ui/core';
+>>>>>>> 4e290f79b3392d3e23cc9558d38b1e802228ecf2
 import Search from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/core/styles';
 import Rating from '@material-ui/lab/Rating';
 import { Link } from 'react-router-dom';
-import { useStoreActions, useStoreState } from 'easy-peasy';
+import { thunk, useStoreActions, useStoreState } from 'easy-peasy';
 import { v4 } from 'uuid';
 import Filter from '../components/Filter';
 import { DateRangePicker } from 'react-date-range';
 import store from "../store/store"
 import { addDays, addYears, eachDayOfInterval, toDate } from 'date-fns';
+import { useHistory } from 'react-router-dom';
+import { FixedSizeList } from 'react-window';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -76,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
 
 const FindCaretakers = () => {
     const classes = useStyles();
+    const history = useHistory();
     const [search, setSearch] = useState("");
     const [availModal, setAvailModal] = useState(false);
     const [filteredCaretakers, setFilteredCaretakers] = useState([]);
@@ -96,13 +104,13 @@ const FindCaretakers = () => {
     const getCareTakerRatings = useStoreActions(actions => actions.careTakers.getCareTakerRatings);
     const getAvailableCaretakers = useStoreActions(actions => actions.careTakers.getAvailableCaretakers);
     const getCaretakersForAllPets = useStoreActions(actions => actions.careTakers.getCaretakersForAllPets);
-
+    
     useEffect(() => {
         getCareTakers();
         getPetTypeList();
         getCareTakerRatings();
         return () => {};
-    }, [])
+    }, []);
 
 
     const careTakers = useStoreState(state => state.careTakers.caretakers);
@@ -128,6 +136,15 @@ const FindCaretakers = () => {
             })
         )
     }, [search, careTakers])
+
+    const handleSearchChange = () => {
+        setFilteredCaretakers(
+            careTakers.filter(caretaker => {
+                return caretaker.pettypes.toLowerCase().includes(search.toLowerCase());
+            })
+        )
+        console.log(filteredCaretakers)
+    }
 
     const sortCareTakers = (event) => {
         setSortValue(event.target.value);
@@ -183,6 +200,38 @@ const FindCaretakers = () => {
 
     }
 
+    const viewCaretakerProfile = (username) => {
+        history.push(`/users/${username}/caretaker`)
+    }
+    const renderRow = ({index, style}) => {
+        const caretaker = filteredCaretakers[index];
+        return (
+            <Card key={v4()} className={classes.card} variant="outlined" style={style}>
+                {/* <CardActionArea component={Link} to={`/users/${caretaker.username}/caretaker`} style={{ textDecoration: 'none' }}> */}
+                <CardActionArea onClick={() => viewCaretakerProfile(caretaker.username)}>
+                    <CardContent>
+                        <Typography gutterBottom variant="h5" component="h2">
+                            {caretaker.username + ` (${caretaker.carername})`}
+                        </Typography>
+                        <Typography variant="body2" component="p">
+                            Caretaker age: {caretaker.age}
+                        </Typography>
+                        <div className={classes.rating}>
+                            <Rating value={caretaker.rating} precision={0.5} readOnly />
+                        </div>
+                        <Typography variant="body2" component="p">
+                            Takes care of: {caretaker.pettypes}
+                            {/* Takes care of: {caretaker.pettypes.map(pettype => pettype.pettype).join(", ")} */}
+                        </Typography>
+                        <Button size="small" color="primary">
+                            Learn More
+                        </Button>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
+        );
+      }
+    
     return (
         <div>
             <Container component="main" maxWidth="md" className={classes.container}>
@@ -212,6 +261,7 @@ const FindCaretakers = () => {
                     Click to filter caretaker by availability
                 </Button>
 
+<<<<<<< HEAD
                 {/* <GridList className={classes.gridList}> */}
                 {filteredCaretakers.map((caretaker) => (
                     <Card key={v4()} className={classes.card} variant="outlined">
@@ -238,6 +288,11 @@ const FindCaretakers = () => {
                     </Card>
                 ))}
                 {/* </GridList> */}
+=======
+                <FixedSizeList height={560} width={300} itemSize={180} itemCount={filteredCaretakers.length} style={{overflow: 'auto', width: "100%"}}> 
+                    {renderRow}
+                </FixedSizeList>
+>>>>>>> 4e290f79b3392d3e23cc9558d38b1e802228ecf2
             </Container>
             <Modal
                 open={availModal}
