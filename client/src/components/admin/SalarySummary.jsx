@@ -68,13 +68,18 @@ const SalarySummary = () => {
 
     const handleChangeMonth = async (event) => {
         setMonth(event.target.value);
+        updateTotalSalary(ctType);
     }
 
     const updateSalaries = async () => {
         await getPartTimerSalary(getStartEndOfMonth(month));
         await getFullTimerSalary(getStartEndOfMonth(month));
+        fullTimerSalary = store.getState().admin.fullTimerSalary;
+        partTimerSalary = store.getState().admin.partTimerSalary;
+
         updateTotalSalary(ctType);
     }
+    
 
     return (
         <div>

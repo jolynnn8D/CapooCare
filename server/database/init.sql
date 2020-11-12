@@ -570,15 +570,15 @@ INSERT INTO PCSAdmin(username, adminName) VALUES ('White', 'white');
 /* Setting categories and their base price */
 INSERT INTO Category(pettype, base_price) VALUES ('dog', 60),('cat', 60),('rabbit', 50),('big dog', 70),('lizard', 60),('bird', 60),('snake', 70),('fish',30);
 
-CALL add_fulltimer('yellowchicken', 'chick', 22, 'bird', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('purpledog', 'purple', 25, 'dog', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('redduck', 'ducklings', 20, 'rabbit', 50, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
-/* add next year periods for redduck FT */
-CALL add_fulltimer('redduck', NULL, NULL, NULL, NULL, '2021-01-01', '2021-05-30', '2021-06-01', '2021-12-20');
+CALL add_fulltimer('mary_caretaker', 'Mary', 22, 'bird', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('bob_lovesdogs', 'Bob', 25, 'dog', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('ameliaCareServices', 'Amelia', 20, 'rabbit', 50, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+/* add next year periods for ameliaCareServices FT */
+CALL add_fulltimer('ameliaCareServices', NULL, NULL, NULL, NULL, '2021-01-01', '2021-05-30', '2021-06-01', '2021-12-20');
 
-CALL add_parttimer('yellowbird', 'bird', 35, 'cat', 60);
-CALL add_parttimer('bluerhino', 'rhino', 28, 'cat', 35);
-CALL add_parttimer('orangedonald', 'bird', 35, 'cat', 60);
+CALL add_parttimer('supercaretaker', 'Kenny Goh', 35, 'cat', 60);
+CALL add_parttimer('harrylampets', 'Harry', 28, 'cat', 35);
+CALL add_parttimer('caretakeriam', 'Jessica', 35, 'cat', 60);
 
 CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
 CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
@@ -594,107 +594,108 @@ INSERT INTO Owned_Pet_Belongs VALUES ('johnthebest', 'fish', 'Bloop', 1, 'Needs 
 INSERT INTO Owned_Pet_Belongs VALUES ('johnthebest', 'snake', 'Hiss', 5, 'Just keep an eye on him');
 
 /* Fulltimers' cares */
-INSERT INTO Cares VALUES ('yellowchicken', 'rabbit', 50);
-INSERT INTO Cares VALUES ('yellowchicken', 'dog', 60);
-INSERT INTO Cares VALUES ('yellowchicken', 'big dog', 70);
-INSERT INTO Cares VALUES ('yellowchicken', 'cat', 60);
-INSERT INTO Cares VALUES ('redduck', 'big dog', 70);
-INSERT INTO Cares VALUES ('redduck', 'snake', 70);
-INSERT INTO Cares VALUES ('redduck', 'fish', 30);
---INSERT INTO Cares VALUES ('purpledog', 'big dog', 70);
-INSERT INTO Cares VALUES ('purpledog', 'cat', 60);
+INSERT INTO Cares VALUES ('mary_caretaker', 'rabbit', 50);
+INSERT INTO Cares VALUES ('mary_caretaker', 'dog', 60);
+INSERT INTO Cares VALUES ('mary_caretaker', 'big dog', 70);
+INSERT INTO Cares VALUES ('mary_caretaker', 'cat', 60);
+INSERT INTO Cares VALUES ('ameliaCareServices', 'big dog', 70);
+INSERT INTO Cares VALUES ('ameliaCareServices', 'snake', 70);
+INSERT INTO Cares VALUES ('ameliaCareServices', 'fish', 30);
+--INSERT INTO Cares VALUES ('bob_lovesdogs', 'big dog', 70);
+INSERT INTO Cares VALUES ('bob_lovesdogs', 'cat', 60);
 
 /* Parttimers' Cares */
-INSERT INTO Cares VALUES ('yellowbird', 'dog', 60);
+INSERT INTO Cares VALUES ('supercaretaker', 'dog', 60);
 /* Remove the following line to encounter pet type error */
-INSERT INTO Cares VALUES ('yellowbird', 'big dog', 90);
+INSERT INTO Cares VALUES ('supercaretaker', 'big dog', 90);
 
-INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-01-01', '2020-03-04');
-INSERT INTO Has_Availability VALUES ('yellowchicken', '2021-01-01', '2021-03-04');
-INSERT INTO Has_Availability VALUES ('purpledog', '2021-01-01', '2021-03-04');
-INSERT INTO Has_Availability VALUES ('redduck', '2021-01-01', '2021-03-04');
-INSERT INTO Has_Availability VALUES ('yellowbird', '2021-01-01', '2021-03-04');
-INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-02', '2020-06-08');
-INSERT INTO Has_Availability VALUES ('yellowbird', '2020-12-04', '2020-12-20');
-INSERT INTO Has_Availability VALUES ('yellowbird', '2020-08-08', '2020-08-10');
+INSERT INTO Has_Availability VALUES ('mary_caretaker', '2020-01-01', '2020-03-04');
+INSERT INTO Has_Availability VALUES ('mary_caretaker', '2021-01-01', '2021-03-04');
+INSERT INTO Has_Availability VALUES ('bob_lovesdogs', '2021-01-01', '2021-03-04');
+INSERT INTO Has_Availability VALUES ('ameliaCareServices', '2021-01-01', '2021-03-04');
+INSERT INTO Has_Availability VALUES ('supercaretaker', '2021-01-01', '2021-03-04');
+INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-06-02', '2020-06-08');
+INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-12-04', '2020-12-20');
+INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-08-08', '2020-08-10');
 
-CALL add_bid('johnthebest', 'Bloop', 'fish', 'redduck', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
-CALL add_bid('johnthebest', 'Hiss', 'snake', 'redduck', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
---UPDATE Bid SET is_win = False WHERE ctuname = 'redduck' AND pouname = 'johnthebest' AND petname = 'Hiss' AND pettype = 'snake' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210220','YYYYMMDD');
-CALL add_bid('marythemess', 'Ruff', 'big dog', 'yellowbird', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
-CALL add_bid('marythemess', 'Champ', 'big dog', 'yellowbird', '2021-01-05', '2021-01-20', 'cash', 'poDeliver');
-UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Ruff' AND pettype = 'big dog' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210220','YYYYMMDD');
-UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210120','YYYYMMDD');
+
+CALL add_bid('johnthebest', 'Bloop', 'fish', 'ameliaCareServices', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
+CALL add_bid('johnthebest', 'Hiss', 'snake', 'ameliaCareServices', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
+--UPDATE Bid SET is_win = False WHERE ctuname = 'ameliaCareServices' AND pouname = 'johnthebest' AND petname = 'Hiss' AND pettype = 'snake' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210220','YYYYMMDD');
+CALL add_bid('marythemess', 'Ruff', 'big dog', 'supercaretaker', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Champ', 'big dog', 'supercaretaker', '2021-01-05', '2021-01-20', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = True WHERE ctuname = 'supercaretaker' AND pouname = 'marythemess' AND petname = 'Ruff' AND pettype = 'big dog' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210220','YYYYMMDD');
+UPDATE Bid SET is_win = True WHERE ctuname = 'supercaretaker' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog' AND s_time = to_date('20210105','YYYYMMDD') AND e_time = to_date('20210120','YYYYMMDD');
 
 -- The following test case overloads 'marythemess' with more bids than she can accept
-CALL add_bid('marythemess', 'Meow', 'cat', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
-CALL add_bid('marythemess', 'Bark', 'big dog', 'yellowchicken', '2021-01-01', '2021-02-28', NULL, NULL);
---CALL add_bid('marythemess', 'Champ', 'big dog', 'purpledog', '2021-02-01', '2021-02-23', 'cash', 'poDeliver');
-CALL add_bid('marythemess', 'Purr', 'cat', 'purpledog', '2021-02-03', '2021-02-22', 'cash', 'ctPickup');
-CALL add_bid('marythemess', 'Champ', 'big dog', 'yellowchicken', '2021-02-24', '2021-02-28', 'cash', 'poDeliver');
-CALL add_bid('marythemess', 'Ruff', 'big dog', 'yellowchicken', '2021-02-25', '2021-02-28', 'cash', 'ctPickup');
-CALL add_bid('marythemess', 'Purr', 'cat', 'yellowchicken', '2021-02-26', '2021-02-28', 'cash', 'poDeliver');
-CALL add_bid('marythemess', 'Sneak', 'cat', 'yellowchicken', '2021-02-27', '2021-02-28', 'cash', 'poDeliver');
-CALL add_bid('marythemess', 'Sneak', 'cat', 'yellowbird', '2020-08-08', '2020-08-09', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Meow', 'cat', 'mary_caretaker', '2021-01-01', '2021-02-28', NULL, NULL);
+CALL add_bid('marythemess', 'Bark', 'big dog', 'mary_caretaker', '2021-01-01', '2021-02-28', NULL, NULL);
+--CALL add_bid('marythemess', 'Champ', 'big dog', 'bob_lovesdogs', '2021-02-01', '2021-02-23', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Purr', 'cat', 'bob_lovesdogs', '2021-02-03', '2021-02-22', 'cash', 'ctPickup');
+CALL add_bid('marythemess', 'Champ', 'big dog', 'mary_caretaker', '2021-02-24', '2021-02-28', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Ruff', 'big dog', 'mary_caretaker', '2021-02-25', '2021-02-28', 'cash', 'ctPickup');
+CALL add_bid('marythemess', 'Purr', 'cat', 'mary_caretaker', '2021-02-26', '2021-02-28', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Sneak', 'cat', 'mary_caretaker', '2021-02-27', '2021-02-28', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Sneak', 'cat', 'supercaretaker', '2020-08-08', '2020-08-09', 'cash', 'poDeliver');
 
 -- The following test case sets up a completed Bid
--- CALL add_bid('marythemess', 'Champ', 'big dog', 'yellowchicken', '2020-02-05', '2020-02-20', 'credit card', 'ctPickup');
--- UPDATE Bid SET is_win = true WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ'
+-- CALL add_bid('marythemess', 'Champ', 'big dog', 'mary_caretaker', '2020-02-05', '2020-02-20', 'credit card', 'ctPickup');
+-- UPDATE Bid SET is_win = true WHERE ctuname = 'mary_caretaker' AND pouname = 'marythemess' AND petname = 'Champ'
 --    AND pettype = 'big dog' AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD');
 -- UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review = 'sample review', pay_status = true
---    WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog'
+--    WHERE ctuname = 'mary_caretaker' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog'
 --    AND s_time = to_date('20200205','YYYYMMDD') AND e_time = to_date('20200220','YYYYMMDD') AND is_win = true;
 
  /* Expected outcome: 'marythemess' wins both bids at timestamp 1-4 and 2-4. This causes 'johnthebest' to lose the 2-4		
-     bid. The 1-4 bid by 'johnthebest' that is inserted afterwards immediately loses as well, since 'yellowbird' has		
+     bid. The 1-4 bid by 'johnthebest' that is inserted afterwards immediately loses as well, since 'supercaretaker' has		
      reached their maximum capacity already.*/		
---  INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));		
---  INSERT INTO Bid VALUES ('marythemess', 'Champ', 'big dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));		
---  INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('2000000'), to_timestamp('4000000'));		
---  INSERT INTO Bid VALUES ('marythemess', 'Meow', 'cat', 'yellowbird', to_timestamp('3000000'), to_timestamp('4000000'));
+--  INSERT INTO Bid VALUES ('marythemess', 'Fido', 'dog', 'supercaretaker', to_timestamp('1000000'), to_timestamp('4000000'));		
+--  INSERT INTO Bid VALUES ('marythemess', 'Champ', 'big dog', 'supercaretaker', to_timestamp('2000000'), to_timestamp('4000000'));		
+--  INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'supercaretaker', to_timestamp('2000000'), to_timestamp('4000000'));		
+--  INSERT INTO Bid VALUES ('marythemess', 'Meow', 'cat', 'supercaretaker', to_timestamp('3000000'), to_timestamp('4000000'));
 
---  UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Fido' AND pettype = 'dog' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');		
---  UPDATE Bid SET is_win = True WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
+--  UPDATE Bid SET is_win = True WHERE ctuname = 'supercaretaker' AND pouname = 'marythemess' AND petname = 'Fido' AND pettype = 'dog' AND s_time = to_timestamp('1000000') AND e_time = to_timestamp('4000000');		
+--  UPDATE Bid SET is_win = True WHERE ctuname = 'supercaretaker' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog' AND s_time = to_timestamp('2000000') AND e_time = to_timestamp('4000000');
 
---  INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'yellowbird', to_timestamp('1000000'), to_timestamp('4000000'));
+--  INSERT INTO Bid VALUES ('johnthebest', 'Fido', 'dog', 'supercaretaker', to_timestamp('1000000'), to_timestamp('4000000'));
 
 --------------- TEST all_ct query, testing with 'marythemess' at time period 2020-06-01 to 2020-06-06 ---------------------
 
 -- These are to set the ratings for following cts
--- yellow chicken
-CALL add_bid('marythemess', 'Champ', 'big dog', 'yellowchicken', '2020-02-24', '2020-02-28', 'cash', 'poDeliver');
-UPDATE Bid SET is_win = true WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ'
+-- mary_caretaker
+CALL add_bid('marythemess', 'Champ', 'big dog', 'mary_caretaker', '2020-02-24', '2020-02-28', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'mary_caretaker' AND pouname = 'marythemess' AND petname = 'Champ'
    AND pettype = 'big dog' AND s_time = to_date('20200224','YYYYMMDD') AND e_time = to_date('20200228','YYYYMMDD');
-UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '5', review = 'sample review', pay_status = true
-   WHERE ctuname = 'yellowchicken' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog'
+UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '5', review = 'Great services, recommended.', pay_status = true
+   WHERE ctuname = 'mary_caretaker' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog'
    AND s_time = to_date('20200224','YYYYMMDD') AND e_time = to_date('20200228','YYYYMMDD') AND is_win = true;
--- yellowbird
-INSERT INTO Has_Availability VALUES ('yellowbird', '2020-01-05', '2020-01-20');
-CALL add_bid('marythemess', 'Champ', 'big dog', 'yellowbird', '2020-01-05', '2020-01-10', 'cash', 'poDeliver');
-UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ'
+-- supercaretaker
+INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-01-05', '2020-01-20');
+CALL add_bid('marythemess', 'Champ', 'big dog', 'supercaretaker', '2020-01-05', '2020-01-10', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'supercaretaker' AND pouname = 'marythemess' AND petname = 'Champ'
    AND pettype = 'big dog' AND s_time = to_date('20200105','YYYYMMDD') AND e_time = to_date('20200110','YYYYMMDD');
-UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review = 'sample review', pay_status = true
-    WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog' 
+UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '5', review = 'sample review', pay_status = true
+    WHERE ctuname = 'supercaretaker' AND pouname = 'marythemess' AND petname = 'Champ' AND pettype = 'big dog' 
     AND s_time = to_date('20200105','YYYYMMDD') AND e_time = to_date('20200110','YYYYMMDD');
--- purpleddog
-CALL add_bid('marythemess', 'Purr', 'cat', 'purpledog', '2020-02-03', '2020-02-22', 'cash', 'poDeliver');
-UPDATE Bid SET is_win = true WHERE ctuname = 'purpledog' AND pouname = 'marythemess' AND petname = 'Purr'
+-- Bobddog
+CALL add_bid('marythemess', 'Purr', 'cat', 'bob_lovesdogs', '2020-02-03', '2020-02-22', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'bob_lovesdogs' AND pouname = 'marythemess' AND petname = 'Purr'
    AND pettype = 'cat' AND s_time = to_date('20200203','YYYYMMDD') AND e_time = to_date('20200222','YYYYMMDD');
-UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '1', review = 'sample review', pay_status = true
-   WHERE ctuname = 'purpledog' AND pouname = 'marythemess' AND petname = 'Purr' AND pettype = 'cat'
+UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review = 'sample review', pay_status = true
+   WHERE ctuname = 'bob_lovesdogs' AND pouname = 'marythemess' AND petname = 'Purr' AND pettype = 'cat'
    AND s_time = to_date('20200203','YYYYMMDD') AND e_time = to_date('20200222','YYYYMMDD') AND is_win = true;
 
 
-INSERT INTO Has_Availability VALUES ('yellowbird', '2020-06-01', '2020-06-06');
-INSERT INTO Has_Availability VALUES ('yellowchicken', '2020-06-01', '2020-06-06');
-INSERT INTO Has_Availability VALUES ('purpledog', '2020-06-01', '2020-06-06');
+INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-06-01', '2020-06-06');
+INSERT INTO Has_Availability VALUES ('mary_caretaker', '2020-06-01', '2020-06-06');
+INSERT INTO Has_Availability VALUES ('bob_lovesdogs', '2020-06-01', '2020-06-06');
 
 -- saturation of PT capacity --
-CALL add_bid('marythemess', 'Champ', 'big dog', 'yellowbird', '2020-06-01', '2020-06-06', 'cash', 'poDeliver');
-UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Champ'
+CALL add_bid('marythemess', 'Champ', 'big dog', 'supercaretaker', '2020-06-01', '2020-06-06', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'supercaretaker' AND pouname = 'marythemess' AND petname = 'Champ'
    AND pettype = 'big dog' AND s_time = to_date('20200601','YYYYMMDD') AND e_time = to_date('20200606','YYYYMMDD');
-CALL add_bid('marythemess', 'Meow', 'cat', 'yellowbird', '2020-06-01', '2020-06-06', 'cash', 'poDeliver');
-UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Meow'
+CALL add_bid('marythemess', 'Meow', 'cat', 'supercaretaker', '2020-06-01', '2020-06-06', 'cash', 'poDeliver');
+UPDATE Bid SET is_win = true WHERE ctuname = 'supercaretaker' AND pouname = 'marythemess' AND petname = 'Meow'
    AND pettype = 'cat' AND s_time = to_date('20200601','YYYYMMDD') AND e_time = to_date('20200606','YYYYMMDD');
 
 --Frontend mock data--
@@ -704,6 +705,43 @@ INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'cat', 'Meow', 2, NULL);
 INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'fish', 'Torpedo', 1, NULL);
 INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'cat', 'Snowy', 1, NULL);
 INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'dog', 'Woof', 2, NULL);
+
+CALL add_fulltimer('caretaker_amy', 'Amy', 22, 'cat', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+CALL add_fulltimer('new_caretaker', 'Sebastian', 50, 'big dog', 70, '2021-01-01', '2021-06-01', '2021-06-02', '2021-12-30');
+CALL add_fulltimer('new_caretaker', NULL, NULL,  NULL, NULL, '2020-01-01', '2020-06-01', '2020-06-02', '2020-12-30');
+
+
+CALL add_parttimer('johnhammington', 'John', 28, 'cat', 35);
+
+INSERT INTO Has_Availability VALUES ('johnhammington', '2021-02-01', '2021-04-30');
+INSERT INTO Cares VALUES ('caretaker_amy', 'big dog', 70);
+INSERT INTO Cares VALUES ('new_caretaker', 'cat', 60);
+INSERT INTO Cares VALUES ('new_caretaker', 'dog', 60);
+
+
+
+
+CALL add_bid('petownerdavid', 'Meow', 'cat', 'caretaker_amy', '2020-01-01', '2020-01-30','cash', 'poDeliver');
+CALL add_bid('petownerdavid', 'Meow', 'cat', 'caretaker_amy', '2020-03-02', '2020-03-25','cash', 'poDeliver');
+CALL add_bid('petownerdavid', 'Brownie', 'big dog', 'caretaker_amy', '2020-03-02', '2020-03-25','cash', 'poDeliver');
+CALL add_bid('petownerdavid', 'Snowy', 'cat', 'johnhammington', '2021-03-02', '2021-03-25','cash', 'poDeliver');
+
+
+CALL add_bid('petownerdavid', 'Snowy', 'cat', 'new_caretaker', '2020-01-17', '2020-01-19', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Champ', 'big dog', 'new_caretaker', '2020-04-17', '2020-04-19', 'cash', 'poDeliver');
+CALL add_bid('johnthebest', 'Fido', 'dog', 'new_caretaker', '2020-05-01', '2020-05-03', 'credit card', 'poDeliver');
+CALL add_bid('johnthebest', 'Fido', 'dog', 'new_caretaker', '2020-05-06', '2020-05-07', 'cash', 'poDeliver');
+CALL add_bid('marythemess', 'Champ', 'big dog', 'new_caretaker', '2020-07-09', '2020-07-10', 'cash', 'poDeliver');
+CALL add_bid('petownerdavid', 'Snowy', 'cat', 'new_caretaker', '2020-09-01', '2020-09-02', 'cash', 'poDeliver');
+CALL add_bid('petownerdavid', 'Woof', 'dog', 'new_caretaker', '2020-02-01', '2020-02-03', 'cash', 'poDeliver');
+CALL add_bid('petownerdavid', 'Woof', 'dog', 'new_caretaker', '2020-11-01', '2020-11-03', 'cash', 'poDeliver');
+CALL add_bid('petownerdavid', 'Brownie', 'big dog', 'new_caretaker', '2020-08-02', '2020-08-25','cash', 'ctPickup');
+
+
+
+
+
+
 
 
 
