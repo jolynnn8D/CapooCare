@@ -90,32 +90,53 @@ const UserCard = (props) => { // currently, when you click on caretaker from Fin
             </div>
         )
     } else {
-        return (
-            <div>
-                <Card onClick={() => toggleModal()} className={classes.root}>
-                    <Grid container>
-                        <Grid item xs={3}>
-                            <ProfilePic img={profileImg}/>
+        if (props.display === 'different_caretaker') {
+            return (
+                <div>
+                    <Card className={classes.root}>
+                        <Grid container>
+                            <Grid item xs={3}>
+                                <ProfilePic img={profileImg}/>
+                            </Grid>
+                            <Grid item className={classes.profileTextArea}>
+                                <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
+                                <h4> Age: {displayedUser.age}</h4>
+                                <h4> Caretaker Type: {displayedUser.is_fulltimer ? "full-timer" : "part-timer"}</h4>
+                                <h4> Rating: {userRating.avg == null ? "No rating so far" : parseFloat(userRating.avg).toFixed(2)} </h4>
+                            </Grid>
                         </Grid>
-                        <Grid item className={classes.profileTextArea}>
-                            <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
-                            <h4> Age: {displayedUser.age}</h4>
-                            <h4> Caretaker Type: {displayedUser.is_fulltimer ? "full-timer" : "part-timer"}</h4>
-                            <h4> Rating: {userRating.avg == null ? "No rating so far" : parseFloat(userRating.avg).toFixed(2)} </h4>
-                            <h6>Click on your profile to make any updates!</h6>
+                    </Card>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <Card onClick={() => toggleModal()} className={classes.root}>
+                        <Grid container>
+                            <Grid item xs={3}>
+                                <ProfilePic img={profileImg}/>
+                            </Grid>
+                            <Grid item className={classes.profileTextArea}>
+                                <h2 className={classes.profileText}> {displayedUser.username} ({displayedUser.firstname})</h2>
+                                <h4> Age: {displayedUser.age}</h4>
+                                <h4> Caretaker Type: {displayedUser.is_fulltimer ? "full-timer" : "part-timer"}</h4>
+                                <h4> Rating: {userRating.avg == null ? "No rating so far" : parseFloat(userRating.avg).toFixed(2)} </h4>
+                                <h6>Click on your profile to make any updates!</h6>
 
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </Card>
-                <Modal
-                        open={open}
-                        onClose={toggleModal}>
-                        <Card className={classes.modal}>
-                            <UserModal closeModal={toggleModal}/>
-                        </Card>
-                </Modal>
-            </div>
-        )
+                    </Card>
+                    <Modal
+                            open={open}
+                            onClose={toggleModal}>
+                            <Card className={classes.modal}>
+                                <UserModal closeModal={toggleModal}/>
+                            </Card>
+                    </Modal>
+                </div>
+            )
+        }
+        
     }
 
 }

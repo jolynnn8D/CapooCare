@@ -28,7 +28,10 @@ const CaretakerProfile = (props) => {
     const username = params.username;
     
     const getDisplayedUser = useStoreActions(actions => actions.user.getDisplayedUser);
+    const getSingleUser = useStoreActions(actions => actions.user.getSingleUser);
     const displayedUser = useStoreState(state => state.user.displayedUser);
+    const singleUser = useStoreState(state => state.user.singleUser);
+
     // console.log(caretaker);
 
     useEffect(() => {
@@ -36,8 +39,29 @@ const CaretakerProfile = (props) => {
         return () => {};
     }, []);
     
-
-    if (displayedUser.is_carer == true) {
+    if (displayedUser.username != singleUser.username) {
+        return (
+            <div>
+                <Grid container>
+                    <Grid item className={classes.verticalSections} xs={12}>
+                        <Grid item xs={12}>
+                            <UserCard display={'different_caretaker'} username={username}/>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Card>
+                                <PetCareList userType="po" username={username}/>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} className={classes.card}>
+                            <Typography variant='h4'> Reviews </Typography> 
+                            <ReviewPanel username={username}/>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </div>
+        )
+    }
+    else if (displayedUser.is_carer == true ) {
         return (
             <div>
                 <Grid container>
