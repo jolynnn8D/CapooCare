@@ -696,3 +696,16 @@ UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythe
 CALL add_bid('marythemess', 'Meow', 'cat', 'yellowbird', '2020-06-01', '2020-06-06', 'cash', 'poDeliver');
 UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythemess' AND petname = 'Meow'
    AND pettype = 'cat' AND s_time = to_date('20200601','YYYYMMDD') AND e_time = to_date('20200606','YYYYMMDD');
+
+--Frontend mock data--
+CALL add_petOwner('petownerdavid', 'David', 35, 'cat', 'Capoo', 1, 'Needs to be walked everyday');
+INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'big dog', 'Brownie', 8, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'cat', 'Meow', 2, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'fish', 'Torpedo', 1, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'cat', 'Snowy', 1, NULL);
+INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'dog', 'Woof', 2, NULL);
+
+
+
+
+
