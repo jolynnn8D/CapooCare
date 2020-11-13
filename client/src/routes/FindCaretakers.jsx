@@ -142,8 +142,8 @@ const FindCaretakers = () => {
         console.log(filteredCaretakers)
     }
 
-    const sortCareTakers = (event) => {
-        setSortValue(event.target.value);
+    const sortCareTakers = (value) => {
+        setSortValue(value);
         setFilteredCaretakers(
             filteredCaretakers.sort((a,b) => (
                 sortValue === 'lowest' ? 
