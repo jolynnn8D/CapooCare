@@ -713,7 +713,7 @@ UPDATE Bid SET is_win = true WHERE ctuname = 'yellowbird' AND pouname = 'marythe
 
 --SPECIFIC EXAMPLES
 
-Category --
+--Category
 insert into Category (pettype, base_price) values ('Pitbull', 100);
 insert into Category (pettype, base_price) values ('Chihuahua', 60);
 insert into Category (pettype, base_price) values ('Aquarium Fish', 40);
@@ -775,7 +775,7 @@ insert into Has_Availability values ('Dustion', '2020-05-15', '2020-06-25');
 insert into Has_Availability values ('Dustion', '2020-07-01', '2020-09-30');
 insert into Has_Availability values ('Dustion', '2020-10-01', '2020-12-31');
 
-Successful Bids for parttimer: Dustion
+-- Successful Bids for parttimer: Dustion
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'Dustion','2020-04-05' , '2020-04-07', 'true', 3, 'Good service', 'cash', 'poDeliver', 'true');
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'Dustion','2020-08-02' , '2020-08-06', 'true', 3, 'Caretaker was very nice. Took good care of my snake.', 'credit card', 'poDeliver', 'true');
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status)values ('zxcher','Ed', 'Hamster', 'Dustion','2020-08-05' , '2020-08-10', 'true', 3, 'cash', 'ctPickup', 'true');
@@ -787,12 +787,12 @@ insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rat
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'purpleAbi','2020-09-20' , '2020-09-25', 'true', 2, 'Bad mannered caretaker', 'cash', 'poDeliver', 'true');
 
 
-Successful Bids for fulltimer: littleJohn, AVAIL: '2020-02-01', '2020-06-30' AND '2020-07-01', '2020-11-30'
+-- Successful Bids for fulltimer: littleJohn, AVAIL: '2020-02-01', '2020-06-30' AND '2020-07-01', '2020-11-30'
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-03-01', '2020-03-15', 'true', 5, 'Great services! Very impressed with his thoughtfulness', 'credit card', 'poDeliver', 'true');
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-04-20' , '2020-04-25', 'true', 5, 'Very accommodating caretaker!','credit card', 'ctPickup', 'true');
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-08-01' , '2020-08-10', 'true', 5, 'credit card', 'poDeliver', 'true');
 
-making > 60 pet days for cartaker littleJohn on month Septemeber
+-- making > 60 pet days for cartaker littleJohn on month Septemeber
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 3, 'credit card', 'ctPickup', 'true');
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 3, 'cash', 'poDeliver', 'true');
 insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 4, 'cash', 'poDeliver', 'true');
