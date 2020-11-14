@@ -11,15 +11,6 @@ export default class Filter extends Component {
             <option value="highest">Highest Rating</option>
             <option value="lowest">Lowest Rating</option>
           </select></div>
-        {/* <div className="filter-size">Filter
-          <select>
-            <option value="">ALL</option>  
-            <option value="">ALL</option>  
-            <option value="">ALL</option>  
-            <option value="">ALL</option>  
-            <option value="">ALL</option>  
-          </select>
-        </div> */}
       </div>
     )
   }

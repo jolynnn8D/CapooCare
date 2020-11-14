@@ -42,15 +42,19 @@ const AddAdmin = () => {
     const submit = async (e) => {
         // console.log(username);
         e.preventDefault();
-        await getNewAdminAccount(username);
+        const result = await getNewAdminAccount(username);
 
-        addAdmin({
-          username: username,
-          adminname: adminname
-        });
+        if (result.data.data.account != null) {
+            alert("Username already exists in the database!");
+        } else {
+            addAdmin({
+            username: username,
+            adminname: adminname
+            });
 
-        setUsername('');
-        setAdminName('');
+            setUsername('');
+            setAdminName('');
+        }
     }
 
     return (

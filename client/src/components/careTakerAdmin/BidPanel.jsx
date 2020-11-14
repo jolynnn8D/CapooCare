@@ -133,7 +133,7 @@ const BidPanel = (props) => {
                             Duration: {sqlToJsDate(bidInfo.s_time).toDateString()} to {sqlToJsDate(bidInfo.e_time).toDateString()}
                         </Typography>
                         <Typography variant="h6">
-                            Price: ${bidInfo.cost.toFixed(2)}
+                            Price: ${bidInfo.cost == null ? "0.00" : bidInfo.cost.toFixed(2)}
                         </Typography>
                         <Typography variant="h6">
                             Pickup Method: {bidInfo.pet_pickup == 'poDeliver' ? "Pet Owner Deliver" 
