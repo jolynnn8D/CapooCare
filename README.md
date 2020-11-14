@@ -1,8 +1,8 @@
 # [Team 57] CapooCare
 
-[**Video Demo**](https://www.youtube.com/watch?v=GrYxDcfxgS0)
+### [**Video Demo**](https://www.youtube.com/watch?v=GrYxDcfxgS0)
 
-[**Application Link**](https://capoocare.herokuapp.com)
+### [**Application Link**](https://capoocare.herokuapp.com)
 
 ![Image of Pet Owner's Profile](/resources/petowner_profile.png)  
 
