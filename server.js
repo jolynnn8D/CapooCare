@@ -4,12 +4,19 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./database/init");
 const keys = require("./keys");
+const path = require("path");
 const port = keys.port || 5000;
 
 const app = express();
 
 app.use(cors())
 app.use(express.json());
+
+if (process.env.NODE_ENV === "production") {
+    //server static content
+    //npm run build
+    app.use(express.static(path.join(__dirname, "client/build")));
+}
 
 // If True, then the database will be wiped and re-initialized. By default, use False.
 const forceInitializeDatabase = keys.forceInitializeDatabase || false
