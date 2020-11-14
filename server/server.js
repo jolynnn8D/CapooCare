@@ -1916,7 +1916,7 @@ app.get("/api/v1/admin/salary/fulltimers/:s_time/:e_time", async (req, res) => {
         "                ELSE 1" +
         "            END" +
         "            FROM Bid RIGHT JOIN Fulltimer ON (Bid.ctuname = Fulltimer.username)" +
-        "            WHERE ctuname = username" +
+        "            WHERE salaries.ctuname = username" +
         "    ) AS salary" +
         "    FROM (" +
         "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
@@ -1999,7 +1999,7 @@ app.get("/api/v1/admin/salary/parttimers/:s_time/:e_time", async (req, res) => {
         "                ELSE 1" +
         "            END" +
         "            FROM Bid RIGHT JOIN Parttimer ON (Bid.ctuname = Parttimer.username)" +
-        "            WHERE ctuname = username" +
+        "            WHERE salaries.ctuname = username" +
         "    ) AS salary" +
         "    FROM (" +
         "        SELECT username AS ctuname, day, COALESCE(price, 0) AS cost, pouname, petName" +
