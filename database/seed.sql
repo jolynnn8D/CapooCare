@@ -1,57 +1,57 @@
 /* SEED */
-INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
-INSERT INTO PCSAdmin(username, adminName) VALUES ('White', 'white');
+-- INSERT INTO PCSAdmin(username, adminName) VALUES ('Red', 'red');
+-- INSERT INTO PCSAdmin(username, adminName) VALUES ('White', 'white');
 
-/* Setting categories and their base price */
-INSERT INTO Category(pettype, base_price) VALUES ('dog', 60),('cat', 60),('rabbit', 50),('big dog', 70),('lizard', 60),('bird', 60),('snake', 70),('fish',30);
+-- /* Setting categories and their base price */
+-- INSERT INTO Category(pettype, base_price) VALUES ('dog', 60),('cat', 60),('rabbit', 50),('big dog', 70),('lizard', 60),('bird', 60),('snake', 70),('fish',30);
 
-CALL add_fulltimer('mary_caretaker', 'Mary', 22, 'bird', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('bob_lovesdogs', 'Bob', 25, 'dog', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('ameliaCareServices', 'Amelia', 20, 'rabbit', 50, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
-/* add next year periods for ameliaCareServices FT */
-CALL add_fulltimer('ameliaCareServices', NULL, NULL, NULL, NULL, '2021-01-01', '2021-05-30', '2021-06-01', '2021-12-20');
+-- CALL add_fulltimer('mary_caretaker', 'Mary', 22, 'bird', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+-- CALL add_fulltimer('bob_lovesdogs', 'Bob', 25, 'dog', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+-- CALL add_fulltimer('ameliaCareServices', 'Amelia', 20, 'rabbit', 50, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+-- /* add next year periods for ameliaCareServices FT */
+-- CALL add_fulltimer('ameliaCareServices', NULL, NULL, NULL, NULL, '2021-01-01', '2021-05-30', '2021-06-01', '2021-12-20');
 
-CALL add_parttimer('supercaretaker', 'Kenny Goh', 35, 'cat', 60);
-CALL add_parttimer('harrylampets', 'Harry', 28, 'cat', 35);
-CALL add_parttimer('caretakeriam', 'Jessica', 35, 'cat', 60);
+-- CALL add_parttimer('supercaretaker', 'Kenny Goh', 35, 'cat', 60);
+-- CALL add_parttimer('harrylampets', 'Harry', 28, 'cat', 35);
+-- CALL add_parttimer('caretakeriam', 'Jessica', 35, 'cat', 60);
 
-CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
-CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
-CALL add_petOwner('thomasthetank', 'Tom', 15, 'cat', 'Claw', 10, NULL);
+-- CALL add_petOwner('johnthebest', 'John', 50, 'dog', 'Fido', 10, NULL);
+-- CALL add_petOwner('marythemess', 'Mary', 25, 'dog', 'Fido', 10, NULL);
+-- CALL add_petOwner('thomasthetank', 'Tom', 15, 'cat', 'Claw', 10, NULL);
 
-INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dog', 'Champ', 10, NULL);
-INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dog', 'Ruff', 12, 'Hates cats');
-INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dog', 'Bark', 14, 'Can be very loud');
-INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
-INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Purr', 15, 'Hates dogs');
-INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Sneak', 20, 'Needs to go outside a lot');
-INSERT INTO Owned_Pet_Belongs VALUES ('johnthebest', 'fish', 'Bloop', 1, 'Needs to be fed thrice a day');
-INSERT INTO Owned_Pet_Belongs VALUES ('johnthebest', 'snake', 'Hiss', 5, 'Just keep an eye on him');
+-- INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dog', 'Champ', 10, NULL);
+-- INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dog', 'Ruff', 12, 'Hates cats');
+-- INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'big dog', 'Bark', 14, 'Can be very loud');
+-- INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Meow', 10, NULL);
+-- INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Purr', 15, 'Hates dogs');
+-- INSERT INTO Owned_Pet_Belongs VALUES ('marythemess', 'cat', 'Sneak', 20, 'Needs to go outside a lot');
+-- INSERT INTO Owned_Pet_Belongs VALUES ('johnthebest', 'fish', 'Bloop', 1, 'Needs to be fed thrice a day');
+-- INSERT INTO Owned_Pet_Belongs VALUES ('johnthebest', 'snake', 'Hiss', 5, 'Just keep an eye on him');
 
-/* Fulltimers' cares */
-INSERT INTO Cares VALUES ('mary_caretaker', 'rabbit', 50);
-INSERT INTO Cares VALUES ('mary_caretaker', 'dog', 60);
-INSERT INTO Cares VALUES ('mary_caretaker', 'big dog', 70);
-INSERT INTO Cares VALUES ('mary_caretaker', 'cat', 60);
-INSERT INTO Cares VALUES ('ameliaCareServices', 'big dog', 70);
-INSERT INTO Cares VALUES ('ameliaCareServices', 'snake', 70);
-INSERT INTO Cares VALUES ('ameliaCareServices', 'fish', 30);
---INSERT INTO Cares VALUES ('bob_lovesdogs', 'big dog', 70);
-INSERT INTO Cares VALUES ('bob_lovesdogs', 'cat', 60);
+-- /* Fulltimers' cares */
+-- INSERT INTO Cares VALUES ('mary_caretaker', 'rabbit', 50);
+-- INSERT INTO Cares VALUES ('mary_caretaker', 'dog', 60);
+-- INSERT INTO Cares VALUES ('mary_caretaker', 'big dog', 70);
+-- INSERT INTO Cares VALUES ('mary_caretaker', 'cat', 60);
+-- INSERT INTO Cares VALUES ('ameliaCareServices', 'big dog', 70);
+-- INSERT INTO Cares VALUES ('ameliaCareServices', 'snake', 70);
+-- INSERT INTO Cares VALUES ('ameliaCareServices', 'fish', 30);
+-- --INSERT INTO Cares VALUES ('bob_lovesdogs', 'big dog', 70);
+-- INSERT INTO Cares VALUES ('bob_lovesdogs', 'cat', 60);
 
-/* Parttimers' Cares */
-INSERT INTO Cares VALUES ('supercaretaker', 'dog', 60);
-/* Remove the following line to encounter pet type error */
-INSERT INTO Cares VALUES ('supercaretaker', 'big dog', 90);
+-- /* Parttimers' Cares */
+-- INSERT INTO Cares VALUES ('supercaretaker', 'dog', 60);
+-- /* Remove the following line to encounter pet type error */
+-- INSERT INTO Cares VALUES ('supercaretaker', 'big dog', 90);
 
-INSERT INTO Has_Availability VALUES ('mary_caretaker', '2020-01-01', '2020-03-04');
-INSERT INTO Has_Availability VALUES ('mary_caretaker', '2021-01-01', '2021-03-04');
-INSERT INTO Has_Availability VALUES ('bob_lovesdogs', '2021-01-01', '2021-03-04');
-INSERT INTO Has_Availability VALUES ('ameliaCareServices', '2021-01-01', '2021-03-04');
-INSERT INTO Has_Availability VALUES ('supercaretaker', '2021-01-01', '2021-03-04');
-INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-06-02', '2020-06-08');
-INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-12-04', '2020-12-20');
-INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-08-08', '2020-08-10');
+-- INSERT INTO Has_Availability VALUES ('mary_caretaker', '2020-01-01', '2020-03-04');
+-- INSERT INTO Has_Availability VALUES ('mary_caretaker', '2021-01-01', '2021-03-04');
+-- INSERT INTO Has_Availability VALUES ('bob_lovesdogs', '2021-01-01', '2021-03-04');
+-- INSERT INTO Has_Availability VALUES ('ameliaCareServices', '2021-01-01', '2021-03-04');
+-- INSERT INTO Has_Availability VALUES ('supercaretaker', '2021-01-01', '2021-03-04');
+-- INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-06-02', '2020-06-08');
+-- INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-12-04', '2020-12-20');
+-- INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-08-08', '2020-08-10');
 
 
 CALL add_bid('johnthebest', 'Bloop', 'fish', 'ameliaCareServices', '2021-01-05', '2021-02-20', 'cash', 'poDeliver');
@@ -121,9 +121,9 @@ UPDATE Bid SET pay_type = 'cash', pet_pickup = 'poDeliver', rating = '3', review
    AND s_time = to_date('20200203','YYYYMMDD') AND e_time = to_date('20200222','YYYYMMDD') AND is_win = true;
 
 
-INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-06-01', '2020-06-06');
-INSERT INTO Has_Availability VALUES ('mary_caretaker', '2020-06-01', '2020-06-06');
-INSERT INTO Has_Availability VALUES ('bob_lovesdogs', '2020-06-01', '2020-06-06');
+-- INSERT INTO Has_Availability VALUES ('supercaretaker', '2020-06-01', '2020-06-06');
+-- INSERT INTO Has_Availability VALUES ('mary_caretaker', '2020-06-01', '2020-06-06');
+-- INSERT INTO Has_Availability VALUES ('bob_lovesdogs', '2020-06-01', '2020-06-06');
 
 -- saturation of PT capacity --
 CALL add_bid('marythemess', 'Champ', 'big dog', 'supercaretaker', '2020-06-01', '2020-06-06', 'cash', 'poDeliver');
@@ -134,24 +134,24 @@ UPDATE Bid SET is_win = true WHERE ctuname = 'supercaretaker' AND pouname = 'mar
    AND pettype = 'cat' AND s_time = to_date('20200601','YYYYMMDD') AND e_time = to_date('20200606','YYYYMMDD');
 
 --Frontend mock data--
-CALL add_petOwner('petownerdavid', 'David', 35, 'cat', 'Capoo', 1, 'Needs to be walked everyday');
-INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'big dog', 'Brownie', 8, NULL);
-INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'cat', 'Meow', 2, NULL);
-INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'fish', 'Torpedo', 1, NULL);
-INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'cat', 'Snowy', 1, NULL);
-INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'dog', 'Woof', 2, NULL);
+-- CALL add_petOwner('petownerdavid', 'David', 35, 'cat', 'Capoo', 1, 'Needs to be walked everyday');
+-- INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'big dog', 'Brownie', 8, NULL);
+-- INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'cat', 'Meow', 2, NULL);
+-- INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'fish', 'Torpedo', 1, NULL);
+-- INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'cat', 'Snowy', 1, NULL);
+-- INSERT INTO Owned_Pet_Belongs VALUES ('petownerdavid', 'dog', 'Woof', 2, NULL);
 
-CALL add_fulltimer('caretaker_amy', 'Amy', 22, 'cat', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
-CALL add_fulltimer('new_caretaker', 'Sebastian', 50, 'big dog', 70, '2021-01-01', '2021-06-01', '2021-06-02', '2021-12-30');
-CALL add_fulltimer('new_caretaker', NULL, NULL,  NULL, NULL, '2020-01-01', '2020-06-01', '2020-06-02', '2020-12-30');
+-- CALL add_fulltimer('caretaker_amy', 'Amy', 22, 'cat', 60, '2020-01-01', '2020-05-30', '2020-06-01', '2020-12-20');
+-- CALL add_fulltimer('new_caretaker', 'Sebastian', 50, 'big dog', 70, '2021-01-01', '2021-06-01', '2021-06-02', '2021-12-30');
+-- CALL add_fulltimer('new_caretaker', NULL, NULL,  NULL, NULL, '2020-01-01', '2020-06-01', '2020-06-02', '2020-12-30');
 
 
-CALL add_parttimer('johnhammington', 'John', 28, 'cat', 35);
+-- CALL add_parttimer('johnhammington', 'John', 28, 'cat', 35);
 
-INSERT INTO Has_Availability VALUES ('johnhammington', '2021-02-01', '2021-04-30');
-INSERT INTO Cares VALUES ('caretaker_amy', 'big dog', 70);
-INSERT INTO Cares VALUES ('new_caretaker', 'cat', 60);
-INSERT INTO Cares VALUES ('new_caretaker', 'dog', 60);
+-- INSERT INTO Has_Availability VALUES ('johnhammington', '2021-02-01', '2021-04-30');
+-- INSERT INTO Cares VALUES ('caretaker_amy', 'big dog', 70);
+-- INSERT INTO Cares VALUES ('new_caretaker', 'cat', 60);
+-- INSERT INTO Cares VALUES ('new_caretaker', 'dog', 60);
 
 
 
@@ -237,106 +237,106 @@ CALL add_bid('petownerdavid', 'Brownie', 'big dog', 'new_caretaker', '2020-08-02
 -- insert into Has_Availability values ('Dustion', '2020-07-01', '2020-09-30');
 -- insert into Has_Availability values ('Dustion', '2020-10-01', '2020-12-31');
 
--- -- Successful Bids for parttimer: Dustion
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'Dustion','2020-04-05' , '2020-04-07', 'true', 3, 'Good service', 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'Dustion','2020-08-02' , '2020-08-06', 'true', 3, 'Caretaker was very nice. Took good care of my snake.', 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status)values ('zxcher','Ed', 'Hamster', 'Dustion','2020-08-05' , '2020-08-10', 'true', 3, 'cash', 'ctPickup', 'true');
+-- Successful Bids for parttimer: Dustion
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'Dustion','2020-04-05' , '2020-04-07', 'true', 3, 'Good service', 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'Dustion','2020-08-02' , '2020-08-06', 'true', 3, 'Caretaker was very nice. Took good care of my snake.', 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status)values ('zxcher','Ed', 'Hamster', 'Dustion','2020-08-05' , '2020-08-10', 'true', 3, 'cash', 'ctPickup', 'true');
 
 
--- -- Successful Bids for fulltimer: purpleAbi, AVAIL: '2020-03-01', '2020-07-30' AND '2020-08-01', '2020-12-30'
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'purpleAbi','2020-05-16' , '2020-05-20', 'true', 2, 'Did take my dog out on walks regularly', 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'purpleAbi','2020-07-01' , '2020-07-02', 'true', 3, 'Did not feed my bird with appropriate seeds. Bad service.', 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'purpleAbi','2020-09-20' , '2020-09-25', 'true', 2, 'Bad mannered caretaker', 'cash', 'poDeliver', 'true');
+-- Successful Bids for fulltimer: purpleAbi, AVAIL: '2020-03-01', '2020-07-30' AND '2020-08-01', '2020-12-30'
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'purpleAbi','2020-05-16' , '2020-05-20', 'true', 2, 'Did take my dog out on walks regularly', 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'purpleAbi','2020-07-01' , '2020-07-02', 'true', 3, 'Did not feed my bird with appropriate seeds. Bad service.', 'cash', 'poDeliver', 'true');
 
 
--- -- Successful Bids for fulltimer: littleJohn, AVAIL: '2020-02-01', '2020-06-30' AND '2020-07-01', '2020-11-30'
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-03-01', '2020-03-15', 'true', 5, 'Great services! Very impressed with his thoughtfulness', 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-04-20' , '2020-04-25', 'true', 5, 'Very accommodating caretaker!','credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-08-01' , '2020-08-10', 'true', 5, 'credit card', 'poDeliver', 'true');
 
--- -- making > 60 pet days for cartaker littleJohn on month Septemeber
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 4, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-01', '2020-09-02', 'true', 5, 'credit card', 'poDeliver', 'true');
--- --4
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 5, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 5, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'cash', 'ctPickup', 'true');
--- --9
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 4, 'cash', 'poDeliver', 'true');
--- --12
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 5, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 5, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'cash', 'ctPickup', 'true');
--- --17
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 4, 'cash', 'poDeliver', 'true');
--- --20
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 5, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 5, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'cash', 'ctPickup', 'true');
--- --25
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 4, 'cash', 'poDeliver', 'true');
--- --28
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 5, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 5, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'cash', 'ctPickup', 'true');
--- --33
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 4, 'cash', 'poDeliver', 'true');
--- --36
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 5, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 5, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'cash', 'ctPickup', 'true');
--- --41
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 4, 'cash', 'poDeliver', 'true');
--- --44
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 5, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 5, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'cash', 'ctPickup', 'true');
--- --49
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 4, 'cash', 'poDeliver', 'true');
--- --52 
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 5, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 5, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'cash', 'ctPickup', 'true');
--- --57
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 4, 'cash', 'poDeliver', 'true');
--- --60
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 5, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 5, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'credit card', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'cash', 'ctPickup', 'true');
--- --65
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'credit card', 'ctPickup', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'cash', 'poDeliver', 'true');
--- insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 4, 'cash', 'poDeliver', 'true');
--- --68
+-- Successful Bids for fulltimer: littleJohn, AVAIL: '2020-02-01', '2020-06-30' AND '2020-07-01', '2020-11-30'
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-03-01', '2020-03-15', 'true', 5, 'Great services! Very impressed with his thoughtfulness', 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, review, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-04-20' , '2020-04-25', 'true', 5, 'Very accommodating caretaker!','credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-08-01' , '2020-08-10', 'true', 5, 'credit card', 'poDeliver', 'true');
+
+-- making > 60 pet days for cartaker littleJohn on month Septemeber
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-01' , '2020-09-02', 'true', 4, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-01', '2020-09-02', 'true', 5, 'credit card', 'poDeliver', 'true');
+--4
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 5, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 5, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'cash', 'ctPickup', 'true');
+--9
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-03' , '2020-09-04', 'true', 4, 'cash', 'poDeliver', 'true');
+--12
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 5, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 5, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'cash', 'ctPickup', 'true');
+--17
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-05' , '2020-09-06', 'true', 4, 'cash', 'poDeliver', 'true');
+--20
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 5, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 5, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'cash', 'ctPickup', 'true');
+--25
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-07' , '2020-09-08', 'true', 4, 'cash', 'poDeliver', 'true');
+--28
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 5, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 5, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'cash', 'ctPickup', 'true');
+--33
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-09' , '2020-09-10', 'true', 4, 'cash', 'poDeliver', 'true');
+--36
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 5, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 5, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'cash', 'ctPickup', 'true');
+--41
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-11' , '2020-09-12', 'true', 4, 'cash', 'poDeliver', 'true');
+--44
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 5, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 5, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'cash', 'ctPickup', 'true');
+--49
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-13' , '2020-09-14', 'true', 4, 'cash', 'poDeliver', 'true');
+--52 
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 5, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 5, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'cash', 'ctPickup', 'true');
+--57
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-15' , '2020-09-16', 'true', 4, 'cash', 'poDeliver', 'true');
+--60
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Marbles', 'Chihuahua', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 5, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','Andrea', 'Caged Insects', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 5, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Kermit', 'Aquarium Fish', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','lil green', 'Snake', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'credit card', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Ed', 'Hamster', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'cash', 'ctPickup', 'true');
+--65
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('nightDreamers','Peach', 'Pitbull', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'credit card', 'ctPickup', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('battyBat','tweet', 'Free-range Birds', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 3, 'cash', 'poDeliver', 'true');
+insert into Bid (pouname, petname, pettype, ctuname, s_time, e_time, is_win, rating, pay_type, pet_pickup, pay_status) values ('zxcher','Cookies', 'Rabbit', 'littleJohn','2020-09-17' , '2020-09-18', 'true', 4, 'cash', 'poDeliver', 'true');
+--68
