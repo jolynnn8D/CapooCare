@@ -12,17 +12,20 @@ const adminModel = {
     getNewAdminAccount: thunk(async (actions, payload) => {
       const username = payload;
       const url = serverUrl + "/api/v1/accounts/" + username;
-      await axios.get(url).then(response => {
-        // console.log(response.data.data);
-        if (response.data.data.account != null) {
-          alert('Username already exists in the database!')
-        } else {
-          // console.log("here");
-          return response.data.data.account;
-        }
-      }).catch((error) => {
-        alert("Please choose a different username!");
-      })
+      // await axios.get(url).then(response => {
+      //   // console.log(response.data.data);
+      //   if (response.data.data.account != null) {
+      //     // alert('Username already exists in the database!');
+      //     return response.data.data.account;
+      //   } else {
+      //     // console.log("here");
+      //     return response.data.data.account;
+      //   }
+      // }).catch((error) => {
+      //   alert("Please choose a different username!");
+      // })
+      const data = await axios.get(url);
+      return data;
     }),
     getAccount: thunk(async (actions, payload) => {
     const username = payload;

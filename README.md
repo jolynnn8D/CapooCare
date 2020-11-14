@@ -1,11 +1,13 @@
 # CS2102_2021_S1_Team57
 
-## Deployment
+# Deployment
 
 Our application, CapooCare, is a web application for pet caretaking services. With its functionalities, CapooCare can take care of the entire use cases of 3 different stakeholders: Pet Owners, Caretakers and PCS Admin. The application has been deployed at the following link: [CapooCare](https://capoocare.herokuapp.com).
 
 # Functionalities
 
+Watch our video demo of the app [here](https://www.youtube.com/watch?v=GrYxDcfxgS0)!  
+  
 Our application fully supports Pet Owners from managing their profile information, pet list and browsing of potential Caretakers to bidding for Caretakers' services, making payments and leaving ratings as well as reviews.
 
 For Caretakers, they also can manage their profile, pet services, pricing, bids and available periods. There are also summary information for them to review and update their services.
