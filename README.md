@@ -1,4 +1,16 @@
-# CS2102_2021_S1_Team57
+# [Team 57] CapooCare
+
+### [**Video Demo**](https://www.youtube.com/watch?v=GrYxDcfxgS0)
+
+### [**Application Link**](https://capoocare.herokuapp.com)
+
+![Image of Pet Owner's Profile](/resources/petowner_profile.png)  
+
+![Image of the Find Caretakers page](/resources/findcaretakers.png)   
+
+![Image of Caretaker's Profile](/resources/caretaker_profile.png)  
+
+![Image of PCS Admin's Page](/resources/admin_page.png)
 
 # Deployment
 
